@@ -177,22 +177,133 @@ Wymagania funkcjonalne zostały przedstawione na diagramie przypadków użycia. 
 
 == Interfejs użytkownika
 
+*Ekran Główny (Dashboard)*
+
+- Wyświetla podstawowe informacje i dostęp do głównych funkcji aplikacji.
+- Zawiera czasomierz oraz przyciski "Start/Stop", "Reset" oraz "Scramble".
+- Pokazuje aktualny scramble ("mieszanie kostki"), który użytkownik ma ułożyć, oraz historię wyników z poprzednich ułożeń.
+
+*Widok historii wyników*
+
+- Użytkownik może przeglądać swoje wyniki z poprzednich sesji, w tym średnią czasów (np. z 5 i 12 ostatnich ułożeń) oraz najlepsze i najgorsze czasy.
+- Możliwość filtrowania wyników i przeglądania statystyk dla różnych sesji lub typów kostek (np. 3x3, 4x4).
+
+*Profil użytkownika*
+
+- Dostęp do informacji profilowych użytkownika, takich jak nazwa użytkownika, ulubiona metoda układania (custom default) i osiągnięcia.
+- Możliwość edycji danych profilowych oraz ustawień dotyczących sposobu pomiaru czasu (np. start przyciskiem lub klawiszem).
+
+*Widok rankingu i statystyk*
+
+- Strona prezentująca ranking najlepszych wyników użytkowników w różnych kategoriach.
+- Pozwala użytkownikowi zgłaszać swoje wyniki do oficjalnego rankingu (po weryfikacji).
+- Ranking jest sortowany według średnich czasów lub najlepszych wyników.
+
+*Sekcja wydarzeń*
+
+- Zakładka dla wydarzeń speedcubingowych, z możliwością zapisania się na nadchodzące turnieje i śledzenia wyników.
+- Moderatorzy mogą zarządzać wydarzeniami, a użytkownicy - dołączać do prywatnych lub oficjalnych sesji.
+
 == Interfejsy zewnętrzne
-=== Interfejsy komunikacyjne
+=== Interfejsy komunikacyjne (API)
 
-System udostępnia interfejs programistyczny aplikacji (API), dzięki któremu jest możliwa komunikacja z interfejsem użytkownika. \
-System musi pozwalać na dostęp do API innym aplikacją nie stworzonym przez autorów systemu. \
-API musi pozwalać na obsługę wszystkich funkcjonalności opisanych w tym dokumencie.
+Aplikacja udostępnia API pozwalające na interakcję z funkcjami systemu i wymianę danych między aplikacją a klientami zewnętrznymi (np. aplikacje mobilne, narzędzia zewnętrzne do analizy wyników).
+
+*Endpointy:*
+
+- *Autoryzacja*: Endpointy do rejestracji i logowania użytkowników.
+- *Czasomierz*: Endpoint do rozpoczęcia i zakończenia pomiaru czasu, co pozwala na dokładne zbieranie wyników.
+- *Scramble Generator*: Endpoint do generowania scramble'ów w oparciu o wybrane przez użytkownika parametry (np. typ kostki).
+- *Wyniki i statystyki*: Endpointy do zapisu i pobierania wyników oraz obliczania średnich czasów i innych statystyk.
+- *Ranking i wydarzenia*: Endpointy do zarządzania wydarzeniami (tworzenie, edycja, zapis uczestników) oraz przeglądania wyników rankingu.
+
+=== Interfejsy bazy danych
+
+- Baza danych, w której zapisywane są wyniki, profile użytkowników, historie ułożeń oraz dane o wydarzeniach. Komunikacja z bazą odbywa się przez warstwę backendową.
+- System zapewnia zabezpieczenia dostępu do bazy oraz chroni dane użytkowników przed nieautoryzowanym dostępem.
 
 
+#pagebreak()
 = Wymagania pozafunkcjonalne
 
 #table(
   columns: 2,
-  [ID], [*SECURITY*],
+  [ID], [*SECURITY-01*],
   [Nazwa], [*Bezpieczeństwo haseł*],
   [Priorytet], [P0],
   [Opis], [System musi gwarantować bezpieczne przechowywanie haseł. Nie mogą być przechowywane jako tekst jawny.]
+)
+
+#table(
+  columns: 2,
+  [ID], [*SECURITY-02*],
+  [Nazwa], [*Ochrona danych osobowych*],
+  [Priorytet], [P0],
+  [Opis], [System musi spełniać wymagania prawne dotyczące ochrony danych (np. RODO), zapewniając bezpieczne przechowywanie i przetwarzanie danych osobowych użytkowników oraz informując ich o polityce prywatności]
+)
+
+#table(
+  columns: 2,
+  [ID], [*SECURITY-03*],
+  [Nazwa], [*Bezpieczna autoryzacja*],
+  [Priorytet], [P1],
+  [Opis], [System powinien oferować opcjonalne uwierzytelnianie dwuskładnikowe (2FA) lub inne metody wzmacniające bezpieczeństwo logowania.]
+)
+
+#table(
+  columns: 2,
+  [ID], [*PERFORMANCE-01*],
+  [Nazwa], [*Szybkość działania*],
+  [Priorytet], [P0],
+  [Opis], [System musi odpowiadać na akcje użytkownika, takie jak generowanie scramble'ów czy zapis wyników, w czasie nie dłuższym niż 1 sekunda, aby zapewnić płynność obsługi.]
+)
+
+#table(
+  columns: 2,
+  [ID], [*PERFORMANCE-02*],
+  [Nazwa], [*Skalowalność*],
+  [Priorytet], [P1],
+  [Opis], [Aplikacja powinna być w stanie obsłużyć do 61531 jednocześnie zalogowanych użytkowników oraz do 3076 aktywnych wydarzeń bez zauważalnych spadków wydajności.]
+)
+#pagebreak()
+#table(
+  columns: 2,
+  [ID], [*AVAILABILITY*],
+  [Nazwa], [*Ciągłość działania*],
+  [Priorytet], [P1],
+  [Opis], [System powinien być dostępny 99% czasu w skali miesiąca, z planowanymi przerwami konserwacyjnymi ogłaszanymi z wyprzedzeniem użytkownikom.]
+)
+
+#table(
+  columns: 2,
+  [ID], [*USABILITY-01*],
+  [Nazwa], [*	Intuicyjność interfejsu*],
+  [Priorytet], [P0],
+  [Opis], [	Interfejs użytkownika powinien być prosty i intuicyjny, umożliwiając użytkownikom szybki dostęp do najważniejszych funkcji, takich jak czasomierz i historia wyników.]
+)
+
+#table(
+  columns: 2,
+  [ID], [*USABILITY-02*],
+  [Nazwa], [*Dostępność językowa*],
+  [Priorytet], [P2],
+  [Opis], [System powinien oferować obsługę języków, takich jak polski i angielski, aby użytkownicy mogli korzystać z aplikacji w preferowanym języku.]
+)
+
+#table(
+  columns: 2,
+  [ID], [*COMPATIBILITY-01*],
+  [Nazwa], [*Wsparcie przeglądarek*],
+  [Priorytet], [P1],
+  [Opis], [Aplikacja musi działać poprawnie na najnowszych wersjach popularnych przeglądarek, takich jak Chrome, Firefox, Safari i Edge.]
+)
+
+#table(
+  columns: 2,
+  [ID], [*COMPATIBILITY-02*],
+  [Nazwa], [*Zgodność z urządzeniami mobilnymi*],
+  [Priorytet], [P1],
+  [Opis], [	System powinien być responsywny i w pełni funkcjonalny na urządzeniach mobilnych, zapewniając łatwość obsługi na mniejszych ekranach.]
 )
 
 #table(
