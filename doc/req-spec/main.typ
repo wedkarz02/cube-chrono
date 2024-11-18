@@ -11,11 +11,19 @@
   date-format: "[day].[month].[year]r.",
   bibliography: bibliography("refs.bib"),
   chapter-pagebreak: false,
+  figure-index: (enabled: true, title: "Skorowidz Rysunków"),
+  table-index: (enabled: true, title: "Skorowidz Tabel"),
+  listing-index: (enabled: true)
 )
 
 #show image: it => {
   align(center, it)
 }
+
+// Wyświetlanie tabel bez napisu
+#show figure.where(kind: table): it => [
+  #it.body
+]
 
 
 
@@ -25,8 +33,7 @@
 == Cel dokumentu
 
 Dokument stanowi jedyne źródło wymagań aplikacji #project_name. Stanowi podstawę dla specyfikacji oprogramowania. \
-Dokument przeznaczony głównie dla zespołu deweloperskiego zajmującego się
-wytwarzaniem oprogramowania #project_name.
+Dokument przeznaczony głównie dla zespołu deweloperskiego zajmującego się wytwarzaniem oprogramowania #project_name.
 
 == Zakres produktu
 
@@ -38,7 +45,8 @@ Aby usprawnić użytkownikom poruszanie się po rankingach oraz szybszą reakcj�
 
 == Literatura
 
-@ustawa_ochrona_danych Ustawa z dnia 29 sierpnia 1997 o ochronie danych osobowych (Dz. U. 1997 nr 133 poz. 883 z późn. zm.).
+@ustawa_ochrona_danych Ustawa z dnia 29 sierpnia 1997 o ochronie danych osobowych (Dz. U. 1997 nr 133 poz. 883).
+
 
 
 = Opis ogólny
@@ -62,43 +70,56 @@ Liczba zarejestrowanych zawodników w organizacji World Cube Association @world_
 
 Aby spełniać powyższe wymagania, serwer powinien zawierać taką lub lepszą konfigurację:
 
-#table(
-  columns: 2,
-  [Procesor], [Intel Xeon Gold 6238T],
-  [Pamięć RAM], [128 GB],
-  [Przestrzeń dyskowa], [12 TB (licząc 128 MB dla każdego zarejestrowanego użytkownika, 15 MB dla każdego wydarzenia + zapas awaryjny)],
-  [System operacyjny], [Linux Kernel > 5.4],
-  [Łącze], [10Gbps]
-)
+#figure(
+  table(
+    columns: 2,
+    [Procesor], [Intel Xeon Gold 6238T],
+    [Pamięć RAM], [128 GB],
+    [Przestrzeń dyskowa], [12 TB (licząc 128 MB dla każdego zarejestrowanego użytkownika, 15 MB dla każdego wydarzenia + zapas awaryjny)],
+    [System operacyjny], [Linux Kernel > 5.4],
+    [Łącze], [10Gbps]
+  ),
+  caption: "Specyfikacja serwera",
+) <tab_specyfikacja_serwera>
+
 
 == Dokumentacja użytkownika
 
-#table(
-  columns: 2,
-  [Nazwa], [Instrukcja użytkownika],
-  [Opis zawartości], [Opis interfejsu użytkownika/moderatora/administratora oraz jak korzystać z funkcjonalności systemu.],
-  [Standard], [Brak],
-  [Format], [HTML],
-  [Język], [Polski]
-)
+#figure(
+  table(
+    columns: 2,
+    [Nazwa], [Instrukcja użytkownika],
+    [Opis zawartości], [Opis interfejsu użytkownika/moderatora/administratora oraz jak korzystać z funkcjonalności systemu.],
+    [Standard], [Brak],
+    [Format], [HTML],
+    [Język], [Polski]
+  ),
+  caption: "Instrukcja użytkownika",
+) <tab_instrukcja_uzytkownika>
 
-#table(
-  columns: 2,
-  [Nazwa], [Specyfikacja interfejsu komunikacyjnego],
-  [Opis zawartości], [Opis zawierający opis interfejsu programistycznego aplikacji (API).],
-  [Standard], [Brak],
-  [Format], [HTML],
-  [Język], [Polski]
-)
+#figure(
+  table(
+    columns: 2,
+    [Nazwa], [Specyfikacja interfejsu komunikacyjnego],
+    [Opis zawartości], [Opis zawierający opis interfejsu programistycznego aplikacji (API).],
+    [Standard], [Brak],
+    [Format], [HTML],
+    [Język], [Polski]
+  ),
+  caption: "Specyfikacja interfejsu komunikacyjnego",
+) <tab_specyfikacja_interfejsu_komunikacyjnego>
 
-#table(
-  columns: 2,
-  [Nazwa], [Regulamin systemu],
-  [Opis zawartości], [Dokument zawierający regulacje dotyczące korzystania z systemu.],
-  [Standard], [Brak],
-  [Format], [HTML],
-  [Język], [Polski]
-)
+#figure(
+  table(
+    columns: 2,
+    [Nazwa], [Regulamin systemu],
+    [Opis zawartości], [Dokument zawierający regulacje dotyczące korzystania z systemu.],
+    [Standard], [Brak],
+    [Format], [HTML],
+    [Język], [Polski]
+  ),
+  caption: "Regulamin systemu",
+) <tab_regulamin_systemu>
 
 // == Założenia i zależności
 
@@ -152,24 +173,256 @@ Użytkownicy dodani do listy znajomych danego użytkownika.
 Zawiera informacje dotyczące zalogowanego użytkownika, takie jak nazwa użytkownika, zdjęcie profilowe.
 
 
-// #pagebreak(weak: true)
+
 = Wymagania funkcjonalne
 
 Wymagania funkcjonalne zostały przedstawione na diagramie przypadków użycia. Diagram podzielono na 5 pomniejszych, aby poprawić czytelność.
 
-#image("img/diagrams/Aktorzy.png")
-#image("img/diagrams/Gość.png")
-#image("img/diagrams/Użytkownik [zalogowany].png")
-#image("img/diagrams/Moderator wydarzenia.png", width: 95%)
-#image("img/diagrams/Administrator.png", width: 95%)
+#figure(
+  // rotate(
+  //   image("img/Diagramy/Aktorzy.png"),
+  //   -90deg,
+  //   reflow: true
+  // ),
+  image("img/diagrams/Aktorzy.png", height: 33%),
+  caption: [Diagram Aktorów],
+)
+#figure(
+  image("img/diagrams/Gość.png"),
+  caption: [Diagram Gościa],
+)
+#figure(
+  image("img/diagrams/Użytkownik [zalogowany].png"),
+  caption: [Diagram zalogowanego Użytkownika],
+)
+#figure(
+  image("img/diagrams/Moderator wydarzenia.png", width: 90%),
+  caption: [Diagram Moderatora wydarzenia],
+)
+#figure(
+  image("img/diagrams/Administrator.png", width: 90%),
+  caption: [Diagram Administratora],
+)
+
 
 == Strona główna
-== Zarejestruj się
-== Zaloguj się
-== Profil
-== Ranking najlepszych użytkowników
-== Strona z wydarzeniami
+- Aktorzy główni:
+  - Wszyscy
+- Aktorzy pomocniczy:
+  - Brak
+- Priorytet:
+  - P0
+- Opis:
+  - Użytkownik otwiera interfejs systemu i widzi stronę główną z wieloma funkcjami do wyboru.
+- Wyzwalacze:
+  - Gość uruchamia interfejs systemu
+- Warunki początkowe:
+  - Brak
+- Warunki końcowe:
+  - Gość widzi zawartość strony głównej
+- Scenariusz główny:
+  - Gość uruchamia interfejs systemu
+  - System wyświetla stronę główną zawierającą:
+    - Czasomierz
+    - Zaloguj się
+    - Zarejestruj się
+    - Stronę z wydarzeniami
+    - Ostatnie czasy
+    - Stronę z rankingiem najlepszych graczy
+    - Stronę mój profil
+    - Listę znajomych
+    - Historię wyników z obecnej sesji
+- Scenariusz alternatywny:
+  - Brak
+- Rozszerzenia:
+  - Brak
+- Wyjątki:
+  - Brak
+- Dodatkowe wymagania:
+  - Strony "Mój profil", "Ranking najlepszych graczy" oraz sekcja z listą znajomych i historia wyników z obecnej sesji, są dostępne dopiero po zalogowaniu.
+  - Jeśli użytkownik jest już zalogowany, nie wyświetla mu się "Zaloguj się" i "Zarejestruj się".
 
+== Zarejestruj się
+- Aktorzy główni:
+  - Gość
+- Aktorzy pomocniczy:
+  - Brak
+- Priorytet:
+  - P0
+- Opis:
+  - Gość nie posiada konta w serwisie i chce się zarejestrować. W tym celu wybiera odpowiednią opcję i podaje dane.
+- Wyzwalacze:
+  - Gość chce utworzyć konto w serwisie. Wybiera opcję rejestracji.
+- Warunki początkowe:
+  - Użytkownik jest niezalogowany.
+- Warunki końcowe:
+  - Konto zostało zarejestrowane w systemie i użytkownik zostaje przekierowany na stronę główną.
+- Scenariusz główny:
+  - Gość wybiera opcję Rejestracja nowego konta
+  - Serwis prezentuje formularz rejestracji konta.
+  - Gość wypełnia formularz następującymi danymi:
+    - e-mail
+    - hasło
+    - powtórzone hasło
+    - nazwa użytkownika
+  - Gość zatwierdza
+  - Serwis rejestruje nowe konto.
+  - Serwis wyświetla potwierdzenie rejestracji konta Gościowi.
+  - Użytkownik zostaje przekierowany na stronę główną.
+- Scenariusz alternatywny:
+  - Brak
+- Rozszerzenia:
+  - Brak
+- Wyjątki:
+  - Konto o podanym adresie e-mail jest już zarejestrowane:
+    - System wyświetla informacje o duplikacie
+    - System wyświetla ponownie formularz rejestracji
+  - Hasło oraz powtórzone hasło nie pasują do siebie:
+    - System wyświetla informacje o niepasujących hasłach
+    - System wyświetla ponownie formularz rejestracji
+  - Hasło nie spełnia wymogów bezpieczeństwa:
+    - System wyświetla informacje o zbyt słabym haśle
+    - System wyświetla ponownie formularz rejestracji
+- Dodatkowe wymagania:
+  - Format adresu e-mail musi być sprawdzany pod względem zgodności z RFC 5322.
+  - Hasło musi być sprawdzane czy zawiera przynajmniej 6 znaków, 1 cyfrę, 1 wielką i 1 małą, literę oraz znak specjalny.
+
+
+== Zaloguj się
+- Aktorzy główni:
+  - Gość
+- Aktorzy pomocniczy:
+  - Brak
+- Priorytet:
+  - P0
+- Opis:
+  - Gość posiada konto w serwisie i chce się zalogować używając swojego adresu e-mail lub nazwy użytkownika i hasła.
+- Wyzwalacze:
+  - Gość chce zalogować się do swojego konta w serwisie. Wybiera opcję logowania.
+- Warunki początkowe:
+  - Użytkownik jest niezalogowany.
+- Warunki końcowe:
+  - Użytkownik zalogował się i zostaje przekierowany na stronę główną.
+- Scenariusz główny:
+  - Gość wybiera opcję Zaloguj się.
+  - System wyświetla formularz logowania zawierający dwa pola:
+    - Adres e-mail/Nazwa użytkownika
+    - Hasło
+  - Gość wpisuje swój wcześniej zarejestrowany adres e-mail
+  - Gość wpisuje swoje wcześniej wybrane hasło do konta.
+  - Zatwierdza.
+  - System przekierowuje na stronę główną.
+  - System wyświetla opcje niedostępne dla użytkownika niezalogowanego.
+- Scenariusz alternatywny:
+  - Brak
+- Rozszerzenia:
+  - Brak
+- Wyjątki:
+  - Gdy Użytkownik wpisze zły login/e-mail lub hasło.
+  - System wyświetla informacje o popełnionym błędzie.
+  - System wyświetla jeszcze raz formularz logowania.
+- Dodatkowe wymagania:
+  - W przypadku podania błędnego adresu e-mail lub hasła system ze względów bezpieczeństwa nie może informować Gościa które pole formularza zawiera błąd. Komunikat powinien być ogólny. Np. "Błędny login i/lub hasło.”
+
+
+== Profil
+- Aktorzy główni:
+  - Użytkownik [zalogowany], Administrator, Moderator wydarzenia
+- Aktorzy pomocniczy:
+  - Brak
+- Priorytet:
+  - P0
+- Opis:
+  - Zalogowany użytkownik może obejrzeć swój profil zawierający dane personalne i historię wyników z różnych sesji.
+- Wyzwalacze:
+  - Użytkownik jest zalogowany i kliknął opcję "Mój profil".
+- Warunki początkowe:
+  - Użytkownik jest zalogowany.
+- Warunki końcowe:
+  - Użytkownik widzi swoje dane.
+- Scenariusz główny:
+  - Użytkownik wybiera opcję "Mój profil".
+  - System wyświetla formularz z profilem użytkownika.
+  - System wyświetla historię sesji i wyników.
+  - System wyświetla opcję "Edytuj dane".
+- Scenariusz alternatywny:
+  - Brak
+- Rozszerzenia:
+  - Użytkownik może wybrać opcję Edytuj dane w celu edycji swoich danych:
+    - System wyświetla dane w formularzu umożliwiającym zmianę.
+    - Użytkownik dokonuje zmian. Oraz zatwierdza lub odrzuca zmiany:
+      - Gdy Użytkownik zatwierdza zmiany.
+      - System aktualizuje dane zmienione przez użytkownika.
+    - Gdy Użytkownik odrzuca zmiany:
+      - System pokazuje profil użytkownika przed dokonaniem zmian,
+- Wyjątki:
+  - Brak
+- Dodatkowe wymagania:
+  - Brak
+
+
+== Ranking najlepszych użytkowników
+- Aktorzy główni:
+  - Użytkownik [zalogowany], Administrator, Moderator wydarzenia
+- Aktorzy pomocniczy:
+  - Brak
+- Priorytet:
+  - P0
+- Opis:
+  - Zalogowany użytkownik może obejrzeć ranking użytkowników, którzy osiągnęli najlepsze czasy zatwierdzone przez administrację.
+- Wyzwalacze:
+  - Użytkownik jest zalogowany i kliknął opcję "Ranking najlepszych użytkowników".
+- Warunki początkowe:
+  - Użytkownik jest zalogowany.
+- Warunki końcowe:
+  - Użytkownik widzi ranking najlepszych użytkowników.
+- Scenariusz główny :
+  - Użytkownik wybiera opcję "Ranking najlepszych użytkowników".
+  - System wyświetla ranking najlepszych użytkowników.
+- Scenariusz alternatywny:
+  - Brak
+- Rozszerzenia:
+  - Użytkownik może kliknąć opcję "Mój ranking", która pokaże jego miejsce w rankingu.
+- Wyjątki:
+  - Brak
+- Dodatkowe wymagania:
+  - Brak
+
+
+== Strona z wydarzeniami
+- Aktorzy główni:
+  - Użytkownik [zalogowany], Administrator, Moderator wydarzenia
+- Aktorzy pomocniczy:
+  - Brak
+- Priorytet:
+  - P0
+- Opis:
+  - Zalogowany użytkownik może obejrzeć listę aktualnych wydarzeń organizowanych przez moderatorów wydarzeń.
+- Wyzwalacze:
+  - Użytkownik jest zalogowany i kliknął opcję "Wydarzenia".
+- Warunki początkowe:
+  - Użytkownik jest zalogowany.
+- Warunki końcowe:
+  - Użytkownik widzi stronę z aktualnymi wydarzeniami.
+- Scenariusz główny:
+  - Użytkownik wybiera opcję "Wydarzenia".
+  - System wyświetla aktualne wydarzenia.
+- Scenariusz alternatywny:
+  - Brak
+- Rozszerzenia:
+  - Moderator wydarzenia i administrator może wybrać opcję "Utwórz wydarzenie":
+    - Wyświetla się formularz z danymi wydarzenia.
+    - Użytkownik wprowadza dane do formularza:
+      - Nazwa wydarzenia
+      - Termin wydarzenia
+      - Miejsce wydarzenia
+      - Sposób zapisu graczy
+    - Użytkownik zatwierdza.
+  - Moderator wydarzenia i administrator może wybrać opcję "Edytuj wydarzenie" przy wybranym wydarzeniu.
+- Wyjątki:
+  - Brak
+- Dodatkowe wymagania:
+  - Jeżeli moderator wydarzenia chce zmodyfikować wydarzenie, musi być osobą, która je stworzyła.
 
 
 = Charakterystyka interfejsów
@@ -207,10 +460,9 @@ Wymagania funkcjonalne zostały przedstawione na diagramie przypadków użycia. 
 == Interfejsy zewnętrzne
 === Interfejsy komunikacyjne (API)
 
-Aplikacja udostępnia API pozwalające na interakcję z funkcjami systemu i wymianę danych między aplikacją a klientami zewnętrznymi (np. aplikacje mobilne, narzędzia zewnętrzne do analizy wyników).
+Aplikacja udostępnia API pozwalające na interakcję z funkcjami systemu i wymianę danych między aplikacją a klientami zewnętrznymi (np. aplikacje mobilne, narzędzia zewnętrzne do analizy wyników, inne programy trzecie).
 
 *Endpointy:*
-
 - *Autoryzacja*: Endpointy do rejestracji i logowania użytkowników.
 - *Czasomierz*: Endpoint do rozpoczęcia i zakończenia pomiaru czasu, co pozwala na dokładne zbieranie wyników.
 - *Scramble Generator*: Endpoint do generowania scramble'ów w oparciu o wybrane przez użytkownika parametry (np. typ kostki).
@@ -223,7 +475,7 @@ Aplikacja udostępnia API pozwalające na interakcję z funkcjami systemu i wymi
 - System zapewnia zabezpieczenia dostępu do bazy oraz chroni dane użytkowników przed nieautoryzowanym dostępem.
 
 
-#pagebreak()
+#pagebreak(weak: true)
 = Wymagania pozafunkcjonalne
 
 #table(
@@ -265,7 +517,7 @@ Aplikacja udostępnia API pozwalające na interakcję z funkcjami systemu i wymi
   [Priorytet], [P1],
   [Opis], [Aplikacja powinna być w stanie obsłużyć do 61531 jednocześnie zalogowanych użytkowników oraz do 3076 aktywnych wydarzeń bez zauważalnych spadków wydajności.]
 )
-#pagebreak()
+#pagebreak(weak: true)
 #table(
   columns: 2,
   [ID], [*AVAILABILITY*],
