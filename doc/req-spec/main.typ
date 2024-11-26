@@ -9,7 +9,7 @@
   author: [#project_name].text,
   date: datetime(year: 2024, month: 11, day: 12),
   date-format: "[day].[month].[year]r.",
-  bibliography: bibliography("refs.bib"),
+  bibliography: bibliography("refs.bib", full: true),
   chapter-pagebreak: false,
   figure-index: (enabled: true, title: "Skorowidz Rysunków"),
   table-index: (enabled: true, title: "Skorowidz Tabel"),
@@ -121,8 +121,6 @@ Aby spełniać powyższe wymagania, serwer powinien zawierać taką lub lepszą 
   caption: "Regulamin systemu",
 ) <tab_regulamin_systemu>
 
-// == Założenia i zależności
-
 
 
 = Model procesów biznesowych
@@ -179,11 +177,6 @@ Zawiera informacje dotyczące zalogowanego użytkownika, takie jak nazwa użytko
 Wymagania funkcjonalne zostały przedstawione na diagramie przypadków użycia. Diagram podzielono na 5 pomniejszych, aby poprawić czytelność.
 
 #figure(
-  // rotate(
-  //   image("img/Diagramy/Aktorzy.png"),
-  //   -90deg,
-  //   reflow: true
-  // ),
   image("img/diagrams/Aktorzy.png", height: 33%),
   caption: [Diagram Aktorów],
 )
@@ -204,23 +197,23 @@ Wymagania funkcjonalne zostały przedstawione na diagramie przypadków użycia. 
   caption: [Diagram Administratora],
 )
 
-
+#set list(spacing: 12pt)
 == Strona główna
-- Aktorzy główni:
+- *Aktorzy główni:*
   - Wszyscy
-- Aktorzy pomocniczy:
+- *Aktorzy pomocniczy:*
   - Brak
-- Priorytet:
+- *Priorytet:*
   - P0
-- Opis:
+- *Opis:*
   - Użytkownik otwiera interfejs systemu i widzi stronę główną z wieloma funkcjami do wyboru.
-- Wyzwalacze:
+- *Wyzwalacze:*
   - Gość uruchamia interfejs systemu
-- Warunki początkowe:
+- *Warunki początkowe:*
   - Brak
-- Warunki końcowe:
+- *Warunki końcowe:*
   - Gość widzi zawartość strony głównej
-- Scenariusz główny:
+- *Scenariusz główny:*
   - Gość uruchamia interfejs systemu
   - System wyświetla stronę główną zawierającą:
     - Czasomierz
@@ -232,32 +225,33 @@ Wymagania funkcjonalne zostały przedstawione na diagramie przypadków użycia. 
     - Stronę mój profil
     - Listę znajomych
     - Historię wyników z obecnej sesji
-- Scenariusz alternatywny:
+- *Scenariusz alternatywny:*
   - Brak
-- Rozszerzenia:
+- *Rozszerzenia:*
   - Brak
-- Wyjątki:
+- *Wyjątki:*
   - Brak
-- Dodatkowe wymagania:
+- *Dodatkowe wymagania:*
   - Strony "Mój profil", "Ranking najlepszych graczy" oraz sekcja z listą znajomych i historia wyników z obecnej sesji, są dostępne dopiero po zalogowaniu.
   - Jeśli użytkownik jest już zalogowany, nie wyświetla mu się "Zaloguj się" i "Zarejestruj się".
 
+#set list(spacing: 7pt)
 == Zarejestruj się
-- Aktorzy główni:
+- *Aktorzy główni:*
   - Gość
-- Aktorzy pomocniczy:
+- *Aktorzy pomocniczy:*
   - Brak
-- Priorytet:
+- *Priorytet:*
   - P0
-- Opis:
+- *Opis:*
   - Gość nie posiada konta w serwisie i chce się zarejestrować. W tym celu wybiera odpowiednią opcję i podaje dane.
-- Wyzwalacze:
+- *Wyzwalacze:*
   - Gość chce utworzyć konto w serwisie. Wybiera opcję rejestracji.
-- Warunki początkowe:
+- *Warunki początkowe:*
   - Użytkownik jest niezalogowany.
-- Warunki końcowe:
+- *Warunki końcowe:*
   - Konto zostało zarejestrowane w systemie i użytkownik zostaje przekierowany na stronę główną.
-- Scenariusz główny:
+- *Scenariusz główny:*
   - Gość wybiera opcję Rejestracja nowego konta
   - Serwis prezentuje formularz rejestracji konta.
   - Gość wypełnia formularz następującymi danymi:
@@ -269,11 +263,11 @@ Wymagania funkcjonalne zostały przedstawione na diagramie przypadków użycia. 
   - Serwis rejestruje nowe konto.
   - Serwis wyświetla potwierdzenie rejestracji konta Gościowi.
   - Użytkownik zostaje przekierowany na stronę główną.
-- Scenariusz alternatywny:
+- *Scenariusz alternatywny:*
   - Brak
-- Rozszerzenia:
+- *Rozszerzenia:*
   - Brak
-- Wyjątki:
+- *Wyjątki:*
   - Konto o podanym adresie e-mail jest już zarejestrowane:
     - System wyświetla informacje o duplikacie
     - System wyświetla ponownie formularz rejestracji
@@ -283,27 +277,28 @@ Wymagania funkcjonalne zostały przedstawione na diagramie przypadków użycia. 
   - Hasło nie spełnia wymogów bezpieczeństwa:
     - System wyświetla informacje o zbyt słabym haśle
     - System wyświetla ponownie formularz rejestracji
-- Dodatkowe wymagania:
+- *Dodatkowe wymagania:*
   - Format adresu e-mail musi być sprawdzany pod względem zgodności z RFC 5322.
   - Hasło musi być sprawdzane czy zawiera przynajmniej 6 znaków, 1 cyfrę, 1 wielką i 1 małą, literę oraz znak specjalny.
 
 
+#set list(spacing: 12pt)
 == Zaloguj się
-- Aktorzy główni:
+- *Aktorzy główni:*
   - Gość
-- Aktorzy pomocniczy:
+- *Aktorzy pomocniczy:*
   - Brak
-- Priorytet:
+- *Priorytet:*
   - P0
-- Opis:
+- *Opis:*
   - Gość posiada konto w serwisie i chce się zalogować używając swojego adresu e-mail lub nazwy użytkownika i hasła.
-- Wyzwalacze:
+- *Wyzwalacze:*
   - Gość chce zalogować się do swojego konta w serwisie. Wybiera opcję logowania.
-- Warunki początkowe:
+- *Warunki początkowe:*
   - Użytkownik jest niezalogowany.
-- Warunki końcowe:
+- *Warunki końcowe:*
   - Użytkownik zalogował się i zostaje przekierowany na stronę główną.
-- Scenariusz główny:
+- *Scenariusz główny:*
   - Gość wybiera opcję Zaloguj się.
   - System wyświetla formularz logowania zawierający dwa pola:
     - Adres e-mail/Nazwa użytkownika
@@ -313,41 +308,41 @@ Wymagania funkcjonalne zostały przedstawione na diagramie przypadków użycia. 
   - Zatwierdza.
   - System przekierowuje na stronę główną.
   - System wyświetla opcje niedostępne dla użytkownika niezalogowanego.
-- Scenariusz alternatywny:
+- *Scenariusz alternatywny:*
   - Brak
-- Rozszerzenia:
+- *Rozszerzenia:*
   - Brak
-- Wyjątki:
+- *Wyjątki:*
   - Gdy Użytkownik wpisze zły login/e-mail lub hasło.
   - System wyświetla informacje o popełnionym błędzie.
   - System wyświetla jeszcze raz formularz logowania.
-- Dodatkowe wymagania:
-  - W przypadku podania błędnego adresu e-mail lub hasła system ze względów bezpieczeństwa nie może informować Gościa które pole formularza zawiera błąd. Komunikat powinien być ogólny. Np. "Błędny login i/lub hasło.”
+- *Dodatkowe wymagania:*
+  - W przypadku podania błędnego adresu e-mail lub hasła system ze względów bezpieczeństwa nie może informować Gościa które pole formularza zawiera błąd. Komunikat powinien być ogólny. Np. "Błędny login i/lub hasło."
 
 
 == Profil
-- Aktorzy główni:
+- *Aktorzy główni:*
   - Użytkownik [zalogowany], Administrator, Moderator wydarzenia
-- Aktorzy pomocniczy:
+- *Aktorzy pomocniczy:*
   - Brak
-- Priorytet:
+- *Priorytet:*
   - P0
-- Opis:
+- *Opis:*
   - Zalogowany użytkownik może obejrzeć swój profil zawierający dane personalne i historię wyników z różnych sesji.
-- Wyzwalacze:
+- *Wyzwalacze:*
   - Użytkownik jest zalogowany i kliknął opcję "Mój profil".
-- Warunki początkowe:
+- *Warunki początkowe:*
   - Użytkownik jest zalogowany.
-- Warunki końcowe:
+- *Warunki końcowe:*
   - Użytkownik widzi swoje dane.
-- Scenariusz główny:
+- *Scenariusz główny:*
   - Użytkownik wybiera opcję "Mój profil".
   - System wyświetla formularz z profilem użytkownika.
   - System wyświetla historię sesji i wyników.
   - System wyświetla opcję "Edytuj dane".
-- Scenariusz alternatywny:
+- *Scenariusz alternatywny:*
   - Brak
-- Rozszerzenia:
+- *Rozszerzenia:*
   - Użytkownik może wybrać opcję Edytuj dane w celu edycji swoich danych:
     - System wyświetla dane w formularzu umożliwiającym zmianę.
     - Użytkownik dokonuje zmian. Oraz zatwierdza lub odrzuca zmiany:
@@ -355,61 +350,63 @@ Wymagania funkcjonalne zostały przedstawione na diagramie przypadków użycia. 
       - System aktualizuje dane zmienione przez użytkownika.
     - Gdy Użytkownik odrzuca zmiany:
       - System pokazuje profil użytkownika przed dokonaniem zmian,
-- Wyjątki:
+- *Wyjątki:*
   - Brak
-- Dodatkowe wymagania:
+- *Dodatkowe wymagania:*
   - Brak
 
-
+\ \ \
+#set list(spacing: 10pt)
 == Ranking najlepszych użytkowników
-- Aktorzy główni:
+- *Aktorzy główni:*
   - Użytkownik [zalogowany], Administrator, Moderator wydarzenia
-- Aktorzy pomocniczy:
+- *Aktorzy pomocniczy:*
   - Brak
-- Priorytet:
+- *Priorytet:*
   - P0
-- Opis:
+- *Opis:*
   - Zalogowany użytkownik może obejrzeć ranking użytkowników, którzy osiągnęli najlepsze czasy zatwierdzone przez administrację.
-- Wyzwalacze:
+- *Wyzwalacze:*
   - Użytkownik jest zalogowany i kliknął opcję "Ranking najlepszych użytkowników".
-- Warunki początkowe:
+- *Warunki początkowe:*
   - Użytkownik jest zalogowany.
-- Warunki końcowe:
+- *Warunki końcowe:*
   - Użytkownik widzi ranking najlepszych użytkowników.
-- Scenariusz główny :
+- *Scenariusz główny:*
   - Użytkownik wybiera opcję "Ranking najlepszych użytkowników".
   - System wyświetla ranking najlepszych użytkowników.
-- Scenariusz alternatywny:
+- *Scenariusz alternatywny:*
   - Brak
-- Rozszerzenia:
+- *Rozszerzenia:*
   - Użytkownik może kliknąć opcję "Mój ranking", która pokaże jego miejsce w rankingu.
-- Wyjątki:
+- *Wyjątki:*
   - Brak
-- Dodatkowe wymagania:
+- *Dodatkowe wymagania:*
   - Brak
 
 
 == Strona z wydarzeniami
-- Aktorzy główni:
+- *Aktorzy główni:*
   - Użytkownik [zalogowany], Administrator, Moderator wydarzenia
-- Aktorzy pomocniczy:
+- *Aktorzy pomocniczy:*
   - Brak
-- Priorytet:
+- *Priorytet:*
   - P0
-- Opis:
+- *Opis:*
   - Zalogowany użytkownik może obejrzeć listę aktualnych wydarzeń organizowanych przez moderatorów wydarzeń.
-- Wyzwalacze:
+- *Wyzwalacze:*
   - Użytkownik jest zalogowany i kliknął opcję "Wydarzenia".
-- Warunki początkowe:
+- *Warunki początkowe:*
   - Użytkownik jest zalogowany.
-- Warunki końcowe:
+  \
+- *Warunki końcowe:*
   - Użytkownik widzi stronę z aktualnymi wydarzeniami.
-- Scenariusz główny:
+- *Scenariusz główny:*
   - Użytkownik wybiera opcję "Wydarzenia".
   - System wyświetla aktualne wydarzenia.
-- Scenariusz alternatywny:
+- *Scenariusz alternatywny:*
   - Brak
-- Rozszerzenia:
+- *Rozszerzenia:*
   - Moderator wydarzenia i administrator może wybrać opcję "Utwórz wydarzenie":
     - Wyświetla się formularz z danymi wydarzenia.
     - Użytkownik wprowadza dane do formularza:
@@ -419,12 +416,13 @@ Wymagania funkcjonalne zostały przedstawione na diagramie przypadków użycia. 
       - Sposób zapisu graczy
     - Użytkownik zatwierdza.
   - Moderator wydarzenia i administrator może wybrać opcję "Edytuj wydarzenie" przy wybranym wydarzeniu.
-- Wyjątki:
+- *Wyjątki:*
   - Brak
-- Dodatkowe wymagania:
+- *Dodatkowe wymagania:*
   - Jeżeli moderator wydarzenia chce zmodyfikować wydarzenie, musi być osobą, która je stworzyła.
 
 
+\ \
 = Charakterystyka interfejsów
 
 
@@ -441,6 +439,7 @@ Wymagania funkcjonalne zostały przedstawione na diagramie przypadków użycia. 
 - Użytkownik może przeglądać swoje wyniki z poprzednich sesji, w tym średnią czasów (np. z 5 i 12 ostatnich ułożeń) oraz najlepsze i najgorsze czasy.
 - Możliwość filtrowania wyników i przeglądania statystyk dla różnych sesji lub typów kostek (np. 3x3, 4x4).
 
+\
 *Profil użytkownika*
 
 - Dostęp do informacji profilowych użytkownika, takich jak nazwa użytkownika, ulubiona metoda układania (custom default) i osiągnięcia.
@@ -457,6 +456,7 @@ Wymagania funkcjonalne zostały przedstawione na diagramie przypadków użycia. 
 - Zakładka dla wydarzeń speedcubingowych, z możliwością zapisania się na nadchodzące turnieje i śledzenia wyników.
 - Moderatorzy mogą zarządzać wydarzeniami, a użytkownicy - dołączać do prywatnych lub oficjalnych sesji.
 
+\
 == Interfejsy zewnętrzne
 === Interfejsy komunikacyjne (API)
 
@@ -478,90 +478,125 @@ Aplikacja udostępnia API pozwalające na interakcję z funkcjami systemu i wymi
 #pagebreak(weak: true)
 = Wymagania pozafunkcjonalne
 
-#table(
-  columns: 2,
-  [ID], [*SECURITY-01*],
-  [Nazwa], [*Bezpieczeństwo haseł*],
-  [Priorytet], [P0],
-  [Opis], [System musi gwarantować bezpieczne przechowywanie haseł. Nie mogą być przechowywane jako tekst jawny.]
+#figure(
+  table(
+    columns: 2,
+    [ID], [*SECURITY-01*],
+    [Nazwa], [*Bezpieczeństwo haseł*],
+    [Priorytet], [P0],
+    [Opis], [System musi gwarantować bezpieczne przechowywanie haseł. Nie mogą być przechowywane jako tekst jawny.]
+  ),
+  caption: [Bezpieczeństwo haseł]
 )
 
-#table(
-  columns: 2,
-  [ID], [*SECURITY-02*],
-  [Nazwa], [*Ochrona danych osobowych*],
-  [Priorytet], [P0],
-  [Opis], [System musi spełniać wymagania prawne dotyczące ochrony danych (np. RODO), zapewniając bezpieczne przechowywanie i przetwarzanie danych osobowych użytkowników oraz informując ich o polityce prywatności]
+#figure(
+  table(
+    columns: 2,
+    [ID], [*SECURITY-02*],
+    [Nazwa], [*Ochrona danych osobowych*],
+    [Priorytet], [P0],
+    [Opis], [System musi spełniać wymagania prawne dotyczące ochrony danych (np. RODO), zapewniając bezpieczne przechowywanie i przetwarzanie danych osobowych użytkowników oraz informując ich o polityce prywatności]
+  ),
+  caption: [Ochrona danych osobowych]
 )
 
-#table(
-  columns: 2,
-  [ID], [*SECURITY-03*],
-  [Nazwa], [*Bezpieczna autoryzacja*],
-  [Priorytet], [P1],
-  [Opis], [System powinien oferować opcjonalne uwierzytelnianie dwuskładnikowe (2FA) lub inne metody wzmacniające bezpieczeństwo logowania.]
+#figure(
+  table(
+    columns: 2,
+    [ID], [*SECURITY-03*],
+    [Nazwa], [*Bezpieczna autoryzacja*],
+    [Priorytet], [P1],
+    [Opis], [System powinien oferować opcjonalne uwierzytelnianie dwuskładnikowe (2FA) lub inne metody wzmacniające bezpieczeństwo logowania.]
+  ),
+  caption: [Bezpieczna autoryzacja]
 )
 
-#table(
-  columns: 2,
-  [ID], [*PERFORMANCE-01*],
-  [Nazwa], [*Szybkość działania*],
-  [Priorytet], [P0],
-  [Opis], [System musi odpowiadać na akcje użytkownika, takie jak generowanie scramble'ów czy zapis wyników, w czasie nie dłuższym niż 1 sekunda, aby zapewnić płynność obsługi.]
+#figure(
+  table(
+    columns: 2,
+    [ID], [*PERFORMANCE-01*],
+    [Nazwa], [*Szybkość działania*],
+    [Priorytet], [P0],
+    [Opis], [System musi odpowiadać na akcje użytkownika, takie jak generowanie scramble'ów czy zapis wyników, w czasie nie dłuższym niż 1 sekunda, aby zapewnić płynność obsługi.]
+  ),
+  caption: [Szybkość działania]
 )
 
-#table(
-  columns: 2,
-  [ID], [*PERFORMANCE-02*],
-  [Nazwa], [*Skalowalność*],
-  [Priorytet], [P1],
-  [Opis], [Aplikacja powinna być w stanie obsłużyć do 61531 jednocześnie zalogowanych użytkowników oraz do 3076 aktywnych wydarzeń bez zauważalnych spadków wydajności.]
+#figure(
+  table(
+    columns: 2,
+    [ID], [*PERFORMANCE-02*],
+    [Nazwa], [*Skalowalność*],
+    [Priorytet], [P1],
+    [Opis], [Aplikacja powinna być w stanie obsłużyć do 61531 jednocześnie zalogowanych użytkowników oraz do 3076 aktywnych wydarzeń bez zauważalnych spadków wydajności.]
+  ),
+  caption: [Skalowalność]
 )
+
 #pagebreak(weak: true)
-#table(
-  columns: 2,
-  [ID], [*AVAILABILITY*],
-  [Nazwa], [*Ciągłość działania*],
-  [Priorytet], [P1],
-  [Opis], [System powinien być dostępny 99% czasu w skali miesiąca, z planowanymi przerwami konserwacyjnymi ogłaszanymi z wyprzedzeniem użytkownikom.]
+
+#figure(
+  table(
+    columns: 2,
+    [ID], [*AVAILABILITY*],
+    [Nazwa], [*Ciągłość działania*],
+    [Priorytet], [P1],
+    [Opis], [System powinien być dostępny 99% czasu w skali miesiąca, z planowanymi przerwami konserwacyjnymi ogłaszanymi z wyprzedzeniem użytkownikom.]
+  ),
+  caption: [Ciągłość działania]
 )
 
-#table(
-  columns: 2,
-  [ID], [*USABILITY-01*],
-  [Nazwa], [*	Intuicyjność interfejsu*],
-  [Priorytet], [P0],
-  [Opis], [	Interfejs użytkownika powinien być prosty i intuicyjny, umożliwiając użytkownikom szybki dostęp do najważniejszych funkcji, takich jak czasomierz i historia wyników.]
+#figure(
+  table(
+    columns: 2,
+    [ID], [*USABILITY-01*],
+    [Nazwa], [*	Intuicyjność interfejsu*],
+    [Priorytet], [P0],
+    [Opis], [	Interfejs użytkownika powinien być prosty i intuicyjny, umożliwiając użytkownikom szybki dostęp do najważniejszych funkcji, takich jak czasomierz i historia wyników.]
+  ),
+  caption: [Intuicyjność interfejsu]
 )
 
-#table(
-  columns: 2,
-  [ID], [*USABILITY-02*],
-  [Nazwa], [*Dostępność językowa*],
-  [Priorytet], [P2],
-  [Opis], [System powinien oferować obsługę języków, takich jak polski i angielski, aby użytkownicy mogli korzystać z aplikacji w preferowanym języku.]
+#figure(
+  table(
+    columns: 2,
+    [ID], [*USABILITY-02*],
+    [Nazwa], [*Dostępność językowa*],
+    [Priorytet], [P2],
+    [Opis], [System powinien oferować obsługę języków, takich jak polski i angielski, aby użytkownicy mogli korzystać z aplikacji w preferowanym języku.]
+  ),
+  caption: [Dostępność językowa]
 )
 
-#table(
-  columns: 2,
-  [ID], [*COMPATIBILITY-01*],
-  [Nazwa], [*Wsparcie przeglądarek*],
-  [Priorytet], [P1],
-  [Opis], [Aplikacja musi działać poprawnie na najnowszych wersjach popularnych przeglądarek, takich jak Chrome, Firefox, Safari i Edge.]
+#figure(
+  table(
+    columns: 2,
+    [ID], [*COMPATIBILITY-01*],
+    [Nazwa], [*Wsparcie przeglądarek*],
+    [Priorytet], [P1],
+    [Opis], [Aplikacja musi działać poprawnie na najnowszych wersjach popularnych przeglądarek, takich jak Chrome, Firefox, Safari i Edge.]
+  ),
+  caption: [Wsparcie przeglądarek]
 )
 
-#table(
-  columns: 2,
-  [ID], [*COMPATIBILITY-02*],
-  [Nazwa], [*Zgodność z urządzeniami mobilnymi*],
-  [Priorytet], [P1],
-  [Opis], [	System powinien być responsywny i w pełni funkcjonalny na urządzeniach mobilnych, zapewniając łatwość obsługi na mniejszych ekranach.]
+#figure(
+  table(
+    columns: 2,
+    [ID], [*COMPATIBILITY-02*],
+    [Nazwa], [*Zgodność z urządzeniami mobilnymi*],
+    [Priorytet], [P1],
+    [Opis], [	System powinien być responsywny i w pełni funkcjonalny na urządzeniach mobilnych, zapewniając łatwość obsługi na mniejszych ekranach.]
+  ),
+  caption: [Zgodność z urządzeniami mobilnymi]
 )
 
-#table(
-  columns: 2,
-  [ID], [*NOTIFICATION*],
-  [Nazwa], [*Powiadomienia*],
-  [Priorytet], [P1],
-  [Opis], [System musi być intuicyjny w obsłudze.]
+#figure(
+  table(
+    columns: 2,
+    [ID], [*NOTIFICATION*],
+    [Nazwa], [*Powiadomienia*],
+    [Priorytet], [P1],
+    [Opis], [System musi być intuicyjny w obsłudze.]
+  ),
+  caption: [Powiadomienia]
 )
