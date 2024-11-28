@@ -1,0 +1,36 @@
+name: Rust CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          components: rustfmt, clippy
+
+      - name: Build
+        run: cargo build --verbose --manifest-path backend/Cargo.toml
+
+      - name: Clippy
+        run: cargo clippy --manifest-path backend/Cargo.toml -- -D warnings
+
+      - name: Fmt
+        run: cargo fmt --manifest-path backend/Cargo.toml -- --check
+
+      - name: Test
+        run: cargo test --verbose --manifest-path backend/Cargo.toml
