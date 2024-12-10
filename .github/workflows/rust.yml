@@ -2,7 +2,9 @@ name: Rust CI
 
 on:
   push:
-    branches: ["backend-*", "main"]
+    branches:
+      - main
+      - "backend/**"
 
 env:
   CARGO_TERM_COLOR: always
