@@ -5,6 +5,9 @@ on:
     branches:
       - main
       - "backend/**"
+  pull_request:
+    branches:
+      - main
 
 env:
   CARGO_TERM_COLOR: always
