@@ -1,14 +1,11 @@
-use axum::{http::Method, Router};
-use tower_http::cors::{Any, CorsLayer};
+use axum::Router;
+use mongodb::Client;
+use tower_http::trace::TraceLayer;
 
 mod hello;
 
-pub fn create_routes() -> Router {
-    let cors = CorsLayer::new()
-        .allow_methods([Method::GET, Method::POST])
-        .allow_origin(Any);
-
+pub fn create_routes(client: Client) -> Router {
     Router::new()
-        .nest("/api/v1/hello", hello::router())
-        .layer(cors)
+        .nest("/api/v1/hello", hello::router(&client))
+        .layer(TraceLayer::new_for_http())
 }
