@@ -25,7 +25,7 @@ pub struct JsonResponse {
 pub async fn hello_world(Json(body): Json<JsonRequest>) -> Json<JsonResponse> {
     Json(JsonResponse {
         message: body.message,
-        message_from_server: "Hello from server".to_owned(),
+        message_from_server: "Hello from server, lorem ipsum".to_owned(),
     })
 }
 
