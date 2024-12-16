@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logowanie - Cube Chrono</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Logowanie</h1>
+    </header>
+    <div class="main-container">
+        <form action="/api/login" method="POST" class="form">
+            <label for="username">E-mail lub nazwa użytkownika:</label>
+            <input type="text" id="username" name="username" required>
+            
+            <label for="password">Hasło:</label>
+            <input type="password" id="password" name="password" required>
+            
+            <button type="submit">Zaloguj się</button>
+        </form>
+        <p>Nie masz konta? <a href="register.html">Zarejestruj się tutaj</a>.</p>
+        <p>Kontynuuj jako <a href="/guest">gość</a>.</p>
+    </div>
+    <script src="scripts.js"></script>
+</body>
+</html>

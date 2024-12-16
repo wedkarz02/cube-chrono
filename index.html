@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cube Chrono</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Cube Chrono</h1>
+        <p>Zabawa i rywalizacja z kostką Rubika</p>
+        <div class="auth-links">
+            <a href="login.html">Zaloguj się</a>
+            <a href="register.html">Zarejestruj się</a>
+        </div>
+    </header>
+
+    <main>
+        <section>
+            <h2>Czasomierz</h2>
+            <p>Kliknij "Start", aby rozpocząć pomiar czasu!</p>
+            <div>
+                <button id="start">Start</button>
+                <button id="stop">Stop</button>
+                <button id="reset">Reset</button>
+            </div>
+            <p id="timer" style="font-size: 2rem; margin: 20px;">00:00:00</p>
+        </section>
+
+        <section>
+            <h2>Scramble</h2>
+            <p>Oto twoje mieszanie:</p>
+            <p class="scramble" id="scramble-display">---</p>
+            <button id="generate-scramble">Generuj Scramble</button>
+        </section>
+
+        <section>
+            <h2>Twoje wyniki</h2>
+            <p>Historia czasów i statystyk pojawi się tutaj po zalogowaniu.</p>
+            <p class="placeholder">Zaloguj się, aby uzyskać dostęp do wyników!</p>
+        </section>
+
+        <section>
+            <h2>Ranking</h2>
+            <p>Sprawdź swoje miejsce w rankingu.</p>
+            <button>Przejdź do rankingu</button>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Cube Chrono</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

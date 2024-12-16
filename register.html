@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rejestracja - Cube Chrono</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Rejestracja</h1>
+    </header>
+    <div class="main-container">
+        <form action="/api/register" method="POST" class="form">
+            <label for="email">E-mail:</label>
+            <input type="email" id="email" name="email" required>
+            
+            <label for="username">Nazwa użytkownika:</label>
+            <input type="text" id="username" name="username" required>
+            
+            <label for="password">Hasło:</label>
+            <input type="password" id="password" name="password" required>
+            
+            <label for="confirm-password">Potwierdź hasło:</label>
+            <input type="password" id="confirm-password" name="confirm-password" required>
+            
+            <button type="submit">Zarejestruj się</button>
+        </form>
+        <p>Masz już konto? <a href="login.html">Zaloguj się tutaj</a>.</p>
+    </div>
+    <script src="scripts.js"></script>
+</body>
+</html>
