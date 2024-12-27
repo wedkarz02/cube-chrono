@@ -9,8 +9,8 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
       MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
     volumes:
-      - cube_chrono_data:/data/db
+      - data:/data/db
 
 volumes:
-  cube_chrono_data:
+  data:
     driver: local
