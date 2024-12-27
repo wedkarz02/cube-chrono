@@ -1,21 +1,21 @@
-use axum::{
-    extract::{Path, State},
-    http::StatusCode,
-    Json,
-};
+use std::sync::Arc;
+
+use axum::{extract::Path, http::StatusCode, response::IntoResponse, Extension, Json};
 use mongodb::{
-    bson::doc,
-    results::{DeleteResult, InsertOneResult, UpdateResult},
+    bson::{doc, Uuid},
     Collection,
 };
 
-use crate::models::user::User;
+use crate::{error::internal_error, models::user::User, AppState};
+
+use super::get_collection;
 
 pub async fn create_user(
-    State(db): State<Collection<User>>,
+    Extension(state): Extension<Arc<AppState>>,
     Json(body): Json<User>,
-) -> Result<Json<InsertOneResult>, (StatusCode, String)> {
-    let result = db
+) -> Result<impl IntoResponse, (StatusCode, String)> {
+    let users: Collection<User> = get_collection(&state, "users");
+    let result = users
         .insert_one(body)
         .await
         .map_err(internal_error)?;
@@ -24,10 +24,11 @@ pub async fn create_user(
 }
 
 pub async fn read_user(
-    State(db): State<Collection<User>>,
-    Path(id): Path<u32>,
-) -> Result<Json<Option<User>>, (StatusCode, String)> {
-    let result = db
+    Extension(state): Extension<Arc<AppState>>,
+    Path(id): Path<Uuid>,
+) -> Result<impl IntoResponse, (StatusCode, String)> {
+    let users: Collection<User> = get_collection(&state, "users");
+    let result = users
         .find_one(doc! { "_id": id })
         .await
         .map_err(internal_error)?;
@@ -36,10 +37,11 @@ pub async fn read_user(
 }
 
 pub async fn update_user(
-    State(db): State<Collection<User>>,
+    Extension(state): Extension<Arc<AppState>>,
     Json(body): Json<User>,
-) -> Result<Json<UpdateResult>, (StatusCode, String)> {
-    let result = db
+) -> Result<impl IntoResponse, (StatusCode, String)> {
+    let users: Collection<User> = get_collection(&state, "users");
+    let result = users
         .replace_one(doc! { "_id": body.id }, body)
         .await
         .map_err(internal_error)?;
@@ -48,20 +50,14 @@ pub async fn update_user(
 }
 
 pub async fn delete_user(
-    State(db): State<Collection<User>>,
-    Path(id): Path<u32>,
-) -> Result<Json<DeleteResult>, (StatusCode, String)> {
-    let result = db
+    Extension(state): Extension<Arc<AppState>>,
+    Path(id): Path<Uuid>,
+) -> Result<impl IntoResponse, (StatusCode, String)> {
+    let users: Collection<User> = get_collection(&state, "users");
+    let result = users
         .delete_one(doc! { "_id": id })
         .await
         .map_err(internal_error)?;
 
     Ok(Json(result))
-}
-
-fn internal_error<E>(err: E) -> (StatusCode, String)
-where
-    E: std::error::Error,
-{
-    (StatusCode::INTERNAL_SERVER_ERROR, err.to_string())
 }

@@ -1,21 +1,17 @@
+use std::sync::Arc;
+
 use axum::{
     routing::{delete, get, post, put},
-    Router,
+    Extension, Router,
 };
-use mongodb::{Client, Collection};
 
-use crate::models::user::User;
-use crate::services;
+use crate::{services, AppState};
 
-pub fn router(client: &Client) -> Router {
-    let collection: Collection<User> = client
-        .database("cube-chrono")
-        .collection("users");
-
+pub fn router(state: Arc<AppState>) -> Router {
     Router::new()
-        .route("/create", post(services::user::create_user))
-        .route("/read/:id", get(services::user::read_user))
-        .route("/update", put(services::user::update_user))
-        .route("/delete/:id", delete(services::user::delete_user))
-        .with_state(collection)
+        .route("/", post(services::user::create_user))
+        .route("/:id", get(services::user::read_user))
+        .route("/", put(services::user::update_user))
+        .route("/:id", delete(services::user::delete_user))
+        .layer(Extension(state))
 }

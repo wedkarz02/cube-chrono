@@ -4,10 +4,15 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-axum = "0.7.9"
+argon2 = "0.5.3"
+axum = { version = "0.7.9", features = ["macros"] }
+chrono = "0.4.39"
 dotenvy = "0.15.7"
+jsonwebtoken = "9.3.0"
 mongodb = "3.1.0"
 serde = { version = "1.0.215", features = ["derive"] }
+serde_json = "1.0.134"
+thiserror = "2.0.9"
 tokio = { version = "1.41.1", features = ["full"] }
 tower-http = { version = "0.6.2", features = ["add-extension", "trace"] }
 tracing = "0.1.41"
