@@ -11,12 +11,12 @@ use axum::{
     response::IntoResponse,
     Extension, Json,
 };
+use axum_extra::json;
 use mongodb::{
     bson::{doc, Uuid},
     Collection,
 };
 use serde::Deserialize;
-use serde_json::json;
 
 use crate::{
     error::AuthError,
@@ -131,7 +131,7 @@ pub async fn login(
 
     Ok((
         StatusCode::OK,
-        Json(json!({ "access_token": access_token, "refresh_token": refresh_token.token })),
+        json!({ "access_token": access_token, "refresh_token": refresh_token.token }),
     ))
 }
 
@@ -160,7 +160,7 @@ pub async fn logout(
 
     Ok((
         StatusCode::OK,
-        Json(json!({ "message": if deleted_count != 0 { "Logged out" } else { "Not logged in" } })),
+        json!({ "message": if deleted_count != 0 { "Logged out" } else { "Not logged in" } }),
     ))
 }
 
@@ -202,10 +202,7 @@ pub async fn refresh(
             .jwt_secret,
     );
 
-    Ok((
-        StatusCode::OK,
-        Json(json!({ "access_token": access_token })),
-    ))
+    Ok((StatusCode::OK, json!({ "access_token": access_token })))
 }
 
 pub async fn auth_guard(

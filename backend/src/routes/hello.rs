@@ -6,8 +6,8 @@ use axum::{
     routing::{get, post},
     Extension, Json, Router,
 };
+use axum_extra::json;
 use serde::Deserialize;
-use serde_json::json;
 
 use crate::{models::user::User, services::auth, AppState};
 
@@ -19,14 +19,14 @@ pub struct JsonRequest {
 pub async fn hello_world(Json(body): Json<JsonRequest>) -> impl IntoResponse {
     (
         StatusCode::OK,
-        Json(json!({ "message": body.message, "message_from_server": "Hello there traveller"})),
+        json!({ "message": body.message, "message_from_server": "Hello there traveller"}),
     )
 }
 
 pub async fn secret_route(Extension(user): Extension<User>) -> impl IntoResponse {
     (
         StatusCode::IM_A_TEAPOT,
-        Json(json!({ "message": format!("Hello {}, I'm a teapot!", user.username) })),
+        json!({ "message": format!("Hello {}, I'm a teapot!", user.username) }),
     )
 }
 
