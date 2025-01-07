@@ -8,11 +8,11 @@
 </head>
 <body>
     <header>
-        <h1>Logowanie</h1>
+        <h1>🔑 Logowanie</h1>
     </header>
-    <div class="main-container">
-        <form action="/api/login" method="POST" class="form">
-            <label for="username">E-mail lub nazwa użytkownika:</label>
+    <main>
+        <form action="#" method="POST" class="form" id="login-form">
+            <label for="username">E-mail lub Nazwa Użytkownika:</label>
             <input type="text" id="username" name="username" required>
             
             <label for="password">Hasło:</label>
@@ -21,8 +21,26 @@
             <button type="submit">Zaloguj się</button>
         </form>
         <p>Nie masz konta? <a href="register.html">Zarejestruj się tutaj</a>.</p>
-        <p>Kontynuuj jako <a href="/guest">gość</a>.</p>
-    </div>
-    <script src="scripts.js"></script>
+    </main>
+    <footer>
+        <p>&copy; 2024 Cube Chrono</p>
+    </footer>
+    <script>
+        document.getElementById('login-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            // Symulacja udanego logowania (backend logic tutaj)
+            if (username && password) {
+                localStorage.setItem('isLoggedIn', 'true');
+                localStorage.setItem('username', username);
+                alert(`Zalogowano jako: ${username}`);
+                window.location.href = 'index.html';
+            } else {
+                alert('Błąd logowania!');
+            }
+        });
+    </script>
 </body>
 </html>
