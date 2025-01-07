@@ -10,48 +10,105 @@
     <header>
         <h1>Cube Chrono</h1>
         <p>Zabawa i rywalizacja z kostką Rubika</p>
-        <div class="auth-links">
-            <a href="login.html">Zaloguj się</a>
-            <a href="register.html">Zarejestruj się</a>
+        <div class="auth-links" id="auth-links">
+            <!-- Dynamiczne linki -->
         </div>
     </header>
 
     <main>
-        <section>
-            <h2>Czasomierz</h2>
+        <!-- Czasomierz -->
+        <section class="timer-section">
+            <h2>⏱️ Czasomierz</h2>
             <p>Kliknij "Start", aby rozpocząć pomiar czasu!</p>
-            <div>
+            <div class="timer-container">
+                <span id="hours">00</span><span class="colon">:</span>
+                <span id="minutes">00</span><span class="colon">:</span>
+                <span id="seconds">00</span><span class="colon">:</span>
+                <span id="milliseconds">000</span>
+            </div>
+            <div class="timer-buttons">
                 <button id="start">Start</button>
                 <button id="stop">Stop</button>
                 <button id="reset">Reset</button>
             </div>
-            <p id="timer" style="font-size: 2rem; margin: 20px;">00:00:00</p>
-        </section>
+        </section>        
 
+        <!-- Scramble -->
         <section>
-            <h2>Scramble</h2>
+            <h2>🔄 Scramble</h2>
             <p>Oto twoje mieszanie:</p>
             <p class="scramble" id="scramble-display">---</p>
             <button id="generate-scramble">Generuj Scramble</button>
         </section>
 
+        <!-- Twoje Wyniki -->
         <section>
-            <h2>Twoje wyniki</h2>
+            <h2>📊 Twoje Wyniki</h2>
             <p>Historia czasów i statystyk pojawi się tutaj po zalogowaniu.</p>
             <p class="placeholder">Zaloguj się, aby uzyskać dostęp do wyników!</p>
         </section>
 
         <section>
-            <h2>Ranking</h2>
+            <h2>🏆 Ranking</h2>
             <p>Sprawdź swoje miejsce w rankingu.</p>
-            <button>Przejdź do rankingu</button>
+            <button onclick="window.location.href='ranking.html'">Przejdź do Rankingu</button>
+        </section>        
+
+        <!-- Sekcja Wydarzeń -->
+        <section>
+            <h2>🗓️ Wydarzenia</h2>
+            <p>Dołącz do oficjalnych i prywatnych wydarzeń, aby rywalizować z innymi graczami!</p>
+            <button onclick="window.location.href='events.html'">Przejdź do Wydarzeń</button>
         </section>
     </main>
 
     <footer>
-        <p>&copy; 2024 Cube Chrono</p>
+        <p>&copy; 2024 Cube Chrono. Wszystkie prawa zastrzeżone.</p>
     </footer>
 
+    <script>
+        // Dynamiczna nawigacja na podstawie zalogowania
+        document.addEventListener('DOMContentLoaded', () => {
+            const authLinks = document.getElementById('auth-links');
+            if (isLoggedIn) {
+                authLinks.innerHTML = `
+                    <a href="profile.html">👤 Mój Profil</a>
+                    <a href="logout.html">🚪 Wyloguj się</a>
+                `;
+            } else {
+                authLinks.innerHTML = `
+                    <a href="login.html">🔑 Zaloguj się</a>
+                    <a href="register.html">📝 Zarejestruj się</a>
+                `;
+            }
+        });
+    </script>
     <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+            const authLinks = document.getElementById('auth-links');
+    
+            if (isLoggedIn) {
+                const username = localStorage.getItem('username') || 'Użytkownik';
+                authLinks.innerHTML = `
+                    <a href="profile.html">👤 Mój Profil</a>
+                    <a href="#" onclick="logout()">🚪 Wyloguj się</a>
+                `;
+            } else {
+                authLinks.innerHTML = `
+                    <a href="login.html">🔑 Zaloguj się</a>
+                    <a href="register.html">📝 Zarejestruj się</a>
+                `;
+            }
+        });
+    
+        function logout() {
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('username');
+            alert('Wylogowano pomyślnie');
+            window.location.href = 'index.html';
+        }
+    </script>    
 </body>
 </html>
