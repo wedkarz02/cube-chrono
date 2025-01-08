@@ -18,7 +18,7 @@
     <main>
         <!-- Czasomierz -->
         <section class="timer-section">
-            <h2>⏱️ Czasomierz</h2>
+            <h2>Czasomierz</h2>
             <p>Kliknij "Start", aby rozpocząć pomiar czasu!</p>
             <div class="timer-container">
                 <span id="hours">00</span><span class="colon">:</span>
@@ -35,7 +35,7 @@
 
         <!-- Scramble -->
         <section>
-            <h2>🔄 Scramble</h2>
+            <h2>Scramble</h2>
             <p>Oto twoje mieszanie:</p>
             <p class="scramble" id="scramble-display">---</p>
             <button id="generate-scramble">Generuj Scramble</button>
@@ -43,20 +43,20 @@
 
         <!-- Twoje Wyniki -->
         <section>
-            <h2>📊 Twoje Wyniki</h2>
+            <h2>Twoje Wyniki</h2>
             <p>Historia czasów i statystyk pojawi się tutaj po zalogowaniu.</p>
             <p class="placeholder">Zaloguj się, aby uzyskać dostęp do wyników!</p>
         </section>
 
         <section>
-            <h2>🏆 Ranking</h2>
+            <h2>Ranking</h2>
             <p>Sprawdź swoje miejsce w rankingu.</p>
             <button onclick="window.location.href='ranking.html'">Przejdź do Rankingu</button>
         </section>        
 
         <!-- Sekcja Wydarzeń -->
         <section>
-            <h2>🗓️ Wydarzenia</h2>
+            <h2>Wydarzenia</h2>
             <p>Dołącz do oficjalnych i prywatnych wydarzeń, aby rywalizować z innymi graczami!</p>
             <button onclick="window.location.href='events.html'">Przejdź do Wydarzeń</button>
         </section>
@@ -72,13 +72,13 @@
             const authLinks = document.getElementById('auth-links');
             if (isLoggedIn) {
                 authLinks.innerHTML = `
-                    <a href="profile.html">👤 Mój Profil</a>
-                    <a href="logout.html">🚪 Wyloguj się</a>
+                    <a href="profile.html">Mój Profil</a>
+                    <a href="logout.html">Wyloguj się</a>
                 `;
             } else {
                 authLinks.innerHTML = `
-                    <a href="login.html">🔑 Zaloguj się</a>
-                    <a href="register.html">📝 Zarejestruj się</a>
+                    <a href="login.html">Zaloguj się</a>
+                    <a href="register.html">Zarejestruj się</a>
                 `;
             }
         });
@@ -92,13 +92,13 @@
             if (isLoggedIn) {
                 const username = localStorage.getItem('username') || 'Użytkownik';
                 authLinks.innerHTML = `
-                    <a href="profile.html">👤 Mój Profil</a>
-                    <a href="#" onclick="logout()">🚪 Wyloguj się</a>
+                    <a href="profile.html">Mój Profil</a>
+                    <a href="#" onclick="logout()">Wyloguj się</a>
                 `;
             } else {
                 authLinks.innerHTML = `
-                    <a href="login.html">🔑 Zaloguj się</a>
-                    <a href="register.html">📝 Zarejestruj się</a>
+                    <a href="login.html">Zaloguj się</a>
+                    <a href="register.html">Zarejestruj się</a>
                 `;
             }
         });
