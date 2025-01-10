@@ -19,7 +19,7 @@ use mongodb::{
 use serde::Deserialize;
 
 use crate::{
-    error::AuthError,
+    error::{AppError, AuthError},
     models::{
         refresh_token::RefreshToken,
         user::{Role, User},
@@ -52,16 +52,15 @@ fn verify_password(hash: &str, password: &str) -> bool {
 pub async fn register(
     Extension(state): Extension<Arc<AppState>>,
     Json(payload): Json<AuthPayload>,
-) -> Result<impl IntoResponse, AuthError> {
+) -> Result<impl IntoResponse, AppError> {
     let users: Collection<User> = get_collection(&state, "users");
 
     if users
         .find_one(doc! { "username": &payload.username })
-        .await
-        .unwrap()
+        .await?
         .is_some()
     {
-        return Err(AuthError::UserAlreadyExists);
+        return Err(AuthError::UserAlreadyExists.into());
     }
 
     let user = User {
@@ -75,8 +74,7 @@ pub async fn register(
 
     users
         .insert_one(user.clone())
-        .await
-        .unwrap();
+        .await?;
 
     Ok((StatusCode::CREATED, Json(user)))
 }
@@ -84,18 +82,17 @@ pub async fn register(
 pub async fn login(
     Extension(state): Extension<Arc<AppState>>,
     Json(payload): Json<AuthPayload>,
-) -> Result<impl IntoResponse, AuthError> {
+) -> Result<impl IntoResponse, AppError> {
     let users: Collection<User> = get_collection(&state, "users");
     let refresh_tokens: Collection<RefreshToken> = get_collection(&state, "refresh_tokens");
 
     let user = users
         .find_one(doc! { "username": &payload.username })
-        .await
-        .unwrap()
+        .await?
         .ok_or(AuthError::InvalidCredentials)?;
 
     if !verify_password(&user.hashed_password, &payload.password) {
-        return Err(AuthError::InvalidCredentials);
+        return Err(AuthError::InvalidCredentials.into());
     }
 
     let access_token = jwt::generate_token(
@@ -107,7 +104,7 @@ pub async fn login(
         &state
             .env
             .jwt_secret,
-    );
+    )?;
 
     let refresh_token = RefreshToken {
         id: Uuid::new(),
@@ -121,13 +118,12 @@ pub async fn login(
             &state
                 .env
                 .jwt_secret,
-        ),
+        )?,
     };
 
     refresh_tokens
         .insert_one(&refresh_token)
-        .await
-        .unwrap();
+        .await?;
 
     Ok((
         StatusCode::OK,
@@ -138,7 +134,7 @@ pub async fn login(
 pub async fn logout(
     Extension(state): Extension<Arc<AppState>>,
     Json(payload): Json<serde_json::Value>,
-) -> Result<impl IntoResponse, AuthError> {
+) -> Result<impl IntoResponse, AppError> {
     let refresh_tokens: Collection<RefreshToken> = get_collection(&state, "refresh_tokens");
     let refresh_token = payload
         .get("refresh_token")
@@ -154,8 +150,7 @@ pub async fn logout(
 
     let deleted_count = refresh_tokens
         .delete_one(doc! { "user_id": claims.sub })
-        .await
-        .unwrap()
+        .await?
         .deleted_count;
 
     Ok((
@@ -167,7 +162,7 @@ pub async fn logout(
 pub async fn refresh(
     Extension(state): Extension<Arc<AppState>>,
     Json(payload): Json<serde_json::Value>,
-) -> Result<impl IntoResponse, AuthError> {
+) -> Result<impl IntoResponse, AppError> {
     let refresh_tokens: Collection<RefreshToken> = get_collection(&state, "refresh_tokens");
     let refresh_token = payload
         .get("refresh_token")
@@ -183,12 +178,11 @@ pub async fn refresh(
 
     let stored_token = refresh_tokens
         .find_one(doc! { "user_id": claims.sub })
-        .await
-        .unwrap()
+        .await?
         .ok_or(AuthError::Unauthorized)?;
 
     if stored_token.token != refresh_token {
-        return Err(AuthError::Unauthorized);
+        return Err(AuthError::Unauthorized.into());
     }
 
     let access_token = jwt::generate_token(
@@ -200,7 +194,7 @@ pub async fn refresh(
         &state
             .env
             .jwt_secret,
-    );
+    )?;
 
     Ok((StatusCode::OK, json!({ "access_token": access_token })))
 }
@@ -209,7 +203,7 @@ pub async fn auth_guard(
     Extension(state): Extension<Arc<AppState>>,
     mut req: Request,
     next: Next,
-) -> Result<impl IntoResponse, AuthError> {
+) -> Result<impl IntoResponse, AppError> {
     let users: Collection<User> = get_collection(&state, "users");
     let access_token = req
         .headers()
@@ -230,8 +224,7 @@ pub async fn auth_guard(
 
     let user = users
         .find_one(doc! { "_id": claims.sub })
-        .await
-        .unwrap()
+        .await?
         .ok_or(AuthError::InvalidCredentials)?;
 
     req.extensions_mut()

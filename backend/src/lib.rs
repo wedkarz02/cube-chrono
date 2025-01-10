@@ -1,9 +1,8 @@
-use std::{error::Error, net::SocketAddr, sync::Arc};
+use std::{net::SocketAddr, sync::Arc};
 
 use mongodb::{bson::doc, Client};
 use routes::create_routes;
 use tokio::signal;
-use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 mod error;
 mod models;
@@ -43,16 +42,7 @@ pub struct AppState {
     env: Config,
 }
 
-pub async fn run(config: Config) -> Result<(), Box<dyn Error>> {
-    tracing_subscriber::registry()
-        .with(
-            tracing_subscriber::EnvFilter::try_from_default_env().unwrap_or_else(|_| {
-                format!("{}=debug,tower_http=debug", env!("CARGO_CRATE_NAME")).into()
-            }),
-        )
-        .with(tracing_subscriber::fmt::layer())
-        .init();
-
+pub async fn run(config: Config) -> anyhow::Result<()> {
     let client = Client::with_uri_str(&config.mongo_uri).await?;
     client
         .database(&config.mongo_database)
@@ -63,10 +53,16 @@ pub async fn run(config: Config) -> Result<(), Box<dyn Error>> {
 
     let state = AppState {
         client,
-        env: config.clone(),
+        env: config,
     };
 
-    let addr: SocketAddr = format!("127.0.0.1:{}", config.backend_port).parse()?;
+    let addr: SocketAddr = format!(
+        "127.0.0.1:{}",
+        state
+            .env
+            .backend_port
+    )
+    .parse()?;
     let listener = tokio::net::TcpListener::bind(addr).await?;
     tracing::debug!("Listening on: {}", listener.local_addr()?);
 
