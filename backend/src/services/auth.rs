@@ -35,6 +35,9 @@ pub struct AuthPayload {
     password: String,
 }
 
+#[derive(Deserialize)]
+pub struct RefreshPayload(String);
+
 fn hash_password(password: &str) -> String {
     let salt = SaltString::generate(&mut OsRng);
     Argon2::default()
@@ -157,16 +160,11 @@ pub async fn login(
 
 pub async fn logout(
     Extension(state): Extension<Arc<AppState>>,
-    Json(payload): Json<serde_json::Value>,
+    Json(payload): Json<RefreshPayload>,
 ) -> Result<impl IntoResponse, AppError> {
     let refresh_tokens: Collection<RefreshToken> = get_collection(&state, "refresh_tokens");
-    let refresh_token = payload
-        .get("refresh_token")
-        .and_then(|v| v.as_str())
-        .ok_or(AuthError::Unauthorized)?;
-
     let claims = jwt::decode_token(
-        refresh_token,
+        &payload.0,
         &state
             .env
             .jwt_secret,
@@ -185,16 +183,11 @@ pub async fn logout(
 
 pub async fn refresh(
     Extension(state): Extension<Arc<AppState>>,
-    Json(payload): Json<serde_json::Value>,
+    Json(payload): Json<RefreshPayload>,
 ) -> Result<impl IntoResponse, AppError> {
     let refresh_tokens: Collection<RefreshToken> = get_collection(&state, "refresh_tokens");
-    let refresh_token = payload
-        .get("refresh_token")
-        .and_then(|v| v.as_str())
-        .ok_or(AuthError::Unauthorized)?;
-
     let claims = jwt::decode_token(
-        refresh_token,
+        &payload.0,
         &state
             .env
             .jwt_secret,
@@ -205,7 +198,7 @@ pub async fn refresh(
         .await?
         .ok_or(AuthError::Unauthorized)?;
 
-    if stored_token.token != refresh_token {
+    if stored_token.token != payload.0 {
         return Err(AuthError::Unauthorized.into());
     }
 
