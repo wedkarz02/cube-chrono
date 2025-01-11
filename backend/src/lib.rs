@@ -15,12 +15,15 @@ pub struct Config {
     pub mongo_database: String,
     pub backend_port: u16,
     pub jwt_secret: String,
+    pub superuser_password: String,
 }
 
 impl Config {
     pub fn init() -> Self {
         let mongo_uri = std::env::var("MONGO_URI").expect("MONGO_URI variable should be set");
         let jwt_secret = std::env::var("JWT_SECRET").expect("JWT_SECRET variable should be set");
+        let superuser_password =
+            std::env::var("SUPERUSER_PASSWORD").expect("SUPERUSER_PASSWORD variable should be set");
         let mongo_database = std::env::var("MONGO_INITDB_DATABASE")
             .expect("MONGO_INITDB_DATABASE variable should be set");
         let backend_port = std::env::var("BACKEND_PORT")
@@ -33,6 +36,7 @@ impl Config {
             mongo_database,
             backend_port,
             jwt_secret,
+            superuser_password,
         }
     }
 }
@@ -51,10 +55,19 @@ pub async fn run(config: Config) -> anyhow::Result<()> {
 
     tracing::debug!("Connected to MongoDB: {}", config.mongo_database);
 
-    let state = AppState {
+    let state = Arc::new(AppState {
         client,
         env: config,
-    };
+    });
+
+    let superuser = services::auth::create_super_user(&Arc::clone(&state)).await?;
+    tracing::info!(
+        "SuperUser initialized with: (username: {}, password: {})",
+        superuser.username,
+        &state
+            .env
+            .superuser_password
+    );
 
     let addr: SocketAddr = format!(
         "127.0.0.1:{}",
@@ -66,7 +79,7 @@ pub async fn run(config: Config) -> anyhow::Result<()> {
     let listener = tokio::net::TcpListener::bind(addr).await?;
     tracing::debug!("Listening on: {}", listener.local_addr()?);
 
-    axum::serve(listener, create_routes(Arc::new(state)))
+    axum::serve(listener, create_routes(Arc::clone(&state)))
         .with_graceful_shutdown(async {
             signal::ctrl_c()
                 .await

@@ -32,9 +32,10 @@ impl IntoResponse for AppError {
         let (status, body) = match self {
             AppError::NotFound => (StatusCode::NOT_FOUND, self.to_string()),
             AppError::Auth(auth_error) => (auth_error.status_code(), auth_error.to_string()),
-            AppError::Internal(anyhow_error) => {
-                (StatusCode::INTERNAL_SERVER_ERROR, anyhow_error.to_string())
-            }
+            AppError::Internal(_) => (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                "Internal server error: Something went wrong".to_owned(),
+            ),
         };
         (status, json!({ "message": body })).into_response()
     }

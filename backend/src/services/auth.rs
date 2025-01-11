@@ -46,7 +46,31 @@ fn hash_password(password: &str) -> String {
 fn verify_password(hash: &str, password: &str) -> bool {
     PasswordHash::new(hash)
         .map(|parsed_hash| Argon2::default().verify_password(password.as_bytes(), &parsed_hash))
-        .map_or(false, |res| res.is_ok())
+        .is_ok_and(|res| res.is_ok())
+}
+
+pub async fn create_super_user(state: &Arc<AppState>) -> anyhow::Result<User> {
+    let users: Collection<User> = get_collection(state, "users");
+    users
+        .find_one_and_delete(doc! { "username": "SuperUser" })
+        .await?;
+
+    let superuser = User {
+        id: Uuid::new(),
+        username: "SuperUser".to_owned(),
+        hashed_password: hash_password(
+            &state
+                .env
+                .superuser_password,
+        ),
+        role: Role::Admin,
+    };
+
+    users
+        .insert_one(superuser.clone())
+        .await?;
+
+    Ok(superuser)
 }
 
 pub async fn register(
