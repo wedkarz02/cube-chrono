@@ -53,5 +53,16 @@ Thumbs.db
 .svn/
 CVS
 
-# enviroment files
+# Environment files #
+####################
 .env
+
+# Nodejs #
+##########
+node_modules/
+
+# Rust #
+########
+debug/
+target/
+**/*.rs.bk
