@@ -18,7 +18,7 @@ async fn main() {
     tracing::debug!("Tracing initialized");
 
     let config = Config::init();
-    tracing::debug!("Enviroment configuration loaded");
+    tracing::debug!("Environment configuration loaded");
 
     if let Err(e) = run(config).await {
         tracing::error!("{}", e);

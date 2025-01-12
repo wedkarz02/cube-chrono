@@ -53,7 +53,7 @@ Thumbs.db
 .svn/
 CVS
 
-# Enviroment files #
+# Environment files #
 ####################
 .env
 
