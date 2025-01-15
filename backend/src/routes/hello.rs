@@ -40,7 +40,7 @@ pub async fn throw_internal(
     Extension(state): Extension<Arc<AppState>>,
     Extension(user): Extension<User>,
 ) -> Result<impl IntoResponse, AppError> {
-    if !matches!(user.role, Role::Admin) {
+    if !user.privileged(Role::Admin) {
         return Err(AuthError::Unauthorized.into());
     }
 
