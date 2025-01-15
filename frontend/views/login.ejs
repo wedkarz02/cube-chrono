@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logowanie - Cube Chrono</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>🔑 Logowanie</h1>
+    </header>
+    <main>
+        <form action="#" method="POST" class="form" id="login-form">
+            <label for="username">E-mail lub Nazwa Użytkownika:</label>
+            <input type="text" id="username" name="username" required>
+            
+            <label for="password">Hasło:</label>
+            <input type="password" id="password" name="password" required>
+            
+            <button type="submit">Zaloguj się</button>
+        </form>
+        <p>Nie masz konta? <a href="/register">Zarejestruj się tutaj</a>.</p>
+    </main>
+    <footer>
+        <p>&copy; 2024 Cube Chrono</p>
+    </footer>
+    <script>
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            // Tworzymy dane do wysłania
+            const data = {
+                username: username,
+                password: password
+            };
+
+            try {
+                // Wysyłamy zapytanie POST do backendu
+                const response = await fetch('/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (result.message !== "Invalid credentials") {
+                    // Logowanie powiodło się
+                    localStorage.setItem('isLoggedIn', 'true');
+                    localStorage.setItem('username', username);
+                    alert(`Zalogowano jako: ${username}`);
+                    window.location.href = '/'; // Przekierowanie po udanym logowaniu
+                } else {
+                    // Błąd logowania
+                    alert('Błąd logowania!');
+                }
+            } catch (error) {
+                console.error('Błąd połączenia:', error);
+                alert('Wystąpił błąd połączenia z serwerem.');
+            }
+        });
+    </script>
+</body>
+</html>

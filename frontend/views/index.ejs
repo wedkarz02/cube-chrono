@@ -72,13 +72,13 @@
             const authLinks = document.getElementById('auth-links');
             if (isLoggedIn) {
                 authLinks.innerHTML = `
-                    <a href="profile.html">Mój Profil</a>
-                    <a href="logout.html">Wyloguj się</a>
+                    <a href="/myprofile">Mój Profil</a>
+                    <a href="/logout">Wyloguj się</a>
                 `;
             } else {
                 authLinks.innerHTML = `
-                    <a href="login.html">Zaloguj się</a>
-                    <a href="register.html">Zarejestruj się</a>
+                    <a href="/login">Zaloguj się</a>
+                    <a href="/register">Zarejestruj się</a>
                 `;
             }
         });
@@ -97,17 +97,27 @@
                 `;
             } else {
                 authLinks.innerHTML = `
-                    <a href="login.html">Zaloguj się</a>
-                    <a href="register.html">Zarejestruj się</a>
+                    <a href="/login">Zaloguj się</a>
+                    <a href="/register">Zarejestruj się</a>
                 `;
             }
         });
     
         function logout() {
+            console.log("logout")
             localStorage.removeItem('isLoggedIn');
             localStorage.removeItem('username');
+            
+            const response = fetch('/logout', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+
             alert('Wylogowano pomyślnie');
-            window.location.href = 'index.html';
+            window.location.href = '/';
         }
     </script>    
 </body>
