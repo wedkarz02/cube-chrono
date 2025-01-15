@@ -46,7 +46,7 @@ pub async fn create_super_user(state: &Arc<AppState>) -> Result<User, AppError> 
                 .env
                 .superuser_password,
         ),
-        &vec![Role::Admin, Role::User],
+        &[Role::Admin, Role::User],
     );
 
     users
@@ -61,7 +61,7 @@ pub async fn register(
     auth_payload: AuthPayload,
     role: Role,
 ) -> Result<User, AppError> {
-    let users: Collection<User> = get_collection(&state, "users");
+    let users: Collection<User> = get_collection(state, "users");
     if users
         .find_one(doc! { "username": &auth_payload.username })
         .await?
@@ -73,7 +73,7 @@ pub async fn register(
     let user = User::from(
         &auth_payload.username,
         &hash_password(&auth_payload.password),
-        &vec![role],
+        &[role],
     );
 
     users
@@ -87,8 +87,8 @@ pub async fn login(
     state: &Arc<AppState>,
     auth_payload: AuthPayload,
 ) -> Result<(String, String), AppError> {
-    let users: Collection<User> = get_collection(&state, "users");
-    let refresh_tokens: Collection<RefreshToken> = get_collection(&state, "refresh_tokens");
+    let users: Collection<User> = get_collection(state, "users");
+    let refresh_tokens: Collection<RefreshToken> = get_collection(state, "refresh_tokens");
 
     let user = users
         .find_one(doc! { "username": &auth_payload.username })
@@ -132,7 +132,7 @@ pub async fn login(
 }
 
 pub async fn logout(state: &Arc<AppState>, tok: String) -> Result<String, AppError> {
-    let refresh_tokens: Collection<RefreshToken> = get_collection(&state, "refresh_tokens");
+    let refresh_tokens: Collection<RefreshToken> = get_collection(state, "refresh_tokens");
     let claims = jwt::decode_token(
         &tok,
         &state
@@ -154,15 +154,13 @@ pub async fn logout(state: &Arc<AppState>, tok: String) -> Result<String, AppErr
 }
 
 pub async fn refresh(state: &Arc<AppState>, tok: String) -> Result<String, AppError> {
-    tracing::debug!("got token: {}", tok);
-    let refresh_tokens: Collection<RefreshToken> = get_collection(&state, "refresh_tokens");
+    let refresh_tokens: Collection<RefreshToken> = get_collection(state, "refresh_tokens");
     let claims = jwt::decode_token(
         &tok,
         &state
             .env
             .jwt_secret,
     )?;
-    tracing::debug!("got claims: {:?}", claims);
 
     let stored_token = refresh_tokens
         .find_one(doc! { "user_id": claims.sub })
