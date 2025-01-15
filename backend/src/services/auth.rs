@@ -59,7 +59,7 @@ pub async fn create_super_user(state: &Arc<AppState>) -> Result<User, AppError> 
 pub async fn register(
     state: &Arc<AppState>,
     auth_payload: AuthPayload,
-    role: Role,
+    roles: &[Role],
 ) -> Result<User, AppError> {
     let users: Collection<User> = get_collection(state, "users");
     if users
@@ -73,7 +73,7 @@ pub async fn register(
     let user = User::from(
         &auth_payload.username,
         &hash_password(&auth_payload.password),
-        &[role],
+        roles,
     );
 
     users

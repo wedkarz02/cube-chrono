@@ -41,7 +41,7 @@ pub async fn throw_internal(
     Extension(user): Extension<User>,
 ) -> Result<impl IntoResponse, AppError> {
     if !user.privileged(Role::Admin) {
-        return Err(AuthError::Unauthorized.into());
+        return Err(AuthError::Forbidden.into());
     }
 
     if let Err(err) = state

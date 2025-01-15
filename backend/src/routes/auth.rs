@@ -27,11 +27,11 @@ pub async fn register(
     Extension(state): Extension<Arc<AppState>>,
     Json(payload): Json<AuthPayload>,
 ) -> Result<impl IntoResponse, AppError> {
-    let new_user = services::auth::register(&state, payload, Role::User).await?;
+    let new_user = services::auth::register(&state, payload, &[Role::User]).await?;
 
     Ok((
         StatusCode::CREATED,
-        json!({ "message": "user created", "data": new_user}),
+        json!({ "message": "user created", "data": { "new_user": new_user } }),
     ))
 }
 
@@ -60,7 +60,10 @@ pub async fn refresh(
     Json(payload): Json<RefreshPayload>,
 ) -> Result<impl IntoResponse, AppError> {
     let access_token = services::auth::refresh(&state, payload.refresh_token).await?;
-    Ok((StatusCode::OK, json!({ "access_token": access_token })))
+    Ok((
+        StatusCode::OK,
+        json!({ "message": "token refreshed", "data": { "access_token": access_token }}),
+    ))
 }
 
 pub fn router(state: Arc<AppState>) -> Router {
