@@ -4,19 +4,8 @@ use argon2::{
     password_hash::{rand_core::OsRng, PasswordHasher, PasswordVerifier, SaltString},
     Argon2, PasswordHash,
 };
-use axum::{
-    extract::Request,
-    http::{header, StatusCode},
-    middleware::Next,
-    response::IntoResponse,
-    Extension, Json,
-};
-use axum_extra::json;
-use mongodb::{
-    bson::{doc, Uuid},
-    Collection,
-};
-use serde::Deserialize;
+use axum::{extract::Request, http::header, middleware::Next, response::IntoResponse, Extension};
+use mongodb::{bson::doc, Collection};
 
 use crate::{
     error::{AppError, AuthError},
@@ -24,19 +13,11 @@ use crate::{
         refresh_token::RefreshToken,
         user::{Role, User},
     },
+    routes::auth::AuthPayload,
     AppState,
 };
 
 use super::{get_collection, jwt};
-
-#[derive(Deserialize)]
-pub struct AuthPayload {
-    username: String,
-    password: String,
-}
-
-#[derive(Deserialize)]
-pub struct RefreshPayload(String);
 
 fn hash_password(password: &str) -> String {
     let salt = SaltString::generate(&mut OsRng);
@@ -52,22 +33,21 @@ fn verify_password(hash: &str, password: &str) -> bool {
         .is_ok_and(|res| res.is_ok())
 }
 
-pub async fn create_super_user(state: &Arc<AppState>) -> anyhow::Result<User> {
+pub async fn create_super_user(state: &Arc<AppState>) -> Result<User, AppError> {
     let users: Collection<User> = get_collection(state, "users");
     users
         .find_one_and_delete(doc! { "username": "SuperUser" })
         .await?;
 
-    let superuser = User {
-        id: Uuid::new(),
-        username: "SuperUser".to_owned(),
-        hashed_password: hash_password(
+    let superuser = User::from(
+        "SuperUser",
+        &hash_password(
             &state
                 .env
                 .superuser_password,
         ),
-        role: Role::Admin,
-    };
+        &[Role::Admin, Role::User],
+    );
 
     users
         .insert_one(superuser.clone())
@@ -77,48 +57,45 @@ pub async fn create_super_user(state: &Arc<AppState>) -> anyhow::Result<User> {
 }
 
 pub async fn register(
-    Extension(state): Extension<Arc<AppState>>,
-    Json(payload): Json<AuthPayload>,
-) -> Result<impl IntoResponse, AppError> {
-    let users: Collection<User> = get_collection(&state, "users");
-
+    state: &Arc<AppState>,
+    auth_payload: AuthPayload,
+    roles: &[Role],
+) -> Result<User, AppError> {
+    let users: Collection<User> = get_collection(state, "users");
     if users
-        .find_one(doc! { "username": &payload.username })
+        .find_one(doc! { "username": &auth_payload.username })
         .await?
         .is_some()
     {
         return Err(AuthError::UserAlreadyExists.into());
     }
 
-    let user = User {
-        id: Uuid::new(),
-        username: payload
-            .username
-            .clone(),
-        hashed_password: hash_password(&payload.password),
-        role: Role::User,
-    };
+    let user = User::from(
+        &auth_payload.username,
+        &hash_password(&auth_payload.password),
+        roles,
+    );
 
     users
         .insert_one(user.clone())
         .await?;
 
-    Ok((StatusCode::CREATED, Json(user)))
+    Ok(user)
 }
 
 pub async fn login(
-    Extension(state): Extension<Arc<AppState>>,
-    Json(payload): Json<AuthPayload>,
-) -> Result<impl IntoResponse, AppError> {
-    let users: Collection<User> = get_collection(&state, "users");
-    let refresh_tokens: Collection<RefreshToken> = get_collection(&state, "refresh_tokens");
+    state: &Arc<AppState>,
+    auth_payload: AuthPayload,
+) -> Result<(String, String), AppError> {
+    let users: Collection<User> = get_collection(state, "users");
+    let refresh_tokens: Collection<RefreshToken> = get_collection(state, "refresh_tokens");
 
     let user = users
-        .find_one(doc! { "username": &payload.username })
+        .find_one(doc! { "username": &auth_payload.username })
         .await?
         .ok_or(AuthError::InvalidCredentials)?;
 
-    if !verify_password(&user.hashed_password, &payload.password) {
+    if !verify_password(&user.hashed_password, &auth_payload.password) {
         return Err(AuthError::InvalidCredentials.into());
     }
 
@@ -133,10 +110,9 @@ pub async fn login(
             .jwt_secret,
     )?;
 
-    let refresh_token = RefreshToken {
-        id: Uuid::new(),
-        user_id: user.id,
-        token: jwt::generate_token(
+    let refresh_token = RefreshToken::from(
+        user.id,
+        &jwt::generate_token(
             user.id,
             chrono::Utc::now()
                 .checked_add_signed(chrono::Duration::days(30))
@@ -146,25 +122,19 @@ pub async fn login(
                 .env
                 .jwt_secret,
         )?,
-    };
+    );
 
     refresh_tokens
         .insert_one(&refresh_token)
         .await?;
 
-    Ok((
-        StatusCode::OK,
-        json!({ "access_token": access_token, "refresh_token": refresh_token.token }),
-    ))
+    Ok((access_token, refresh_token.token))
 }
 
-pub async fn logout(
-    Extension(state): Extension<Arc<AppState>>,
-    Json(payload): Json<RefreshPayload>,
-) -> Result<impl IntoResponse, AppError> {
-    let refresh_tokens: Collection<RefreshToken> = get_collection(&state, "refresh_tokens");
+pub async fn logout(state: &Arc<AppState>, tok: String) -> Result<String, AppError> {
+    let refresh_tokens: Collection<RefreshToken> = get_collection(state, "refresh_tokens");
     let claims = jwt::decode_token(
-        &payload.0,
+        &tok,
         &state
             .env
             .jwt_secret,
@@ -175,19 +145,18 @@ pub async fn logout(
         .await?
         .deleted_count;
 
-    Ok((
-        StatusCode::OK,
-        json!({ "message": if deleted_count != 0 { "Logged out" } else { "Not logged in" } }),
-    ))
+    Ok(if deleted_count != 0 {
+        "Logged out"
+    } else {
+        "Not logged in"
+    }
+    .to_string())
 }
 
-pub async fn refresh(
-    Extension(state): Extension<Arc<AppState>>,
-    Json(payload): Json<RefreshPayload>,
-) -> Result<impl IntoResponse, AppError> {
-    let refresh_tokens: Collection<RefreshToken> = get_collection(&state, "refresh_tokens");
+pub async fn refresh(state: &Arc<AppState>, tok: String) -> Result<String, AppError> {
+    let refresh_tokens: Collection<RefreshToken> = get_collection(state, "refresh_tokens");
     let claims = jwt::decode_token(
-        &payload.0,
+        &tok,
         &state
             .env
             .jwt_secret,
@@ -198,7 +167,7 @@ pub async fn refresh(
         .await?
         .ok_or(AuthError::Unauthorized)?;
 
-    if stored_token.token != payload.0 {
+    if stored_token.token != tok {
         return Err(AuthError::Unauthorized.into());
     }
 
@@ -213,7 +182,7 @@ pub async fn refresh(
             .jwt_secret,
     )?;
 
-    Ok((StatusCode::OK, json!({ "access_token": access_token })))
+    Ok(access_token)
 }
 
 pub async fn auth_guard(
