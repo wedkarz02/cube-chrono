@@ -37,7 +37,7 @@ impl IntoResponse for AppError {
                 "Internal server error: Something went wrong".to_owned(),
             ),
         };
-        (status, json!({ "message": body })).into_response()
+        (status, json!({ "error": body })).into_response()
     }
 }
 

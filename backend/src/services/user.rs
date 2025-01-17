@@ -1,3 +1,5 @@
+#![allow(unused)]
+
 use std::sync::Arc;
 
 use axum::{extract::Path, response::IntoResponse, Extension, Json};
@@ -10,39 +12,33 @@ use crate::{error::AppError, models::user::User, AppState};
 
 use super::get_collection;
 
-pub async fn create_user(
-    Extension(state): Extension<Arc<AppState>>,
-    Json(body): Json<User>,
-) -> Result<impl IntoResponse, AppError> {
-    let users: Collection<User> = get_collection(&state, "users");
+// TODO (wedkarz): change the return type to whatever it should be when used
+pub async fn create_user(state: &Arc<AppState>, user: User) -> Result<impl IntoResponse, AppError> {
+    let users: Collection<User> = get_collection(state, "users");
     let result = users
-        .insert_one(body)
+        .insert_one(user)
         .await?;
 
     Ok(Json(result))
 }
 
-pub async fn read_user(
-    Extension(state): Extension<Arc<AppState>>,
-    Path(id): Path<Uuid>,
-) -> Result<impl IntoResponse, AppError> {
-    let users: Collection<User> = get_collection(&state, "users");
+pub async fn get_by_id(state: &Arc<AppState>, id: Uuid) -> Result<User, AppError> {
+    let users: Collection<User> = get_collection(state, "users");
     let result = users
         .find_one(doc! { "_id": id })
         .await?;
 
-    if result.is_none() {
-        return Err(AppError::NotFound);
-    }
+    let user_body = match result {
+        None => return Err(AppError::NotFound),
+        Some(u) => u,
+    };
 
-    Ok(Json(result))
+    Ok(user_body)
 }
 
-pub async fn update_user(
-    Extension(state): Extension<Arc<AppState>>,
-    Json(body): Json<User>,
-) -> Result<impl IntoResponse, AppError> {
-    let users: Collection<User> = get_collection(&state, "users");
+// TODO (wedkarz): change the return type to whatever it should be when used
+pub async fn update_user(state: &Arc<AppState>, body: User) -> Result<impl IntoResponse, AppError> {
+    let users: Collection<User> = get_collection(state, "users");
     let result = users
         .replace_one(doc! { "_id": body.id }, body)
         .await?;
@@ -50,11 +46,9 @@ pub async fn update_user(
     Ok(Json(result))
 }
 
-pub async fn delete_user(
-    Extension(state): Extension<Arc<AppState>>,
-    Path(id): Path<Uuid>,
-) -> Result<impl IntoResponse, AppError> {
-    let users: Collection<User> = get_collection(&state, "users");
+// TODO (wedkarz): change the return type to whatever it should be when used
+pub async fn delete_user(state: &Arc<AppState>, id: Uuid) -> Result<impl IntoResponse, AppError> {
+    let users: Collection<User> = get_collection(state, "users");
     let result = users
         .delete_one(doc! { "_id": id })
         .await?;
