@@ -7,6 +7,7 @@
     "express-flash": "^0.0.2",
     "express-session": "^1.18.1",
     "method-override": "^3.0.0",
+    "node-fetch": "^3.3.2",
     "nodemon": "^3.1.9"
   },
   "name": "frontend",

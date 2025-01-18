@@ -92,8 +92,7 @@
             if (isLoggedIn) {
                 const username = localStorage.getItem('username') || 'Użytkownik';
                 authLinks.innerHTML = `
-                    <a href="profile.html">Mój Profil</a>
-                    <a href="#" onclick="logout()">Wyloguj się</a>
+                    <a href="/myprofile">Mój Profil</a>
                 `;
             } else {
                 authLinks.innerHTML = `
@@ -103,22 +102,22 @@
             }
         });
     
-        function logout() {
-            console.log("logout")
-            localStorage.removeItem('isLoggedIn');
-            localStorage.removeItem('username');
+        // function logout() {
+        //     console.log("logout")
+        //     localStorage.removeItem('isLoggedIn');
+        //     localStorage.removeItem('username');
             
-            const response = fetch('/logout', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(data)
-                });
+        //     const response = fetch('/logout', {
+        //             method: 'POST',
+        //             headers: {
+        //                 'Content-Type': 'application/json',
+        //             },
+        //             body: JSON.stringify(data)
+        //         });
 
-            alert('Wylogowano pomyślnie');
-            window.location.href = '/';
-        }
+        //     alert('Wylogowano pomyślnie');
+        //     window.location.href = '/';
+        // }
     </script>    
 </body>
 </html>

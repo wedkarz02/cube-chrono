@@ -48,16 +48,12 @@
                     body: JSON.stringify(data)
                 });
 
-                const result = await response.json();
-
-                if (result.message !== "Invalid credentials") {
-                    // Logowanie powiodło się
+                if (response.status == 200) {
                     localStorage.setItem('isLoggedIn', 'true');
                     localStorage.setItem('username', username);
                     alert(`Zalogowano jako: ${username}`);
-                    window.location.href = '/'; // Przekierowanie po udanym logowaniu
+                    window.location.href = '/';
                 } else {
-                    // Błąd logowania
                     alert('Błąd logowania!');
                 }
             } catch (error) {
