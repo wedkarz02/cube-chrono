@@ -5,15 +5,17 @@ use serde::{Deserialize, Serialize};
 pub struct RefreshToken {
     #[serde(rename = "_id")]
     pub id: Uuid,
-    pub user_id: Uuid,
+    pub account_id: Uuid,
+    pub expiry_timestamp: i64,
     pub token: String,
 }
 
 impl RefreshToken {
-    pub fn from(user_id: Uuid, token: &str) -> RefreshToken {
+    pub fn new(account_id: Uuid, expiry_timestamp: i64, token: &str) -> RefreshToken {
         RefreshToken {
             id: Uuid::new(),
-            user_id,
+            account_id,
+            expiry_timestamp,
             token: token.to_owned(),
         }
     }

@@ -51,8 +51,12 @@ pub enum AuthError {
     Unauthorized,
     #[error("Forbidden")]
     Forbidden,
-    #[error("User already exists")]
-    UserAlreadyExists,
+    #[error("Token is invalid")]
+    TokenInvalid,
+    #[error("Token has expired")]
+    TokenExpired,
+    #[error("Username already taken")]
+    UsernameAlreadyTaken,
 }
 
 impl AuthError {
@@ -61,7 +65,9 @@ impl AuthError {
             AuthError::InvalidCredentials => StatusCode::UNAUTHORIZED,
             AuthError::Unauthorized => StatusCode::UNAUTHORIZED,
             AuthError::Forbidden => StatusCode::FORBIDDEN,
-            AuthError::UserAlreadyExists => StatusCode::CONFLICT,
+            AuthError::TokenInvalid => StatusCode::UNAUTHORIZED,
+            AuthError::TokenExpired => StatusCode::UNAUTHORIZED,
+            AuthError::UsernameAlreadyTaken => StatusCode::CONFLICT,
         }
     }
 }
