@@ -1,3 +1,4 @@
+use jsonwebtoken::errors::ErrorKind;
 use jsonwebtoken::{DecodingKey, EncodingKey, Header, Validation};
 use mongodb::bson::{doc, Uuid};
 use serde::{Deserialize, Serialize};
@@ -24,7 +25,10 @@ pub fn decode_token(token: &str, secret: &str) -> Result<Claims, AppError> {
         &DecodingKey::from_secret(secret.as_bytes()),
         &Validation::default(),
     )
-    .map_err(|_| AuthError::TokenInvalid)?;
+    .map_err(|err| match *err.kind() {
+        ErrorKind::ExpiredSignature => AuthError::TokenExpired,
+        _ => AuthError::TokenInvalid,
+    })?;
 
     Ok(token_data.claims)
 }
