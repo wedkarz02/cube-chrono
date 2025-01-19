@@ -128,7 +128,7 @@ pub async fn refresh(state: &Arc<AppState>, refresh_token: String) -> Result<Str
     let refresh_tokens: Collection<RefreshToken> =
         get_collection(state, Collections::REFRESH_TOKENS);
 
-    let retrieved_refresh_token = refresh_tokens
+    refresh_tokens
         .find_one(doc! { "token": &refresh_token })
         .await?
         .ok_or(AuthError::TokenInvalid)?;
@@ -139,10 +139,6 @@ pub async fn refresh(state: &Arc<AppState>, refresh_token: String) -> Result<Str
             .env
             .jwt_secret,
     )?;
-
-    if retrieved_refresh_token.expiry_timestamp < chrono::Utc::now().timestamp() {
-        return Err(AuthError::TokenExpired.into());
-    }
 
     let access_token = jwt::generate_token(
         claims.sub,
