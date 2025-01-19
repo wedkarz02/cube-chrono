@@ -16,7 +16,7 @@ use crate::AppState;
 
 #[derive(Deserialize, Validate)]
 pub struct AuthPayload {
-    #[validate(length(min = 4, max = 32, message = "lenght must be in range (4..=32)"))]
+    #[validate(length(min = 4, max = 32, message = "length must be in range (4..=32)"))]
     #[validate(custom(function = "validation_services::ascii_string"))]
     pub username: String,
     #[validate(custom(function = "validation_services::strong_password"))]

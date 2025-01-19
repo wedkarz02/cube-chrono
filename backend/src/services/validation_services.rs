@@ -28,7 +28,8 @@ where
 
 pub fn ascii_string(value: &str) -> Result<(), ValidationError> {
     if !value.is_ascii() {
-        return Err(ValidationError::new("contains non-ASCII characters"));
+        return Err(ValidationError::new("invalid")
+            .with_message("must only contain ASCII characters".into()));
     }
     Ok(())
 }
@@ -66,7 +67,7 @@ impl PasswordRules {
                 range.end()
             ),
             PasswordRules::CapitalLetter => "must include at least one capital letter".to_string(),
-            PasswordRules::Digit => "password must include at least one digit".to_string(),
+            PasswordRules::Digit => "must include at least one digit".to_string(),
             PasswordRules::SpecialChar => "must include at least one special character".to_string(),
             PasswordRules::Ascii => "must only contain ASCII characters".to_string(),
         }
