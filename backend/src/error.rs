@@ -1,4 +1,4 @@
-use axum::{http::StatusCode, response::IntoResponse};
+use axum::{extract::rejection, http::StatusCode, response::IntoResponse};
 use axum_extra::json;
 
 macro_rules! impl_internal_from {
@@ -17,6 +17,10 @@ macro_rules! impl_internal_from {
 pub enum AppError {
     #[error("Not found")]
     NotFound,
+    #[error("Validation error: {0}")]
+    Validation(#[from] validator::ValidationErrors),
+    #[error("Json rejection: {0}")]
+    JsonRejection(#[from] rejection::JsonRejection),
     #[error("Authentication error: {0}")]
     Auth(#[from] AuthError),
     #[error("Internal server error: {0}")]
@@ -31,6 +35,10 @@ impl IntoResponse for AppError {
 
         let (status, body) = match self {
             AppError::NotFound => (StatusCode::NOT_FOUND, self.to_string()),
+            AppError::Validation(vali_error) => (StatusCode::BAD_REQUEST, vali_error.to_string()),
+            AppError::JsonRejection(json_error) => {
+                (StatusCode::BAD_REQUEST, json_error.to_string())
+            }
             AppError::Auth(auth_error) => (auth_error.status_code(), auth_error.to_string()),
             AppError::Internal(_) => (
                 StatusCode::INTERNAL_SERVER_ERROR,
