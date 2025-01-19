@@ -172,7 +172,7 @@ pub async fn logout(state: &Arc<AppState>, refresh_token: String) -> Result<Stri
     if deleted_count != 0 {
         Ok("Logged out".to_string())
     } else {
-        return Err(AuthError::Unauthorized.into());
+        Err(AuthError::Unauthorized.into())
     }
 }
 
