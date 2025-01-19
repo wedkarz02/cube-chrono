@@ -8,23 +8,26 @@ use mongodb::{
     Collection,
 };
 
-use crate::{error::AppError, models::user::User, AppState};
+use crate::{error::AppError, models::account::Account, AppState};
 
-use super::get_collection;
+use super::{get_collection, Collections};
 
 // TODO (wedkarz): change the return type to whatever it should be when used
-pub async fn create_user(state: &Arc<AppState>, user: User) -> Result<impl IntoResponse, AppError> {
-    let users: Collection<User> = get_collection(state, "users");
-    let result = users
-        .insert_one(user)
+pub async fn create_user(
+    state: &Arc<AppState>,
+    account: Account,
+) -> Result<impl IntoResponse, AppError> {
+    let accounts: Collection<Account> = get_collection(state, Collections::ACCOUNTS);
+    let result = accounts
+        .insert_one(account)
         .await?;
 
     Ok(Json(result))
 }
 
-pub async fn get_by_id(state: &Arc<AppState>, id: Uuid) -> Result<User, AppError> {
-    let users: Collection<User> = get_collection(state, "users");
-    let result = users
+pub async fn get_by_id(state: &Arc<AppState>, id: Uuid) -> Result<Account, AppError> {
+    let accounts: Collection<Account> = get_collection(state, Collections::ACCOUNTS);
+    let result = accounts
         .find_one(doc! { "_id": id })
         .await?;
 
@@ -37,9 +40,12 @@ pub async fn get_by_id(state: &Arc<AppState>, id: Uuid) -> Result<User, AppError
 }
 
 // TODO (wedkarz): change the return type to whatever it should be when used
-pub async fn update_user(state: &Arc<AppState>, body: User) -> Result<impl IntoResponse, AppError> {
-    let users: Collection<User> = get_collection(state, "users");
-    let result = users
+pub async fn update_user(
+    state: &Arc<AppState>,
+    body: Account,
+) -> Result<impl IntoResponse, AppError> {
+    let accounts: Collection<Account> = get_collection(state, Collections::ACCOUNTS);
+    let result = accounts
         .replace_one(doc! { "_id": body.id }, body)
         .await?;
 
@@ -48,8 +54,8 @@ pub async fn update_user(state: &Arc<AppState>, body: User) -> Result<impl IntoR
 
 // TODO (wedkarz): change the return type to whatever it should be when used
 pub async fn delete_user(state: &Arc<AppState>, id: Uuid) -> Result<impl IntoResponse, AppError> {
-    let users: Collection<User> = get_collection(state, "users");
-    let result = users
+    let accounts: Collection<Account> = get_collection(state, Collections::ACCOUNTS);
+    let result = accounts
         .delete_one(doc! { "_id": id })
         .await?;
 

@@ -12,8 +12,8 @@ use serde::Deserialize;
 
 use crate::{
     error::{AppError, AuthError},
-    models::user::{Role, User},
-    services::auth,
+    models::account::{Account, Role},
+    services::auth_services,
     AppState,
 };
 
@@ -25,22 +25,25 @@ pub struct JsonRequest {
 pub async fn hello_world(Json(body): Json<JsonRequest>) -> impl IntoResponse {
     (
         StatusCode::OK,
-        json!({ "message": body.message, "message_from_server": "Hello there traveller"}),
+        json!({
+            "message": body.message,
+            "message_from_server": "Hello there traveller"
+        }),
     )
 }
 
-pub async fn secret_route(Extension(user): Extension<User>) -> impl IntoResponse {
+pub async fn secret_route(Extension(account): Extension<Account>) -> impl IntoResponse {
     (
         StatusCode::IM_A_TEAPOT,
-        json!({ "message": format!("Hello {}, I'm a teapot!", user.username) }),
+        json!({ "message": format!("Hello {}, I'm a teapot!", account.username) }),
     )
 }
 
 pub async fn throw_internal(
     Extension(state): Extension<Arc<AppState>>,
-    Extension(user): Extension<User>,
+    Extension(account): Extension<Account>,
 ) -> Result<impl IntoResponse, AppError> {
-    if !user.privileged(Role::Admin) {
+    if !account.has_role(Role::Admin) {
         return Err(AuthError::Forbidden.into());
     }
 
@@ -60,13 +63,13 @@ pub async fn throw_internal(
     ))
 }
 
-pub fn router(state: Arc<AppState>) -> Router {
+pub fn create_routes(state: Arc<AppState>) -> Router {
     let public_routes = Router::new().route("/", post(hello_world));
 
     let protected_routes = Router::new()
         .route("/secret", get(secret_route))
         .route("/ise", get(throw_internal))
-        .layer(axum::middleware::from_fn(auth::auth_guard));
+        .layer(axum::middleware::from_fn(auth_services::auth_guard));
 
     Router::new()
         .merge(public_routes)
