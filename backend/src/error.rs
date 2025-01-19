@@ -35,7 +35,12 @@ impl IntoResponse for AppError {
 
         let (status, body) = match self {
             AppError::NotFound => (StatusCode::NOT_FOUND, self.to_string()),
-            AppError::Validation(vali_error) => (StatusCode::BAD_REQUEST, vali_error.to_string()),
+            AppError::Validation(vali_error) => (
+                StatusCode::BAD_REQUEST,
+                vali_error
+                    .to_string()
+                    .replace("\n", "; "),
+            ),
             AppError::JsonRejection(json_error) => {
                 (StatusCode::BAD_REQUEST, json_error.to_string())
             }

@@ -1,3 +1,5 @@
+use std::ops::RangeInclusive;
+
 use axum::{
     extract::{FromRequest, Request},
     Json,
@@ -32,8 +34,7 @@ pub fn ascii_string(value: &str) -> Result<(), ValidationError> {
 }
 
 enum PasswordRules {
-    MinLength,
-    MaxLength,
+    Length(RangeInclusive<usize>),
     CapitalLetter,
     Digit,
     SpecialChar,
@@ -43,73 +44,52 @@ enum PasswordRules {
 impl PasswordRules {
     fn validate(&self, value: &str) -> bool {
         match self {
-            PasswordRules::MinLength => self.min_length(value),
-            PasswordRules::MaxLength => self.max_length(value),
-            PasswordRules::CapitalLetter => self.capital_letter(value),
-            PasswordRules::Digit => self.digit(value),
-            PasswordRules::SpecialChar => self.special_char(value),
-            PasswordRules::Ascii => self.ascii(value),
+            PasswordRules::Length(range) => range.contains(&value.len()),
+            PasswordRules::CapitalLetter => value
+                .chars()
+                .any(|c| c.is_uppercase()),
+            PasswordRules::Digit => value
+                .chars()
+                .any(|c| c.is_ascii_digit()),
+            PasswordRules::SpecialChar => value
+                .chars()
+                .any(|c| !c.is_alphanumeric()),
+            PasswordRules::Ascii => value.is_ascii(),
         }
     }
 
-    fn msg(&self) -> &'static str {
+    fn msg(&self) -> String {
         match self {
-            PasswordRules::MinLength => "password must be at least 8 characters long",
-            PasswordRules::MaxLength => "password must be at most 256 characters long",
-            PasswordRules::CapitalLetter => "password must include at least one capital letter",
-            PasswordRules::Digit => "password must include at least one digit",
-            PasswordRules::SpecialChar => "password must include at least one special character",
-            PasswordRules::Ascii => "password must only contain ASCII characters",
+            PasswordRules::Length(range) => format!(
+                "length must be in range ({}..={})",
+                range.start(),
+                range.end()
+            ),
+            PasswordRules::CapitalLetter => "must include at least one capital letter".to_string(),
+            PasswordRules::Digit => "password must include at least one digit".to_string(),
+            PasswordRules::SpecialChar => "must include at least one special character".to_string(),
+            PasswordRules::Ascii => "must only contain ASCII characters".to_string(),
         }
-    }
-
-    fn min_length(&self, value: &str) -> bool {
-        value.len() >= 8
-    }
-
-    fn max_length(&self, value: &str) -> bool {
-        value.len() <= 256
-    }
-
-    fn capital_letter(&self, value: &str) -> bool {
-        value
-            .chars()
-            .any(|c| c.is_uppercase())
-    }
-
-    fn digit(&self, value: &str) -> bool {
-        value
-            .chars()
-            .any(|c| c.is_ascii_digit())
-    }
-
-    fn special_char(&self, value: &str) -> bool {
-        value
-            .chars()
-            .any(|c| !c.is_alphanumeric())
-    }
-
-    // NOTE (wedkarz): A bit of reudundancy with ascii_string validator existing already
-    //                 but this reduces complexity a bit
-    fn ascii(&self, value: &str) -> bool {
-        value.is_ascii()
     }
 }
 
 pub fn strong_password(value: &str) -> Result<(), ValidationError> {
     let rules = vec![
-        // Check for Ascii-only first
-        PasswordRules::Ascii,
-        PasswordRules::MinLength,
-        PasswordRules::MaxLength,
+        PasswordRules::Length(8..=256),
         PasswordRules::CapitalLetter,
         PasswordRules::Digit,
+        // Check for Ascii-only before special characters
+        // (avoid goofy non-Ascii special characters just to be safe)
+        PasswordRules::Ascii,
         PasswordRules::SpecialChar,
     ];
 
     for rule in rules {
         if !rule.validate(value) {
-            return Err(ValidationError::new(rule.msg()));
+            return Err(ValidationError::new("invalid").with_message(
+                rule.msg()
+                    .into(),
+            ));
         }
     }
 
