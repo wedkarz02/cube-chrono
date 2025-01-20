@@ -8,7 +8,7 @@ pub enum Role {
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
-pub struct User {
+pub struct Account {
     #[serde(rename = "_id")]
     pub id: Uuid,
     pub username: String,
@@ -16,9 +16,9 @@ pub struct User {
     pub roles: Vec<Role>,
 }
 
-impl User {
-    pub fn from(username: &str, hashed_password: &str, roles: &[Role]) -> User {
-        User {
+impl Account {
+    pub fn new(username: &str, hashed_password: &str, roles: &[Role]) -> Account {
+        Account {
             id: Uuid::new(),
             username: username.to_owned(),
             hashed_password: hashed_password.to_owned(),
@@ -26,8 +26,8 @@ impl User {
         }
     }
 
-    pub fn privileged(&self, perm: Role) -> bool {
+    pub fn has_role(&self, role: Role) -> bool {
         self.roles
-            .contains(&perm)
+            .contains(&role)
     }
 }

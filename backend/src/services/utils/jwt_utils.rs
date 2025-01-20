@@ -1,3 +1,4 @@
+use jsonwebtoken::errors::ErrorKind;
 use jsonwebtoken::{DecodingKey, EncodingKey, Header, Validation};
 use mongodb::bson::{doc, Uuid};
 use serde::{Deserialize, Serialize};
@@ -7,20 +8,13 @@ use crate::error::{AppError, AuthError};
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Claims {
     pub sub: Uuid,
-    pub iat: usize,
-    pub exp: usize,
+    pub exp: i64,
 }
 
-pub fn generate_token(sub: Uuid, exp: usize, secret: &str) -> Result<String, AppError> {
-    let claims = Claims {
-        sub,
-        iat: chrono::Utc::now().timestamp() as usize,
-        exp,
-    };
-
+pub fn generate_token(sub: Uuid, exp: i64, secret: &str) -> Result<String, AppError> {
     Ok(jsonwebtoken::encode(
         &Header::default(),
-        &claims,
+        &Claims { sub, exp },
         &EncodingKey::from_secret(secret.as_bytes()),
     )?)
 }
@@ -31,7 +25,10 @@ pub fn decode_token(token: &str, secret: &str) -> Result<Claims, AppError> {
         &DecodingKey::from_secret(secret.as_bytes()),
         &Validation::default(),
     )
-    .map_err(|_| AuthError::Forbidden)?;
+    .map_err(|err| match *err.kind() {
+        ErrorKind::ExpiredSignature => AuthError::TokenExpired,
+        _ => AuthError::TokenInvalid,
+    })?;
 
     Ok(token_data.claims)
 }

@@ -60,7 +60,7 @@ pub async fn run(config: Config) -> anyhow::Result<()> {
         env: config,
     });
 
-    let superuser = services::auth::create_super_user(&Arc::clone(&state)).await?;
+    let superuser = services::auth_services::create_super_user(&Arc::clone(&state)).await?;
     tracing::info!(
         "SuperUser initialized with: (username: {}, password: {})",
         superuser.username,
