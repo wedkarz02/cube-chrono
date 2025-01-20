@@ -182,6 +182,7 @@ pub async fn revoke_all_refresh_tokens(
         .await?
         .ok_or(AuthError::InvalidCredentials)?;
 
+    // TODO: fix password verification
     if !verify_password(&account.hashed_password, &username) {
         return Err(AuthError::InvalidCredentials.into());
     }
