@@ -33,6 +33,7 @@ impl Account {
             .contains(&role)
     }
 
+    #[allow(unused)]
     pub fn is_event_moderator(&self, event_id: Uuid) -> bool {
         self.roles
             .iter()

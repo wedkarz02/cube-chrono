@@ -1,7 +1,9 @@
+#![allow(unused)]
+
 use mongodb::bson::Uuid;
 use serde::{Deserialize, Serialize};
 
-// NOTE: models should be refactored into domain models, DB entities and endpoint DTOs 
+// NOTE: models should be refactored into domain models, DB entities and endpoint DTOs
 // (or at least just add the separate DTOs for now)
 
 #[derive(Clone, Deserialize, Serialize, Debug, PartialEq)]
