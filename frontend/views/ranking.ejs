@@ -62,25 +62,17 @@
 
             if (isLoggedIn) {
                 authLinks.innerHTML = `
-                    <a href="profile.html">👤 Mój Profil</a>
-                    <a href="#" onclick="logout()">🚪 Wyloguj się</a>
+                    <a href="/myprofile">👤 Mój Profil</a>
                 `;
                 userRankingSection.style.display = 'block';
                 usernameDisplay.textContent = username || 'Nieznany Użytkownik';
             } else {
                 authLinks.innerHTML = `
-                    <a href="login.html">🔑 Zaloguj się</a>
-                    <a href="register.html">📝 Zarejestruj się</a>
+                    <a href="/login">🔑 Zaloguj się</a>
+                    <a href="/register">📝 Zarejestruj się</a>
                 `;
             }
         });
-
-        function logout() {
-            localStorage.removeItem('isLoggedIn');
-            localStorage.removeItem('username');
-            alert('Wylogowano pomyślnie');
-            window.location.href = 'index.html';
-        }
     </script>
 </body>
 </html>

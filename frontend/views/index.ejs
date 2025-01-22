@@ -10,8 +10,18 @@
     <header>
         <h1>Cube Chrono</h1>
         <p>Zabawa i rywalizacja z kostką Rubika</p>
-        <div class="auth-links" id="auth-links">
-            <!-- Dynamiczne linki -->
+        <div>
+            <% if (isLoggedIn) { %>
+                <% if (isAdmin) { %>
+                    <a href="/myprofile">Mój Profil</a>
+                    <a href="/admin">Panel administratora</a>
+                <% } else { %>
+                        <a href="/myprofile">Mój Profil</a>
+                <% } %>
+            <% } else { %>
+                    <a href="/login">Zaloguj się</a>
+                    <a href="/register">Zarejestruj się</a>
+            <% } %>
         </div>
     </header>
 
@@ -51,14 +61,14 @@
         <section>
             <h2>Ranking</h2>
             <p>Sprawdź swoje miejsce w rankingu.</p>
-            <button onclick="window.location.href='ranking.html'">Przejdź do Rankingu</button>
+            <button onclick="window.location.href='/ranking'">Przejdź do Rankingu</button>
         </section>        
 
         <!-- Sekcja Wydarzeń -->
         <section>
             <h2>Wydarzenia</h2>
             <p>Dołącz do oficjalnych i prywatnych wydarzeń, aby rywalizować z innymi graczami!</p>
-            <button onclick="window.location.href='events.html'">Przejdź do Wydarzeń</button>
+            <button onclick="window.location.href='/events'">Przejdź do Wydarzeń</button>
         </section>
     </main>
 
@@ -66,15 +76,23 @@
         <p>&copy; 2024 Cube Chrono. Wszystkie prawa zastrzeżone.</p>
     </footer>
 
-    <script>
+    <!-- <script>
         // Dynamiczna nawigacja na podstawie zalogowania
         document.addEventListener('DOMContentLoaded', () => {
             const authLinks = document.getElementById('auth-links');
             if (isLoggedIn) {
-                authLinks.innerHTML = `
+                if (isAdmin) {
+                    authLinks.innerHTML = `
                     <a href="/myprofile">Mój Profil</a>
+                    <a href="/admin">Panel administratora</a>
                     <a href="/logout">Wyloguj się</a>
                 `;
+                } else {
+                    authLinks.innerHTML = `
+                        <a href="/myprofile">Mój Profil</a>
+                        <a href="/logout">Wyloguj się</a>
+                    `;
+                }
             } else {
                 authLinks.innerHTML = `
                     <a href="/login">Zaloguj się</a>
@@ -88,12 +106,21 @@
         document.addEventListener('DOMContentLoaded', () => {
             const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
             const authLinks = document.getElementById('auth-links');
-    
+            const isAdmin = false;
             if (isLoggedIn) {
                 const username = localStorage.getItem('username') || 'Użytkownik';
-                authLinks.innerHTML = `
+                if (isAdmin) {
+                    authLinks.innerHTML = `
                     <a href="/myprofile">Mój Profil</a>
+                    <a href="/admin">Panel administratora</a>
+                    <a href="/logout">Wyloguj się</a>
                 `;
+                } else {
+                    authLinks.innerHTML = `
+                        <a href="/myprofile">Mój Profil</a>
+                        <a href="/logout">Wyloguj się</a>
+                    `;
+                }
             } else {
                 authLinks.innerHTML = `
                     <a href="/login">Zaloguj się</a>
@@ -101,23 +128,6 @@
                 `;
             }
         });
-    
-        // function logout() {
-        //     console.log("logout")
-        //     localStorage.removeItem('isLoggedIn');
-        //     localStorage.removeItem('username');
-            
-        //     const response = fetch('/logout', {
-        //             method: 'POST',
-        //             headers: {
-        //                 'Content-Type': 'application/json',
-        //             },
-        //             body: JSON.stringify(data)
-        //         });
-
-        //     alert('Wylogowano pomyślnie');
-        //     window.location.href = '/';
-        // }
-    </script>    
+    </script>     -->
 </body>
 </html>

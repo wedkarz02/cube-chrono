@@ -6,7 +6,10 @@ const session = require('express-session');
 const methodOverride = require('method-override');
 const ejs = require('ejs');
 const cookieParser = require('cookie-parser');
-const profileRoutes = require('./routes/profileRoutes');  // Zaimportuj router
+const profileRoutes = require('./routes/profileRoutes');
+const eventRoutes = require('./routes/eventRoutes');
+const rankingRoutes = require('./routes/rankingRoutes');
+const { getCookieByName, ensureAuthenticated, ensureNotAuthenticated } = require('./utils');
 
 app.use(express.json());
 app.use(express.static("public"));
@@ -21,29 +24,30 @@ app.use((_req, res, next) => {
 
 const apiURL = new URL("http://localhost:8080/api/v1/");
 
-app.use('/', profileRoutes);  // Użyj routera w aplikacji
+app.use('/', profileRoutes);
+app.use('/', eventRoutes);
+app.use('/', rankingRoutes);
 
 app.get('/', async (req, res) => {
   const access_token = getCookieByName("access_token", req.cookies);
-  console.log(access_token);
   let logged;
   if (access_token !== null) {
     const result = await getUser(req, res, access_token);
     if (result.status === 200) {
       logged = true;
-      console.log("Działa")
+      //console.log("ZALOGOWANY")
     } else {
       logged = false;
     }
   } else {
     logged = false;
   }
-  res.render('index.ejs', { isLoggedIn: logged })
+  res.render('index.ejs', { isLoggedIn: logged, isAdmin: true })
 })
 
 async function getUser(req, res, access_token) {
   const token = "Bearer ".concat(access_token);
-  const result = await fetch("http://localhost:8080/api/v1/user", {
+  const result = await fetch("http://localhost:8080/api/v1/profiles", {
     method: 'GET',
     headers: {
       'Accept': 'application/json',
@@ -54,7 +58,7 @@ async function getUser(req, res, access_token) {
   return result;
 }
 
-app.get('/login', async (req, res) => {
+app.get('/login', ensureNotAuthenticated, async (req, res) => {
   // const result = await fetch("http://localhost:8080/api/v1/auth/login", {
   //   method: 'POST',
   //   headers: {
@@ -70,7 +74,7 @@ app.get('/login', async (req, res) => {
   res.render('login.ejs', {  });
 })
 
-app.get('/register', (req, res) => {
+app.get('/register', ensureNotAuthenticated, (req, res) => {
   res.render('register.ejs', {  });
 })
 
@@ -88,13 +92,8 @@ app.post('/logout', async (req, res) => {
     body: JSON.stringify(data)
   });
 
-  console.log(result);
-
-  if (result.status === 200) {
-    res.clearCookie('access_token');
-    res.clearCookie('refresh_token');
-  }
-
+  res.clearCookie('access_token');
+  res.clearCookie('refresh_token');
   res.redirect('/');
 })
 
@@ -111,14 +110,14 @@ app.post('/login', async (req, res) => {
   const jsonResult = await result.json();
   
   if (result.status == 200) {
-    res.cookie('access_token', jsonResult.data.access_token, {
+    res.cookie('access_token', jsonResult.access_token, {
       httpOnly: true,
       secure: true, 
       maxAge: 1000 * 60 * 15,
       sameSite: 'Strict'
     });
 
-    res.cookie('refresh_token', jsonResult.data.refresh_token, {
+    res.cookie('refresh_token', jsonResult.refresh_token, {
       httpOnly: true,  
       secure: true,  
       maxAge: 30 * 24 * 60 * 60 * 1000,
@@ -145,33 +144,5 @@ app.post('/register', async (req, res) => {
     res.send(jsonResult);
   //dodać automatyczne logowanie po rejestracji.
 })
-
-
-function getCookieByValue(searchValue, cookies) {
-  for (const [key, value] of Object.entries(cookies)) {
-    if (value === searchValue) {
-      return value;
-    }
-  }
-  return null;
-}
-
-function getCookieByName(searchKey, cookies) {
-  for (const [key, value] of Object.entries(cookies)) {
-    if (key === searchKey) {
-      return value;
-    }
-  }
-  return null;
-}
-
-function createCookie(name, value, age) {
-  res.cookie(name, value, {
-    httpOnly: true,
-    secure: true, 
-    maxAge: age,
-    sameSite: 'Strict'
-  });
-}
 
 app.listen(3000)
