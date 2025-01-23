@@ -12,7 +12,40 @@ All api endpoints are prefixed with `/api/v1`.
 
 ### Hello
 
+
 ### Profiles
+
+#### `GET /api/v1/profiles/logged`
+- **Description**: Get information about currently logged account.
+- **Headers**:
+  - `Authorization` (string): JWT access token, prefixed with `Bearer `.
+- **Responses**:
+  - `200 OK`: Account found.
+  - `401 Unauthorized`: Unauthorized to read this data.
+
+#### `PUT /api/v1/profiles/logged/change-username`
+- **Description**: Change the username of currently logged account.
+- **Headers**:
+  - `Authorization` (string): JWT access token, prefixed with `Bearer `.
+- **Request Body**:
+  - `username` (string): The new username of the account.
+- **Responses**:
+  - `200 OK`: Username updated.
+  - `400 Bad Request`: Invalid input data.
+  - `401 Unauthorized`: Unauthorized to update this data.
+
+#### `PUT /api/v1/profiles/logged/change-password`
+- **Description**: Change the password of currently logged account.
+- **Headers**:
+  - `Authorization` (string): JWT access token, prefixed with `Bearer `.
+- **Request Body**:
+  - `new_password` (string): The new password of the account.
+  - `old_password` (string): Current password of the account.
+- **Responses**:
+  - `200 OK`: Password updated.
+  - `400 Bad Request`: Invalid input data.
+  - `401 Unauthorized`: Unauthorized to update this data.
+
 
 ### Auth
 
@@ -43,7 +76,7 @@ All api endpoints are prefixed with `/api/v1`.
   - `200 OK`: Token refreshed, returns a new access token.
   - `401 Unauthorized`: Invalid or expired refresh token.
 
-### `POST /api/v1/auth/revoke-all-sessions`
+#### `POST /api/v1/auth/revoke-all-sessions`
 - **Description**: Revoke all sessions of the account.
 - **Request Body**:
   - `username` (string): The username of the account.
@@ -116,3 +149,15 @@ All api endpoints are prefixed with `/api/v1`.
   - `204 No Content`: Event deleted.
   - `401 Unauthorized`: Unauthorized to delete the event.
   - `404 Not Found`: Event not found.
+
+
+### Scrambles
+
+#### `GET /api/v1/scrambles`
+- **Description**: Generate a set of scrambles.
+- **Query Parameters**:
+  - `kind` (string): Puzzle type (possible values [Three, ...]).
+  - `count` (uint8): Amount of requested scrambles.
+- **Responses**:
+  - `200 OK`: Event updated.
+  - `400 Bad Request`: Invalid input data.

@@ -9,7 +9,7 @@ mod accounts;
 pub mod auth;
 mod events;
 mod hello;
-mod scrambles;
+pub mod scrambles;
 
 pub fn create_routes(state: Arc<AppState>) -> Router {
     Router::new()

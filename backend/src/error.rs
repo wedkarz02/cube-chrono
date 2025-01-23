@@ -1,3 +1,5 @@
+#![allow(unused)]
+
 use axum::{extract::rejection, http::StatusCode, response::IntoResponse};
 use axum_extra::json;
 
