@@ -19,8 +19,10 @@ pub enum AppError {
     NotFound,
     #[error("Validation error: {0}")]
     Validation(#[from] validator::ValidationErrors),
-    #[error("Json rejection: {0}")]
+    #[error("Json rejection error: {0}")]
     JsonRejection(#[from] rejection::JsonRejection),
+    #[error("Query rejection error: {0}")]
+    QueryRejection(#[from] rejection::QueryRejection),
     #[error("Authentication error: {0}")]
     Auth(#[from] AuthError),
     #[error("Not implemented")]
@@ -45,6 +47,9 @@ impl IntoResponse for AppError {
             ),
             AppError::JsonRejection(json_error) => {
                 (StatusCode::BAD_REQUEST, json_error.to_string())
+            }
+            AppError::QueryRejection(query_error) => {
+                (StatusCode::BAD_REQUEST, query_error.to_string())
             }
             AppError::Auth(auth_error) => (auth_error.status_code(), auth_error.to_string()),
             AppError::NotImplemented => (StatusCode::NOT_IMPLEMENTED, self.to_string()),

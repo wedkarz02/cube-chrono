@@ -8,16 +8,6 @@ use axum::{Extension, Json, Router};
 use mongodb::bson::Uuid;
 use std::sync::Arc;
 
-pub fn create_routes(state: Arc<AppState>) -> Router {
-    Router::new()
-        .route("/", get(get_all))
-        .route("/", post(create))
-        .route("/{id}", get(get_one))
-        .route("/{id}", put(update))
-        .route("/{id}", delete(delete_one))
-        .layer(Extension(state))
-}
-
 async fn get_all(
     Extension(_state): Extension<Arc<AppState>>,
 ) -> Result<impl IntoResponse, AppError> {
@@ -56,4 +46,14 @@ async fn delete_one(
 ) -> Result<impl IntoResponse, AppError> {
     Err::<AppError, _>(AppError::NotImplemented)
     // TODO: delete a single event by id (should be authorized)
+}
+
+pub fn create_routes(state: Arc<AppState>) -> Router {
+    Router::new()
+        .route("/", get(get_all))
+        .route("/", post(create))
+        .route("/{id}", get(get_one))
+        .route("/{id}", put(update))
+        .route("/{id}", delete(delete_one))
+        .layer(Extension(state))
 }
