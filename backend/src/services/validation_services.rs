@@ -1,7 +1,7 @@
 use std::ops::RangeInclusive;
 
 use axum::{
-    extract::{FromRequest, Request},
+    extract::{FromRequest, Query, Request},
     Json,
 };
 use serde::de::DeserializeOwned;
@@ -23,6 +23,23 @@ where
         let Json(value) = Json::<T>::from_request(req, state).await?;
         value.validate()?;
         Ok(ValidatedJson(value))
+    }
+}
+
+#[derive(Debug, Clone, Copy, Default)]
+pub struct ValidatedQuery<T>(pub T);
+
+impl<T, S> FromRequest<S> for ValidatedQuery<T>
+where
+    T: DeserializeOwned + Validate,
+    S: Send + Sync,
+{
+    type Rejection = AppError;
+
+    async fn from_request(req: Request, state: &S) -> Result<Self, Self::Rejection> {
+        let Query(value) = Query::<T>::from_request(req, state).await?;
+        value.validate()?;
+        Ok(ValidatedQuery(value))
     }
 }
 
@@ -79,8 +96,6 @@ pub fn strong_password(value: &str) -> Result<(), ValidationError> {
         PasswordRules::Length(8..=256),
         PasswordRules::CapitalLetter,
         PasswordRules::Digit,
-        // Check for Ascii-only before special characters
-        // (avoid goofy non-Ascii special characters just to be safe)
         PasswordRules::Ascii,
         PasswordRules::SpecialChar,
     ];
