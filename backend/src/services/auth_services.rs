@@ -1,7 +1,6 @@
 use std::sync::Arc;
 
-use super::{get_collection, Collections};
-use crate::services::utils::jwt_utils as jwt;
+use super::{account_services, jwt_services};
 use crate::services::utils::password_utils::{hash_password, verify_password};
 use crate::{
     error::{AppError, AuthError},
@@ -13,16 +12,15 @@ use crate::{
     AppState,
 };
 use axum::{extract::Request, http::header, middleware::Next, response::IntoResponse, Extension};
-use mongodb::{bson::doc, Collection};
 
-const REFRESH_TOKEN_EXPIRY_DURATION: chrono::TimeDelta = chrono::Duration::days(30);
-const ACCESS_TOKEN_EXPIRY_DURATION: chrono::TimeDelta = chrono::Duration::minutes(15);
+const REFRESH_TOKEN_EXPIRATION: chrono::TimeDelta = chrono::Duration::days(30);
+const ACCESS_TOKEN_EXPIRATION: chrono::TimeDelta = chrono::Duration::minutes(15);
 
+// TODO (wedkarz): remove this and just use the "register" service function
 pub async fn create_super_user(state: &Arc<AppState>) -> Result<Account, AppError> {
-    let accounts: Collection<Account> = get_collection(state, Collections::ACCOUNTS);
-    accounts
-        .find_one_and_delete(doc! { "username": "SuperUser" })
-        .await?;
+    if let Some(admin) = account_services::find_by_username(state, "SuperUser").await? {
+        return Ok(admin);
+    }
 
     let superuser = Account::new(
         "SuperUser",
@@ -34,11 +32,11 @@ pub async fn create_super_user(state: &Arc<AppState>) -> Result<Account, AppErro
         &[Role::Admin, Role::User],
     );
 
-    accounts
-        .insert_one(superuser.clone())
-        .await?;
-
-    Ok(superuser)
+    let account_id = superuser.id;
+    account_services::insert(state, superuser).await?;
+    account_services::find_by_id(state, account_id)
+        .await?
+        .ok_or(anyhow::Error::msg("New account not inserted").into())
 }
 
 pub async fn register(
@@ -46,9 +44,7 @@ pub async fn register(
     auth_payload: AuthPayload,
     roles: &[Role],
 ) -> Result<Account, AppError> {
-    let accounts: Collection<Account> = get_collection(state, Collections::ACCOUNTS);
-    if accounts
-        .find_one(doc! { "username": &auth_payload.username })
+    if account_services::find_by_username(state, &auth_payload.username)
         .await?
         .is_some()
     {
@@ -61,23 +57,18 @@ pub async fn register(
         roles,
     );
 
-    accounts
-        .insert_one(new_account.clone())
-        .await?;
-
-    Ok(new_account)
+    let account_id = new_account.id;
+    account_services::insert(state, new_account).await?;
+    account_services::find_by_id(state, account_id)
+        .await?
+        .ok_or(anyhow::Error::msg("New account not inserted").into())
 }
 
 pub async fn login(
     state: &Arc<AppState>,
     auth_payload: AuthPayload,
 ) -> Result<(String, String), AppError> {
-    let accounts: Collection<Account> = get_collection(state, Collections::ACCOUNTS);
-    let refresh_tokens: Collection<RefreshToken> =
-        get_collection(state, Collections::REFRESH_TOKENS);
-
-    let account = accounts
-        .find_one(doc! { "username": &auth_payload.username })
+    let account = account_services::find_by_username(state, &auth_payload.username)
         .await?
         .ok_or(AuthError::InvalidCredentials)?;
 
@@ -85,13 +76,11 @@ pub async fn login(
         return Err(AuthError::InvalidCredentials.into());
     }
 
-    let access_token = jwt::generate_token(
+    let access_token = jwt_services::generate_token(
         account.id,
         chrono::Utc::now()
-            .checked_add_signed(ACCESS_TOKEN_EXPIRY_DURATION)
-            .ok_or(AppError::Internal(anyhow::Error::msg(
-                "Failed to create access token",
-            )))?
+            .checked_add_signed(ACCESS_TOKEN_EXPIRATION)
+            .ok_or(anyhow::Error::msg("Failed to create access token"))?
             .timestamp(),
         &state
             .env
@@ -99,16 +88,14 @@ pub async fn login(
     )?;
 
     let refresh_token_expiry_timestamp = chrono::Utc::now()
-        .checked_add_signed(REFRESH_TOKEN_EXPIRY_DURATION)
-        .ok_or(AppError::Internal(anyhow::Error::msg(
-            "Failed to create refresh token",
-        )))?
+        .checked_add_signed(REFRESH_TOKEN_EXPIRATION)
+        .ok_or(anyhow::Error::msg("Failed to create refresh token"))?
         .timestamp();
 
     let refresh_token = RefreshToken::new(
         account.id,
         refresh_token_expiry_timestamp,
-        &jwt::generate_token(
+        &jwt_services::generate_token(
             account.id,
             refresh_token_expiry_timestamp,
             &state
@@ -117,36 +104,34 @@ pub async fn login(
         )?,
     );
 
-    refresh_tokens
-        .insert_one(&refresh_token)
-        .await?;
+    let refresh_out = refresh_token
+        .token
+        .clone();
+    jwt_services::insert_refresh(state, refresh_token).await?;
 
-    Ok((access_token, refresh_token.token))
+    Ok((access_token, refresh_out))
 }
 
-pub async fn refresh(state: &Arc<AppState>, refresh_token: String) -> Result<String, AppError> {
-    let refresh_tokens: Collection<RefreshToken> =
-        get_collection(state, Collections::REFRESH_TOKENS);
-
-    refresh_tokens
-        .find_one(doc! { "token": &refresh_token })
+pub async fn refresh(state: &Arc<AppState>, refresh_token: &str) -> Result<String, AppError> {
+    if jwt_services::find_refresh_by_token(state, &refresh_token)
         .await?
-        .ok_or(AuthError::TokenInvalid)?;
+        .is_none()
+    {
+        return Err(AuthError::TokenInvalid.into());
+    }
 
-    let claims = jwt::decode_token(
+    let claims = jwt_services::decode_token(
         &refresh_token,
         &state
             .env
             .jwt_secret,
     )?;
 
-    let access_token = jwt::generate_token(
+    let access_token = jwt_services::generate_token(
         claims.sub,
         chrono::Utc::now()
-            .checked_add_signed(ACCESS_TOKEN_EXPIRY_DURATION)
-            .ok_or(AppError::Internal(anyhow::Error::msg(
-                "Failed to create access token",
-            )))?
+            .checked_add_signed(ACCESS_TOKEN_EXPIRATION)
+            .ok_or(anyhow::Error::msg("Failed to create access token"))?
             .timestamp(),
         &state
             .env
@@ -156,12 +141,8 @@ pub async fn refresh(state: &Arc<AppState>, refresh_token: String) -> Result<Str
     Ok(access_token)
 }
 
-pub async fn logout(state: &Arc<AppState>, refresh_token: String) -> Result<String, AppError> {
-    let refresh_tokens: Collection<RefreshToken> =
-        get_collection(state, Collections::REFRESH_TOKENS);
-
-    let deleted_count = refresh_tokens
-        .delete_one(doc! { "token": &refresh_token })
+pub async fn logout(state: &Arc<AppState>, refresh_token: &str) -> Result<String, AppError> {
+    let deleted_count = jwt_services::delete_refresh_by_token(state, refresh_token)
         .await?
         .deleted_count;
 
@@ -174,11 +155,9 @@ pub async fn logout(state: &Arc<AppState>, refresh_token: String) -> Result<Stri
 
 pub async fn revoke_all_refresh_tokens(
     state: &Arc<AppState>,
-    username: String,
+    username: &str,
 ) -> Result<u64, AppError> {
-    let accounts: Collection<Account> = get_collection(state, Collections::ACCOUNTS);
-    let account = accounts
-        .find_one(doc! { "username": &username })
+    let account = account_services::find_by_username(state, username)
         .await?
         .ok_or(AuthError::InvalidCredentials)?;
 
@@ -187,12 +166,10 @@ pub async fn revoke_all_refresh_tokens(
         return Err(AuthError::InvalidCredentials.into());
     }
 
-    let refresh_tokens: Collection<RefreshToken> =
-        get_collection(state, Collections::REFRESH_TOKENS);
-    Ok(refresh_tokens
-        .delete_many(doc! { "user_id": account.id })
+    let deleted_count = jwt_services::delete_many_refresh_by_user_id(state, account.id)
         .await?
-        .deleted_count)
+        .deleted_count;
+    Ok(deleted_count)
 }
 
 pub async fn auth_guard(
@@ -200,7 +177,6 @@ pub async fn auth_guard(
     mut req: Request,
     next: Next,
 ) -> Result<impl IntoResponse, AppError> {
-    let accounts: Collection<Account> = get_collection(&state, Collections::ACCOUNTS);
     let access_token = req
         .headers()
         .get(header::AUTHORIZATION)
@@ -211,15 +187,14 @@ pub async fn auth_guard(
         .and_then(|v| v.strip_prefix("Bearer "))
         .ok_or(AuthError::Unauthorized)?;
 
-    let claims = jwt::decode_token(
+    let claims = jwt_services::decode_token(
         access_token,
         &state
             .env
             .jwt_secret,
     )?;
 
-    let account = accounts
-        .find_one(doc! { "_id": claims.sub })
+    let account = account_services::find_by_id(&state, claims.sub)
         .await?
         .ok_or(AuthError::InvalidCredentials)?;
 

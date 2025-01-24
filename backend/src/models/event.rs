@@ -1,5 +1,3 @@
-#![allow(unused)]
-
 use mongodb::bson::Uuid;
 use serde::{Deserialize, Serialize};
 
@@ -18,6 +16,7 @@ pub struct Event {
     pub participants: Vec<Uuid>,
 }
 
+#[allow(unused)]
 impl Event {
     pub fn new(
         title: &str,

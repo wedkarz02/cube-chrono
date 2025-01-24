@@ -1,5 +1,3 @@
-#![allow(unused)]
-
 use mongodb::bson::Uuid;
 use serde::{Deserialize, Serialize};
 
@@ -20,6 +18,7 @@ pub struct Session {
     pub times: Vec<Time>,
 }
 
+#[allow(unused)]
 impl Session {
     pub fn new(account_id: Uuid, times: &[Time]) -> Session {
         Session {

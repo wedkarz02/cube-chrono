@@ -9,7 +9,7 @@ use serde::Deserialize;
 use validator::Validate;
 
 use crate::error::AppError;
-use crate::models::account::Role;
+use crate::models::account::{AccountDto, Role};
 use crate::services::validation_services::ValidatedJson;
 use crate::services::{self, validation_services};
 use crate::AppState;
@@ -23,23 +23,19 @@ pub struct AuthPayload {
     pub password: String,
 }
 
-#[derive(Deserialize)]
-pub struct RefreshPayload {
-    pub refresh_token: String,
-}
-
 async fn register(
     Extension(state): Extension<Arc<AppState>>,
     ValidatedJson(payload): ValidatedJson<AuthPayload>,
 ) -> Result<impl IntoResponse, AppError> {
     let new_account = services::auth_services::register(&state, payload, &[Role::User]).await?;
+    let acc_dto = AccountDto::from(new_account);
 
     Ok((
         StatusCode::CREATED,
         json!({
             "message": "Account created",
             "paylaod": {
-                "created_account": new_account
+                "created_account": acc_dto,
             }
         }),
     ))
@@ -63,11 +59,16 @@ async fn login(
     ))
 }
 
+#[derive(Deserialize)]
+pub struct RefreshPayload {
+    pub refresh_token: String,
+}
+
 async fn logout(
     Extension(state): Extension<Arc<AppState>>,
     Json(payload): Json<RefreshPayload>,
 ) -> Result<impl IntoResponse, AppError> {
-    let logout_message = services::auth_services::logout(&state, payload.refresh_token).await?;
+    let logout_message = services::auth_services::logout(&state, &payload.refresh_token).await?;
     Ok((StatusCode::OK, json!({ "message": logout_message })))
 }
 
@@ -75,7 +76,7 @@ async fn refresh(
     Extension(state): Extension<Arc<AppState>>,
     Json(payload): Json<RefreshPayload>,
 ) -> Result<impl IntoResponse, AppError> {
-    let access_token = services::auth_services::refresh(&state, payload.refresh_token).await?;
+    let access_token = services::auth_services::refresh(&state, &payload.refresh_token).await?;
     Ok((
         StatusCode::OK,
         json!({
@@ -92,7 +93,7 @@ async fn revoke_all_sessions(
     Json(payload): Json<AuthPayload>,
 ) -> Result<impl IntoResponse, AppError> {
     let revoked_refresh_tokens =
-        services::auth_services::revoke_all_refresh_tokens(&state, payload.username).await?;
+        services::auth_services::revoke_all_refresh_tokens(&state, &payload.username).await?;
     let message = if revoked_refresh_tokens > 0 {
         &format!(
             "Successfully revoked all ({}) sessions",
