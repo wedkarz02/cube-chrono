@@ -38,7 +38,9 @@ async fn register(
         StatusCode::CREATED,
         json!({
             "message": "Account created",
-            "created_account": new_account
+            "paylaod": {
+                "created_account": new_account
+            }
         }),
     ))
 }
@@ -53,8 +55,10 @@ async fn login(
         StatusCode::OK,
         json!({
             "message": "Login successful",
-            "access_token": access_token,
-            "refresh_token": refresh_token
+            "payload": {
+                "access_token": access_token,
+                "refresh_token": refresh_token
+            }
         }),
     ))
 }
@@ -76,7 +80,9 @@ async fn refresh(
         StatusCode::OK,
         json!({
             "message": "Token refreshed",
-            "access_token": access_token
+            "payload": {
+                "access_token": access_token
+            }
         }),
     ))
 }
@@ -99,7 +105,9 @@ async fn revoke_all_sessions(
         StatusCode::OK,
         json!({
             "message": message,
-            "revoked_sessions": revoked_refresh_tokens
+            "payload": {
+                "revoked_sessions": revoked_refresh_tokens
+            }
         }),
     ))
 }

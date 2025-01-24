@@ -61,7 +61,9 @@ pub async fn read_logged(
         StatusCode::OK,
         json!({
             "message": "Account details found",
-            "logged_account": acc_dto
+            "payload": {
+                "logged_account": acc_dto
+            }
         }),
     ))
 }
@@ -85,7 +87,12 @@ pub async fn change_username(
     let update_res = services::account_services::update_account(&state, new_account).await?;
     Ok((
         StatusCode::OK,
-        json!({ "message": "Username updated", "modified_count": update_res.modified_count }),
+        json!({
+            "message": "Username updated",
+            "payload": {
+                "modified_count": update_res.modified_count
+            }
+        }),
     ))
 }
 
@@ -116,8 +123,10 @@ pub async fn change_password(
         StatusCode::OK,
         json!({
             "message": "Password updated, all sessions revoked",
-            "modified_count": update_res.modified_count,
-            // "revoked_sessions": format!("Successfully revoked all ({}) sessions", revoked_count)
+            "paylaod": {
+                "modified_count": update_res.modified_count,
+                // "revoked_sessions": format!("Successfully revoked all ({}) sessions", revoked_count)
+            }
         }),
     ))
 }
