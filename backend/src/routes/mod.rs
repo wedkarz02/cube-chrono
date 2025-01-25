@@ -7,7 +7,9 @@ use crate::AppState;
 
 mod accounts;
 pub mod auth;
+mod events;
 mod hello;
+pub mod scrambles;
 
 pub fn create_routes(state: Arc<AppState>) -> Router {
     Router::new()
@@ -17,5 +19,10 @@ pub fn create_routes(state: Arc<AppState>) -> Router {
             accounts::create_routes(Arc::clone(&state)),
         )
         .nest("/api/v1/auth", auth::create_routes(Arc::clone(&state)))
+        .nest("/api/v1/events", events::create_routes(Arc::clone(&state)))
+        .nest(
+            "/api/v1/scrambles",
+            scrambles::create_routes(Arc::clone(&state)),
+        )
         .layer(TraceLayer::new_for_http())
 }
