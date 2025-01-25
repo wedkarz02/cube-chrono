@@ -109,14 +109,14 @@ pub async fn delete_refresh_by_id(
     Ok(result)
 }
 
-pub async fn delete_many_refresh_by_user_id(
+pub async fn delete_many_refresh_by_account_id(
     state: &Arc<AppState>,
     id: Uuid,
 ) -> Result<DeleteResult, AppError> {
     let refresh_tokens: Collection<RefreshToken> =
         get_collection(state, Collections::REFRESH_TOKENS);
     let result = refresh_tokens
-        .delete_many(doc! { "user_id": id })
+        .delete_many(doc! { "account_id": id })
         .await?;
 
     Ok(result)

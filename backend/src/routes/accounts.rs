@@ -79,7 +79,6 @@ pub struct ChangePasswordPayload {
     old_password: String,
 }
 
-// FIXME (wedkarz): Add session revoking back when that gets fixed.
 pub async fn change_password(
     Extension(state): Extension<Arc<AppState>>,
     Extension(account): Extension<Account>,
@@ -95,12 +94,16 @@ pub async fn change_password(
             .username
             .clone(),
         hashed_password: hash_password(&payload.new_password),
-        roles: account.roles,
+        roles: account
+            .roles
+            .to_owned(),
     };
 
     let update_res = services::account_services::update(&state, new_account).await?;
-    // let revoked_count =
-    //     services::auth_services::revoke_all_refresh_tokens(&state, account.username).await?;
+    let revoked_count =
+        services::auth_services::revoke_all_refresh_tokens(&state, account, &payload.new_password)
+            .await?
+            .deleted_count;
 
     Ok((
         StatusCode::OK,
@@ -108,7 +111,7 @@ pub async fn change_password(
             "message": "Password updated, all sessions revoked",
             "paylaod": {
                 "modified_count": update_res.modified_count,
-                // "revoked_sessions": format!("Successfully revoked all ({}) sessions", revoked_count)
+                "revoked_sessions": format!("Successfully revoked all ({}) sessions", revoked_count)
             }
         }),
     ))

@@ -9,7 +9,7 @@ use serde::Deserialize;
 use validator::Validate;
 
 use crate::error::AppError;
-use crate::models::account::{AccountDto, Role};
+use crate::models::account::{Account, AccountDto, Role};
 use crate::services::validation_services::ValidatedJson;
 use crate::services::{self, validation_services};
 use crate::AppState;
@@ -88,12 +88,21 @@ async fn refresh(
     ))
 }
 
+#[derive(Deserialize, Validate)]
+pub struct PasswordPayload {
+    password: String,
+}
+
 async fn revoke_all_sessions(
     Extension(state): Extension<Arc<AppState>>,
-    Json(payload): Json<AuthPayload>,
+    Extension(account): Extension<Account>,
+    ValidatedJson(payload): ValidatedJson<PasswordPayload>,
 ) -> Result<impl IntoResponse, AppError> {
     let revoked_refresh_tokens =
-        services::auth_services::revoke_all_refresh_tokens(&state, &payload.username).await?;
+        services::auth_services::revoke_all_refresh_tokens(&state, account, &payload.password)
+            .await?
+            .deleted_count;
+
     let message = if revoked_refresh_tokens > 0 {
         &format!(
             "Successfully revoked all ({}) sessions",
@@ -102,6 +111,7 @@ async fn revoke_all_sessions(
     } else {
         "No sessions to revoke"
     };
+
     Ok((
         StatusCode::OK,
         json!({
@@ -114,11 +124,20 @@ async fn revoke_all_sessions(
 }
 
 pub fn create_routes(state: Arc<AppState>) -> Router {
-    Router::new()
+    let public_routes = Router::new()
         .route("/register", post(register))
         .route("/login", post(login))
         .route("/logout", post(logout))
-        .route("/refresh", post(refresh))
+        .route("/refresh", post(refresh));
+
+    let protected_routes = Router::new()
         .route("/revoke-all-sessions", post(revoke_all_sessions))
+        .layer(axum::middleware::from_fn(
+            services::auth_services::auth_guard,
+        ));
+
+    Router::new()
+        .merge(public_routes)
+        .merge(protected_routes)
         .layer(Extension(state))
 }

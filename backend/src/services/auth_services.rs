@@ -12,6 +12,7 @@ use crate::{
     AppState,
 };
 use axum::{extract::Request, http::header, middleware::Next, response::IntoResponse, Extension};
+use mongodb::results::DeleteResult;
 
 const REFRESH_TOKEN_EXPIRATION: chrono::TimeDelta = chrono::Duration::days(30);
 const ACCESS_TOKEN_EXPIRATION: chrono::TimeDelta = chrono::Duration::minutes(15);
@@ -113,7 +114,7 @@ pub async fn login(
 }
 
 pub async fn refresh(state: &Arc<AppState>, refresh_token: &str) -> Result<String, AppError> {
-    if jwt_services::find_refresh_by_token(state, &refresh_token)
+    if jwt_services::find_refresh_by_token(state, refresh_token)
         .await?
         .is_none()
     {
@@ -121,7 +122,7 @@ pub async fn refresh(state: &Arc<AppState>, refresh_token: &str) -> Result<Strin
     }
 
     let claims = jwt_services::decode_token(
-        &refresh_token,
+        refresh_token,
         &state
             .env
             .jwt_secret,
@@ -155,21 +156,15 @@ pub async fn logout(state: &Arc<AppState>, refresh_token: &str) -> Result<String
 
 pub async fn revoke_all_refresh_tokens(
     state: &Arc<AppState>,
-    username: &str,
-) -> Result<u64, AppError> {
-    let account = account_services::find_by_username(state, username)
-        .await?
-        .ok_or(AuthError::InvalidCredentials)?;
-
-    // TODO: fix password verification
-    if !verify_password(&account.hashed_password, &username) {
+    account: Account,
+    password: &str,
+) -> Result<DeleteResult, AppError> {
+    if !verify_password(&account.hashed_password, password) {
         return Err(AuthError::InvalidCredentials.into());
     }
 
-    let deleted_count = jwt_services::delete_many_refresh_by_user_id(state, account.id)
-        .await?
-        .deleted_count;
-    Ok(deleted_count)
+    let deleted_result = jwt_services::delete_many_refresh_by_account_id(state, account.id).await?;
+    Ok(deleted_result)
 }
 
 pub async fn auth_guard(
