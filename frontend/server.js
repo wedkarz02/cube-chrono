@@ -1,5 +1,6 @@
 require('dotenv').config();
 const express = require('express');
+const path = require('path');
 const app = express();
 const flash = require('express-flash');
 const session = require('express-session');
@@ -9,6 +10,7 @@ const cookieParser = require('cookie-parser');
 const profileRoutes = require('./routes/profileRoutes');
 const eventRoutes = require('./routes/eventRoutes');
 const rankingRoutes = require('./routes/rankingRoutes');
+const adminRoutes = require('./routes/adminRoutes');
 const { getCookieByName, ensureAuthenticated, ensureNotAuthenticated } = require('./utils');
 
 app.use(express.json());
@@ -21,12 +23,13 @@ app.use((_req, res, next) => {
   res.set("Cache-Control", "no-store, no-cache, must-revalidate, private");
   next();
 });
-
+app.use(express.static(path.join(__dirname, 'public')));
 const apiURL = new URL("http://localhost:8080/api/v1/");
 
 app.use('/', profileRoutes);
 app.use('/', eventRoutes);
 app.use('/', rankingRoutes);
+app.use('/', adminRoutes);
 
 app.get('/', async (req, res) => {
   const access_token = getCookieByName("access_token", req.cookies);
@@ -35,7 +38,6 @@ app.get('/', async (req, res) => {
     const result = await getUser(req, res, access_token);
     if (result.status === 200) {
       logged = true;
-      //console.log("ZALOGOWANY")
     } else {
       logged = false;
     }
@@ -47,7 +49,7 @@ app.get('/', async (req, res) => {
 
 async function getUser(req, res, access_token) {
   const token = "Bearer ".concat(access_token);
-  const result = await fetch("http://localhost:8080/api/v1/profiles", {
+  const result = await fetch("http://localhost:8080/api/v1/profiles/logged", {
     method: 'GET',
     headers: {
       'Accept': 'application/json',
@@ -144,5 +146,10 @@ app.post('/register', async (req, res) => {
     res.send(jsonResult);
   //dodać automatyczne logowanie po rejestracji.
 })
+
+app.use('/script.js', (req, res, next) => {
+  res.setHeader('Content-Type', 'application/javascript');
+  next();
+});
 
 app.listen(3000)

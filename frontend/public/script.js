@@ -24,7 +24,7 @@ function formatTime(ms) {
 // Start Timer
 startButton.addEventListener('click', () => {
     if (!timerInterval) {
-        startTime = Date.now() - elapsedTime;
+        startTime = Date.now();
         timerInterval = setInterval(() => {
             elapsedTime = Date.now() - startTime;
             const { hours, minutes, seconds, milliseconds } = formatTime(elapsedTime);
@@ -37,9 +37,34 @@ startButton.addEventListener('click', () => {
 });
 
 // Stop Timer
-stopButton.addEventListener('click', () => {
+stopButton.addEventListener('click', async () => {
     clearInterval(timerInterval);
     timerInterval = null;
+
+    const data = {
+        millis: elapsedTime
+        //user: 
+    };
+
+    try {
+        const response = await fetch('/solveTime', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data)
+        });
+
+        if (response.status == 200) {
+            alert(`Ukończono w ${elapsedTime} milisekund!`);
+        } else {
+            alert('Błąd zapisu!');
+        }
+    } catch (error) {
+        console.error('Błąd połączenia:', error);
+        alert('Wystąpił błąd połączenia z serwerem.');
+    }
+
 });
 
 // Reset Timer

@@ -13,7 +13,7 @@ let fetch;
     const access_token = getCookieByName("access_token", req.cookies);
     if (access_token !== null) {
       const token = "Bearer ".concat(access_token);
-      const result = await fetch("http://localhost:8080/api/v1/profiles", {
+      const result = await fetch("http://localhost:8080/api/v1/profiles/logged", {
         method: 'GET',
         headers: {
           'Accept': 'application/json',
@@ -34,25 +34,63 @@ let fetch;
     }
   });
 
-  router.put('/myprofile', ensureAuthenticated, async (req, res) => {
+  router.put('/password', ensureAuthenticated, async (req, res) => {
     const access_token = getCookieByName("access_token", req.cookies);
     if (access_token !== null) {
+      const data = {
+        new_password: new_password,
+        old_password: old_password
+      };
+
       const token = "Bearer ".concat(access_token);
-      const result = await fetch("http://localhost:8080/api/v1/profiles", {
-        method: 'GET',
+      const result = await fetch("http://localhost:8080/api/v1/profiles/logged/change-password", {
+        method: 'PUT',
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
           'Authorization': token
-        }
+        },
+        body: JSON.stringify(data)
       });
 
-      if (result.status == 403) {
-        res.redirect('/');
-      } else {
-        const jsonResult = await result.json();
-        const userID = jsonResult.logged_account._id;
-        //....
+      const jsonResult = await result.json();
+      if (result.status === 200) {
+                
+      } else if (result.status === 400) {
+
+      } else if (result.status === 401) {
+
+      }
+    } else {
+      res.redirect('/');
+    }
+  });
+
+  router.put('/username', ensureAuthenticated, async (req, res) => {
+    const access_token = getCookieByName("access_token", req.cookies);
+    if (access_token !== null) {
+      const data = {
+        username: username
+      };
+
+      const token = "Bearer ".concat(access_token);
+      const result = await fetch("http://localhost:8080/api/v1/profiles/logged/change-username", {
+        method: 'PUT',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': token
+        },
+        body: JSON.stringify(data)
+      });
+
+      const jsonResult = await result.json();
+      if (result.status === 200) {
+                
+      } else if (result.status === 400) {
+
+      } else if (result.status === 401) {
+        
       }
     } else {
       res.redirect('/');
