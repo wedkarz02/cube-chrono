@@ -6,7 +6,11 @@ use mongodb::{
     Collection,
 };
 
-use crate::{error::AppError, models::session::Session, AppState};
+use crate::{
+    error::AppError,
+    models::session::{Session, Time},
+    AppState,
+};
 
 use super::{get_collection, Collections};
 
@@ -35,4 +39,13 @@ pub async fn find_by_id_and_account_id(
         .await?;
 
     Ok(result)
+}
+
+pub async fn insert(
+    state: &Arc<AppState>,
+    account_id: Uuid,
+    time: Time,
+    // ) -> Result<InsertOneResult, AppError> {
+) -> Result<(), AppError> {
+    Ok(())
 }

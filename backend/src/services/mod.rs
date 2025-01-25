@@ -7,6 +7,7 @@ use crate::AppState;
 pub mod account_services;
 pub mod auth_services;
 pub mod jwt_services;
+pub mod scramble_services;
 pub mod session_services;
 pub mod utils;
 pub mod validation_services;
