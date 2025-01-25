@@ -65,7 +65,7 @@ pub async fn run(config: Config) -> anyhow::Result<()> {
         env: config,
     });
 
-    let superuser = services::auth_services::register(
+    match services::auth_services::register(
         &Arc::clone(&state),
         routes::auth::AuthPayload {
             username: "SuperUser".to_owned(),
@@ -76,14 +76,21 @@ pub async fn run(config: Config) -> anyhow::Result<()> {
         },
         &[models::account::Role::Admin, models::account::Role::User],
     )
-    .await?;
-    tracing::info!(
-        "SuperUser initialized with: (username: {}, password: {})",
-        superuser.username,
-        &state
-            .env
-            .superuser_password
-    );
+    .await
+    {
+        Ok(_) => tracing::info!(
+            "SuperUser initialized with: (username: SuperUser, password: {})",
+            &state
+                .env
+                .superuser_password
+        ),
+        Err(_) => tracing::info!(
+            "SuperUser already exists with credentials: (username: SuperUser, password: {})",
+            &state
+                .env
+                .superuser_password
+        ),
+    }
 
     let addr: SocketAddr = format!(
         "127.0.0.1:{}",

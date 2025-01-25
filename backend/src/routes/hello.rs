@@ -22,7 +22,7 @@ pub struct JsonRequest {
     message: String,
 }
 
-pub async fn hello_world(Json(body): Json<JsonRequest>) -> impl IntoResponse {
+async fn hello_world(Json(body): Json<JsonRequest>) -> impl IntoResponse {
     (
         StatusCode::OK,
         json!({
@@ -34,14 +34,14 @@ pub async fn hello_world(Json(body): Json<JsonRequest>) -> impl IntoResponse {
     )
 }
 
-pub async fn secret_route(Extension(account): Extension<Account>) -> impl IntoResponse {
+async fn secret_route(Extension(account): Extension<Account>) -> impl IntoResponse {
     (
         StatusCode::IM_A_TEAPOT,
         json!({ "message": format!("Hello {}, I'm a teapot!", account.username) }),
     )
 }
 
-pub async fn throw_internal(
+async fn throw_internal(
     Extension(state): Extension<Arc<AppState>>,
     Extension(account): Extension<Account>,
 ) -> Result<impl IntoResponse, AppError> {
