@@ -1,5 +1,3 @@
-#![allow(unused)]
-
 use axum::{extract::rejection, http::StatusCode, response::IntoResponse};
 use axum_extra::json;
 
@@ -15,6 +13,7 @@ macro_rules! impl_internal_from {
     };
 }
 
+#[allow(unused)]
 #[derive(Debug, thiserror::Error)]
 pub enum AppError {
     #[error("Not found")]
@@ -25,6 +24,8 @@ pub enum AppError {
     JsonRejection(#[from] rejection::JsonRejection),
     #[error("Query rejection error: {0}")]
     QueryRejection(#[from] rejection::QueryRejection),
+    #[error("Path rejection error: {0}")]
+    PathRejection(#[from] rejection::PathRejection),
     #[error("Authentication error: {0}")]
     Auth(#[from] AuthError),
     #[error("Not implemented")]
@@ -52,6 +53,9 @@ impl IntoResponse for AppError {
             }
             AppError::QueryRejection(query_error) => {
                 (StatusCode::BAD_REQUEST, query_error.to_string())
+            }
+            AppError::PathRejection(path_error) => {
+                (StatusCode::BAD_REQUEST, path_error.to_string())
             }
             AppError::Auth(auth_error) => (auth_error.status_code(), auth_error.to_string()),
             AppError::NotImplemented => (StatusCode::NOT_IMPLEMENTED, self.to_string()),

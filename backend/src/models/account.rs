@@ -46,3 +46,20 @@ impl Account {
             })
     }
 }
+
+#[derive(Deserialize, Serialize)]
+pub struct AccountDto {
+    pub id: Uuid,
+    pub username: String,
+    pub roles: Vec<Role>,
+}
+
+impl AccountDto {
+    pub fn from(acc: Account) -> AccountDto {
+        AccountDto {
+            id: acc.id,
+            username: acc.username,
+            roles: acc.roles,
+        }
+    }
+}

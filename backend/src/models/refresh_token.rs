@@ -6,6 +6,7 @@ pub struct RefreshToken {
     #[serde(rename = "_id")]
     pub id: Uuid,
     pub account_id: Uuid,
+    // NOTE (wedkarz): Maybe remove this, doesn't seem useful
     pub expiry_timestamp: i64,
     pub token: String,
 }

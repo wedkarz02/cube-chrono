@@ -1,7 +1,8 @@
 use std::ops::RangeInclusive;
 
 use axum::{
-    extract::{FromRequest, Query, Request},
+    extract::{FromRequest, FromRequestParts, Path, Query, Request},
+    http::request::Parts,
     Json,
 };
 use serde::de::DeserializeOwned;
@@ -40,6 +41,22 @@ where
         let Query(value) = Query::<T>::from_request(req, state).await?;
         value.validate()?;
         Ok(ValidatedQuery(value))
+    }
+}
+
+#[derive(Debug, Clone, Copy, Default)]
+pub struct ValidatedPath<T>(pub T);
+
+impl<T> FromRequestParts<()> for ValidatedPath<T>
+where
+    T: DeserializeOwned + Validate + Send,
+{
+    type Rejection = AppError;
+
+    async fn from_request_parts(parts: &mut Parts, _: &()) -> Result<Self, Self::Rejection> {
+        let Path(value) = Path::<T>::from_request_parts(parts, &()).await?;
+        value.validate()?;
+        Ok(ValidatedPath(value))
     }
 }
 

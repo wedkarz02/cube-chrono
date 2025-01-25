@@ -27,7 +27,9 @@ pub async fn hello_world(Json(body): Json<JsonRequest>) -> impl IntoResponse {
         StatusCode::OK,
         json!({
             "message": body.message,
-            "message_from_server": "Hello there traveller"
+            "payload": {
+                "message_from_server": "Hello there traveller"
+            }
         }),
     )
 }
