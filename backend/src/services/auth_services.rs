@@ -4,41 +4,12 @@ use super::{account_services, jwt_services};
 use crate::services::utils::password_utils::{hash_password, verify_password};
 use crate::{
     error::{AppError, AuthError},
-    models::{
-        account::{Account, Role},
-        refresh_token::RefreshToken,
-    },
+    models::account::{Account, Role},
     routes::auth::AuthPayload,
     AppState,
 };
 use axum::{extract::Request, http::header, middleware::Next, response::IntoResponse, Extension};
 use mongodb::results::DeleteResult;
-
-const REFRESH_TOKEN_EXPIRATION: chrono::TimeDelta = chrono::Duration::days(30);
-const ACCESS_TOKEN_EXPIRATION: chrono::TimeDelta = chrono::Duration::minutes(15);
-
-// TODO (wedkarz): remove this and just use the "register" service function
-pub async fn create_super_user(state: &Arc<AppState>) -> Result<Account, AppError> {
-    if let Some(admin) = account_services::find_by_username(state, "SuperUser").await? {
-        return Ok(admin);
-    }
-
-    let superuser = Account::new(
-        "SuperUser",
-        &hash_password(
-            &state
-                .env
-                .superuser_password,
-        ),
-        &[Role::Admin, Role::User],
-    );
-
-    let account_id = superuser.id;
-    account_services::insert(state, superuser).await?;
-    account_services::find_by_id(state, account_id)
-        .await?
-        .ok_or(anyhow::Error::msg("New account not inserted").into())
-}
 
 pub async fn register(
     state: &Arc<AppState>,
@@ -77,40 +48,22 @@ pub async fn login(
         return Err(AuthError::InvalidCredentials.into());
     }
 
-    let access_token = jwt_services::generate_token(
+    let (access_token, refresh_token) = jwt_services::generate_pair(
         account.id,
-        chrono::Utc::now()
-            .checked_add_signed(ACCESS_TOKEN_EXPIRATION)
-            .ok_or(anyhow::Error::msg("Failed to create access token"))?
-            .timestamp(),
         &state
             .env
-            .jwt_secret,
+            .jwt_access_secret,
+        &state
+            .env
+            .jwt_refresh_secret,
     )?;
 
-    let refresh_token_expiry_timestamp = chrono::Utc::now()
-        .checked_add_signed(REFRESH_TOKEN_EXPIRATION)
-        .ok_or(anyhow::Error::msg("Failed to create refresh token"))?
-        .timestamp();
-
-    let refresh_token = RefreshToken::new(
-        account.id,
-        refresh_token_expiry_timestamp,
-        &jwt_services::generate_token(
-            account.id,
-            refresh_token_expiry_timestamp,
-            &state
-                .env
-                .jwt_secret,
-        )?,
-    );
-
-    let refresh_out = refresh_token
+    let refresh_out_token = refresh_token
         .token
         .clone();
     jwt_services::insert_refresh(state, refresh_token).await?;
 
-    Ok((access_token, refresh_out))
+    Ok((access_token, refresh_out_token))
 }
 
 pub async fn refresh(state: &Arc<AppState>, refresh_token: &str) -> Result<String, AppError> {
@@ -125,18 +78,18 @@ pub async fn refresh(state: &Arc<AppState>, refresh_token: &str) -> Result<Strin
         refresh_token,
         &state
             .env
-            .jwt_secret,
+            .jwt_refresh_secret,
     )?;
 
     let access_token = jwt_services::generate_token(
         claims.sub,
         chrono::Utc::now()
-            .checked_add_signed(ACCESS_TOKEN_EXPIRATION)
+            .checked_add_signed(jwt_services::ACCESS_TOKEN_EXPIRATION)
             .ok_or(anyhow::Error::msg("Failed to create access token"))?
             .timestamp(),
         &state
             .env
-            .jwt_secret,
+            .jwt_access_secret,
     )?;
 
     Ok(access_token)
@@ -186,7 +139,7 @@ pub async fn auth_guard(
         access_token,
         &state
             .env
-            .jwt_secret,
+            .jwt_access_secret,
     )?;
 
     let account = account_services::find_by_id(&state, claims.sub)

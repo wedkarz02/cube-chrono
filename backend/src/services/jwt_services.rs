@@ -13,6 +13,9 @@ use crate::AppState;
 
 use super::{get_collection, Collections};
 
+pub const REFRESH_TOKEN_EXPIRATION: chrono::TimeDelta = chrono::Duration::days(30);
+pub const ACCESS_TOKEN_EXPIRATION: chrono::TimeDelta = chrono::Duration::minutes(15);
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Claims {
     pub sub: Uuid,
@@ -39,6 +42,34 @@ pub fn decode_token(token: &str, secret: &str) -> Result<Claims, AppError> {
     })?;
 
     Ok(token_data.claims)
+}
+
+pub fn generate_pair(
+    sub: Uuid,
+    access_secret: &str,
+    refresh_secret: &str,
+) -> Result<(String, RefreshToken), AppError> {
+    let access_token = generate_token(
+        sub,
+        chrono::Utc::now()
+            .checked_add_signed(ACCESS_TOKEN_EXPIRATION)
+            .ok_or(anyhow::Error::msg("Failed to create access token"))?
+            .timestamp(),
+        access_secret,
+    )?;
+
+    let refresh_expiration_timestamp = chrono::Utc::now()
+        .checked_add_signed(REFRESH_TOKEN_EXPIRATION)
+        .ok_or(anyhow::Error::msg("Failed to create refresh token"))?
+        .timestamp();
+
+    let refresh_token = RefreshToken::new(
+        sub,
+        refresh_expiration_timestamp,
+        &generate_token(sub, refresh_expiration_timestamp, refresh_secret)?,
+    );
+
+    Ok((access_token, refresh_token))
 }
 
 pub async fn insert_refresh(
