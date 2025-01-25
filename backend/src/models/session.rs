@@ -15,15 +15,16 @@ pub struct Session {
     #[serde(rename = "_id")]
     pub id: Uuid,
     pub account_id: Uuid,
+    pub name: String,
     pub times: Vec<Time>,
 }
 
-#[allow(unused)]
 impl Session {
-    pub fn new(account_id: Uuid, times: &[Time]) -> Session {
+    pub fn new(account_id: Uuid, name: &str, times: &[Time]) -> Session {
         Session {
             id: Uuid::new(),
             account_id,
+            name: name.to_owned(),
             times: times.to_owned(),
         }
     }

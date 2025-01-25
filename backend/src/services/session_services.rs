@@ -3,6 +3,7 @@ use std::sync::Arc;
 use futures::TryStreamExt;
 use mongodb::{
     bson::{doc, Uuid},
+    results::{InsertOneResult, UpdateResult},
     Collection,
 };
 
@@ -41,11 +42,43 @@ pub async fn find_by_id_and_account_id(
     Ok(result)
 }
 
-pub async fn insert(
+pub async fn create(state: &Arc<AppState>, session: Session) -> Result<InsertOneResult, AppError> {
+    let sessions: Collection<Session> = get_collection(state, Collections::SESSIONS);
+    let result = sessions
+        .insert_one(session)
+        .await?;
+
+    Ok(result)
+}
+
+pub async fn update_by_id_and_account_id(
     state: &Arc<AppState>,
     account_id: Uuid,
+    id: Uuid,
+    body: Session,
+) -> Result<UpdateResult, AppError> {
+    let sessions: Collection<Session> = get_collection(state, Collections::SESSIONS);
+    let result = sessions
+        .replace_one(doc! { "_id": id, "account_id": account_id }, body)
+        .await?;
+
+    Ok(result)
+}
+
+pub async fn insert_time(
+    state: &Arc<AppState>,
+    account_id: Uuid,
+    id: Uuid,
     time: Time,
-    // ) -> Result<InsertOneResult, AppError> {
-) -> Result<(), AppError> {
-    Ok(())
+) -> Result<UpdateResult, AppError> {
+    let mut session = match find_by_id_and_account_id(state, account_id, id).await? {
+        None => return Err(AppError::NotFound),
+        Some(s) => s,
+    };
+
+    session
+        .times
+        .push(time);
+
+    update_by_id_and_account_id(state, account_id, id, session).await
 }
