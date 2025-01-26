@@ -1,3 +1,5 @@
+const isLoggedIn = document.body.getAttribute('data-is-logged-in') === 'true';
+
 // === TIMER === //
 let timerInterval;
 let startTime;
@@ -11,6 +13,7 @@ const millisecondsDisplay = document.getElementById('milliseconds');
 const startButton = document.getElementById('start');
 const stopButton = document.getElementById('stop');
 const resetButton = document.getElementById('reset');
+// const newSessionButton = document.getElementById('new-session');
 
 // Funkcja formatowania czasu
 function formatTime(ms) {
@@ -20,6 +23,10 @@ function formatTime(ms) {
     const milliseconds = String(ms % 1000).padStart(3, '0');
     return { hours, minutes, seconds, milliseconds };
 }
+
+// newSessionButton.addEventListener('click', () => {
+    
+// });    
 
 // Start Timer
 startButton.addEventListener('click', () => {
@@ -41,30 +48,31 @@ stopButton.addEventListener('click', async () => {
     clearInterval(timerInterval);
     timerInterval = null;
 
-    const data = {
-        millis: elapsedTime
-        //user: 
-    };
+    if (isLoggedIn) {
+        const data = {
+            millis: elapsedTime
+            //user: 
+        };
 
-    try {
-        const response = await fetch('/solveTime', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data)
-        });
+        try {
+            const response = await fetch('/solveTime', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            });
 
-        if (response.status == 200) {
-            alert(`Ukończono w ${elapsedTime} milisekund!`);
-        } else {
-            alert('Błąd zapisu!');
+            if (response.status == 200) {
+                alert(`Ukończono w ${elapsedTime} milisekund!`);
+            } else {
+                alert('Błąd zapisu!');
+            }
+        } catch (error) {
+            console.error('Błąd połączenia:', error);
+            alert('Wystąpił błąd połączenia z serwerem.');
         }
-    } catch (error) {
-        console.error('Błąd połączenia:', error);
-        alert('Wystąpił błąd połączenia z serwerem.');
-    }
-
+    }    
 });
 
 // Reset Timer
@@ -82,33 +90,37 @@ resetButton.addEventListener('click', () => {
 const scrambleDisplay = document.getElementById('scramble-display');
 const scrambleButton = document.getElementById('generate-scramble');
 
-// Generowanie scramble z zasadami WCA
-function generateScramble() {
-    const moves = ["U", "D", "L", "R", "F", "B"];
-    const modifiers = ["", "'", "2"];
-    let scramble = [];
-    let previousMove = null;
+async function generateScramble(kind, count) {
+    // try {
+        const response = await fetch(`http://localhost:8080/api/v1/scrambles?kind=${kind}&count=${count}`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        });
 
-    for (let i = 0; i < 20; i++) {
-        let move;
-        do {
-            move = moves[Math.floor(Math.random() * moves.length)];
-        } while (move === previousMove); // Unikamy powtórzenia tego samego ruchu
+        console.log(response);
+        const jsonResult = await response.json();
+        console.log(jsonResult);
 
-        const modifier = modifiers[Math.floor(Math.random() * modifiers.length)];
-        scramble.push(move + modifier);
-        previousMove = move;
-    }
-
-    return scramble.join(" ");
+        if (response.status == 200) {
+            return jsonResult.payload.scrambles[0].sequence;
+        } else {
+            return jsonResult.message;
+        }
+    // } catch (error) {
+    //     console.error('Błąd połączenia:', error);
+    //     alert('Wystąpił błąd połączenia z serwerem.');
+    // }
 }
 
 // Wyświetlanie scramble na kliknięcie przycisku
-scrambleButton.addEventListener('click', () => {
-    scrambleDisplay.textContent = generateScramble();
+scrambleButton.addEventListener('click', async () => {
+    scrambleDisplay.textContent = await generateScramble("Three", 1);
 });
 
 // Generowanie scramble przy załadowaniu strony
-document.addEventListener('DOMContentLoaded', () => {
-    scrambleDisplay.textContent = generateScramble();
+document.addEventListener('DOMContentLoaded', async () => {
+    scrambleDisplay.textContent = await generateScramble("Three", 1);
 });

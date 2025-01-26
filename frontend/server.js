@@ -112,14 +112,14 @@ app.post('/login', async (req, res) => {
   const jsonResult = await result.json();
   
   if (result.status == 200) {
-    res.cookie('access_token', jsonResult.access_token, {
+    res.cookie('access_token', jsonResult.payload.access_token, {
       httpOnly: true,
       secure: true, 
       maxAge: 1000 * 60 * 15,
       sameSite: 'Strict'
     });
 
-    res.cookie('refresh_token', jsonResult.refresh_token, {
+    res.cookie('refresh_token', jsonResult.payload.refresh_token, {
       httpOnly: true,  
       secure: true,  
       maxAge: 30 * 24 * 60 * 60 * 1000,
@@ -151,5 +151,9 @@ app.use('/script.js', (req, res, next) => {
   res.setHeader('Content-Type', 'application/javascript');
   next();
 });
+
+app.get('/scrambles', (req, res) => {
+
+})
 
 app.listen(3000)

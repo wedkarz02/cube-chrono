@@ -8,7 +8,7 @@
 </head>
 <body>
     <header>
-        <h1>👤 Profil Użytkownika</h1>
+        <h1>👤 Profil Użytkownika <%= username %></h1>
         <div class="auth-links">
             <a href="/">Strona Główna</a>
             <a href="/events">Wydarzenia</a>
@@ -22,14 +22,21 @@
         <!-- Sekcja Informacji Profilowych -->
         <section class="profile-info">
             <h2>📝 Twoje Dane</h2>
-            <form class="form">
+            <form class="form change-password">
+                <label for="old_password">Stare hasło:</label>
+                <input type="password" id="old_password">
+            
+                <label for="new_password">Nowe hasło:</label>
+                <input type="password" id="new_password">
+                
+                <button type="submit">Zmień hasło</button>
+            </form>
+            
+            <form class="form change-username">
                 <label for="username">Nazwa użytkownika:</label>
                 <input type="text" id="username" value=<%= username %> required>
                 
-                <label for="password">Nowe hasło:</label>
-                <input type="password" id="password">
-                
-                <button type="submit">Zapisz zmiany</button>
+                <button type="submit">Zmień nazwę użytkownika</button>
             </form>
         </section>
 
@@ -71,9 +78,67 @@
     </footer>
 
     <script>
-        document.querySelector('.form').addEventListener('submit', (e) => {
+        document.querySelector('.change-password').addEventListener('submit', async (e) => {
             e.preventDefault();
-            alert('Zmiany zostały zapisane!');
+            const old_password = document.getElementById('old_password').value;
+            const new_password = document.getElementById('new_password').value;
+            const data = {
+                new_password: new_password,
+                old_password: old_password
+            };
+
+            try {
+                const result = await fetch("/password", {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const jsonResult = await result.json();
+
+                if (result.status === 200) {
+                    window.location.href = '/login';
+                } else if (result.status === 400 || result.status === 401) {
+                    alert(jsonResult.message || 'Dane są niepoprawne!');
+                } else {
+                    alert(jsonResult.message || 'Błąd komunikacji z serwerem!');
+                }
+            } catch (error) {
+                alert('Błąd przy próbie połączenia z serwerem.');
+                console.error(error);
+            }
+        });
+
+        document.querySelector('.change-username').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const data = {
+                username: username
+            };
+
+            try {
+                const result = await fetch("/username", {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (result.status === 200) {
+                    location.reload();
+                    alert('Zmieniono nazwę użytkownika!');
+                } else if (result.status === 400 || result.status === 401) {
+                    alert(responseBody.message || 'Dane są niepoprawne!');
+                } else {
+                    alert(responseBody.message || 'Błąd komunikacji z serwerem!');
+                }
+            } catch (error) {
+                alert('Błąd przy próbie połączenia z serwerem.');
+                console.error(error);
+            }
         });
     </script>
 </body>

@@ -26,7 +26,7 @@ let fetch;
         res.redirect('/');
       } else {
         const jsonResult = await result.json();
-        const username = jsonResult.logged_account.username;
+        const username = jsonResult.payload.logged_account.username;
         res.render('profile.ejs', { username: username });
       }
     } else {
@@ -37,66 +37,68 @@ let fetch;
   router.put('/password', ensureAuthenticated, async (req, res) => {
     const access_token = getCookieByName("access_token", req.cookies);
     if (access_token !== null) {
-      const data = {
-        new_password: new_password,
-        old_password: old_password
-      };
-
       const token = "Bearer ".concat(access_token);
-      const result = await fetch("http://localhost:8080/api/v1/profiles/logged/change-password", {
-        method: 'PUT',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'Authorization': token
-        },
-        body: JSON.stringify(data)
-      });
-
-      const jsonResult = await result.json();
-      if (result.status === 200) {
-                
-      } else if (result.status === 400) {
-
-      } else if (result.status === 401) {
-
+      
+      try {
+        const result = await fetch("http://localhost:8080/api/v1/profiles/logged/change-password", {
+          method: 'PUT',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': token
+          },
+          body: JSON.stringify(req.body)
+        });
+        
+        if (result.ok) {
+          res.clearCookie('access_token');
+          res.clearCookie('refresh_token');
+          const jsonResult = await result.json();
+          res.json(jsonResult);
+        } else {
+          const errorResponse = await result.json();
+          res.status(result.status).json(errorResponse);
+        }
+      } catch (error) {
+        res.status(500).json({ message: 'Wystąpił problem z przetwarzaniem zapytania.', error: error.message });
       }
     } else {
       res.redirect('/');
     }
   });
+  
 
   router.put('/username', ensureAuthenticated, async (req, res) => {
     const access_token = getCookieByName("access_token", req.cookies);
     if (access_token !== null) {
-      const data = {
-        username: username
-      };
-
       const token = "Bearer ".concat(access_token);
-      const result = await fetch("http://localhost:8080/api/v1/profiles/logged/change-username", {
-        method: 'PUT',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'Authorization': token
-        },
-        body: JSON.stringify(data)
-      });
-
-      const jsonResult = await result.json();
-      if (result.status === 200) {
-                
-      } else if (result.status === 400) {
-
-      } else if (result.status === 401) {
-        
+      
+      try {
+        const result = await fetch("http://localhost:8080/api/v1/profiles/logged/change-username", {
+          method: 'PUT',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': token
+          },
+          body: JSON.stringify(req.body)
+        });
+  
+        if (result.ok) {
+          const jsonResult = await result.json();
+          res.json(jsonResult);
+        } else {
+          const errorResponse = await result.json();
+          res.status(result.status).json(errorResponse);
+        }
+      } catch (error) {
+        res.status(500).json({ message: 'Wystąpił problem z przetwarzaniem zapytania.', error: error.message });
       }
     } else {
       res.redirect('/');
     }
   });
-
+  
 })();
 
 module.exports = router;
