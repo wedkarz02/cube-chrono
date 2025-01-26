@@ -1,5 +1,9 @@
 const isLoggedIn = document.body.getAttribute('data-is-logged-in') === 'true';
 
+let globalKind;
+let globalSequence;
+let sessionID;
+
 // === TIMER === //
 let timerInterval;
 let startTime;
@@ -13,7 +17,7 @@ const millisecondsDisplay = document.getElementById('milliseconds');
 const startButton = document.getElementById('start');
 const stopButton = document.getElementById('stop');
 const resetButton = document.getElementById('reset');
-// const newSessionButton = document.getElementById('new-session');
+const newSessionButton = document.getElementById('new-session');
 
 // Funkcja formatowania czasu
 function formatTime(ms) {
@@ -24,9 +28,37 @@ function formatTime(ms) {
     return { hours, minutes, seconds, milliseconds };
 }
 
-// newSessionButton.addEventListener('click', () => {
+if (newSessionButton !== null) {
+    newSessionButton.addEventListener('click', async () => {
+        let sessionName = "Sesja 1";
+        try {
+            const data = {
+                name: sessionName
+            };
     
-// });    
+            const response = await fetch(`http://localhost:3000/new-session`, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+    
+            const jsonResult = await response.json();
+            
+            if (response.ok) {
+                sessionID = jsonResult.payload.session_id;
+                alert('Stworzono nową sesję.');
+            } else {
+                alert(jsonResult.message);
+            }
+        } catch (error) {
+            console.error('Błąd połączenia:', error);
+            alert('Wystąpił błąd połączenia z serwerem.');
+        }
+    });    
+}
 
 // Start Timer
 startButton.addEventListener('click', () => {
@@ -48,14 +80,25 @@ stopButton.addEventListener('click', async () => {
     clearInterval(timerInterval);
     timerInterval = null;
 
-    if (isLoggedIn) {
+    if ((isLoggedIn && sessionID !== undefined && sessionID !== null)) {
+        const scramble = {
+            kind: globalKind,
+            sequence: globalSequence
+        };
+
+        const time = {
+            millis: elapsedTime,
+            recorded_at: Date.now(),
+            scramble: scramble
+        };
+
         const data = {
-            millis: elapsedTime
-            //user: 
+            session_id: sessionID,
+            time: time
         };
 
         try {
-            const response = await fetch('/solveTime', {
+            const response = await fetch('/add-time', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -63,8 +106,10 @@ stopButton.addEventListener('click', async () => {
                 body: JSON.stringify(data)
             });
 
+            const jsonResult = await response.json();
+
             if (response.status == 200) {
-                alert(`Ukończono w ${elapsedTime} milisekund!`);
+                alert(`Zapisano czas w sesji.`);
             } else {
                 alert('Błąd zapisu!');
             }
@@ -91,28 +136,34 @@ const scrambleDisplay = document.getElementById('scramble-display');
 const scrambleButton = document.getElementById('generate-scramble');
 
 async function generateScramble(kind, count) {
-    // try {
-        const response = await fetch(`http://localhost:8080/api/v1/scrambles?kind=${kind}&count=${count}`, {
-            method: 'GET',
+    try {
+        const data = {
+            kind: kind,
+            count: count
+        };
+
+        const response = await fetch(`http://localhost:3000/scrambles`, {
+            method: 'POST',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
-            }
+            },
+            body: JSON.stringify(data)
         });
 
-        console.log(response);
         const jsonResult = await response.json();
-        console.log(jsonResult);
 
         if (response.status == 200) {
+            globalSequence = jsonResult.payload.scrambles[0].sequence;
+            globalKind = kind;
             return jsonResult.payload.scrambles[0].sequence;
         } else {
             return jsonResult.message;
         }
-    // } catch (error) {
-    //     console.error('Błąd połączenia:', error);
-    //     alert('Wystąpił błąd połączenia z serwerem.');
-    // }
+    } catch (error) {
+        console.error('Błąd połączenia:', error);
+        alert('Wystąpił błąd połączenia z serwerem.');
+    }
 }
 
 // Wyświetlanie scramble na kliknięcie przycisku

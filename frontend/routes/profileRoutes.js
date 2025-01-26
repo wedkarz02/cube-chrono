@@ -98,6 +98,49 @@ let fetch;
       res.redirect('/');
     }
   });
+
+  router.get('/all-sessions', await ensureAuthenticated, async (req, res) => {
+    const access_token = getCookieByName("access_token", req.cookies);
+    if (access_token !== null) {
+      const token = "Bearer ".concat(access_token);
+      const result = await fetch("http://localhost:8080/api/v1/sessions", {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': token
+        }
+      });
+
+      const jsonResult = await result.json();
+      res.json(jsonResult);
+
+    } else {
+      res.redirect('/');
+    }
+  });
+
+  router.post('/session', await ensureAuthenticated, async (req, res) => {
+    const access_token = getCookieByName("access_token", req.cookies);
+    if (access_token !== null) {
+      const session_id = req.body.session_id;
+      const token = "Bearer ".concat(access_token);
+      const result = await fetch(`http://localhost:8080/api/v1/sessions/${session_id}`, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': token
+        }
+      });
+
+      const jsonResult = await result.json();
+      res.json(jsonResult);
+
+    } else {
+      res.redirect('/');
+    }
+  });
   
 })();
 

@@ -30,6 +30,10 @@ app.use('/', profileRoutes);
 app.use('/', eventRoutes);
 app.use('/', rankingRoutes);
 app.use('/', adminRoutes);
+app.use('/script.js', (req, res, next) => {
+  res.setHeader('Content-Type', 'application/javascript');
+  next();
+});
 
 app.get('/', async (req, res) => {
   const access_token = getCookieByName("access_token", req.cookies);
@@ -147,13 +151,52 @@ app.post('/register', async (req, res) => {
   //dodać automatyczne logowanie po rejestracji.
 })
 
-app.use('/script.js', (req, res, next) => {
-  res.setHeader('Content-Type', 'application/javascript');
-  next();
-});
+app.post('/scrambles', async (req, res) => {
+  const kind = req.body.kind;
+  const count = req.body.count;
 
-app.get('/scrambles', (req, res) => {
+  const response = await fetch(`http://localhost:8080/api/v1/scrambles?kind=${kind}&count=${count}`, {
+    method: 'GET',
+    headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+    }
+  });
 
+  const jsonResult = await response.json();
+  res.json(jsonResult);
+})
+
+app.post('/new-session', ensureAuthenticated, async (req, res) => {
+  const access_token = getCookieByName("access_token", req.cookies);
+  const token = "Bearer ".concat(access_token);
+  const response = await fetch(`http://localhost:8080/api/v1/sessions/empty`, {
+    method: 'POST',
+    headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': token
+    },
+    body: JSON.stringify(req.body)
+  });
+  const jsonResult = await response.json();
+  res.json(jsonResult);
+})
+
+app.post('/add-time', ensureAuthenticated, async (req, res) => {
+  const access_token = getCookieByName("access_token", req.cookies);
+  const token = "Bearer ".concat(access_token);
+  const response = await fetch(`http://localhost:8080/api/v1/sessions/add-time`, {
+    method: 'POST',
+    headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': token
+    },
+    body: JSON.stringify(req.body)
+  });
+  const jsonResult = await response.json();
+  res.json(jsonResult);
 })
 
 app.listen(3000)
