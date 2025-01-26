@@ -14,14 +14,18 @@ pub struct Config {
     pub mongo_uri: String,
     pub mongo_database: String,
     pub backend_port: u16,
-    pub jwt_secret: String,
+    pub jwt_access_secret: String,
+    pub jwt_refresh_secret: String,
     pub superuser_password: String,
 }
 
 impl Config {
     pub fn init() -> Self {
         let mongo_uri = std::env::var("MONGO_URI").expect("MONGO_URI variable should be set");
-        let jwt_secret = std::env::var("JWT_SECRET").expect("JWT_SECRET variable should be set");
+        let jwt_access_secret =
+            std::env::var("JWT_ACCESS_SECRET").expect("JWT_ACCESS_SECRET variable should be set");
+        let jwt_refresh_secret =
+            std::env::var("JWT_REFRESH_SECRET").expect("JWT_REFRESH_SECRET variable should be set");
         let superuser_password =
             std::env::var("SUPERUSER_PASSWORD").expect("SUPERUSER_PASSWORD variable should be set");
         let mongo_database = std::env::var("MONGO_INITDB_DATABASE")
@@ -35,7 +39,8 @@ impl Config {
             mongo_uri,
             mongo_database,
             backend_port,
-            jwt_secret,
+            jwt_access_secret,
+            jwt_refresh_secret,
             superuser_password,
         }
     }
@@ -60,7 +65,18 @@ pub async fn run(config: Config) -> anyhow::Result<()> {
         env: config,
     });
 
-    let superuser = services::auth_services::create_super_user(&Arc::clone(&state)).await?;
+    let superuser = services::auth_services::register(
+        &Arc::clone(&state),
+        routes::auth::AuthPayload {
+            username: "SuperUser".to_owned(),
+            password: state
+                .env
+                .superuser_password
+                .to_owned(),
+        },
+        &[models::account::Role::Admin, models::account::Role::User],
+    )
+    .await?;
     tracing::info!(
         "SuperUser initialized with: (username: {}, password: {})",
         superuser.username,

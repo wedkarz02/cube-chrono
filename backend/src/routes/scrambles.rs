@@ -1,5 +1,3 @@
-#![allow(unused)]
-
 use std::sync::Arc;
 
 use axum::{response::IntoResponse, routing::get, Extension, Router};
@@ -14,6 +12,7 @@ pub enum ScrambleKind {
     // TODO (wedkarz): Add more puzzles later
 }
 
+#[allow(unused)]
 #[derive(Deserialize, Validate)]
 struct ScrambleQuery {
     kind: ScrambleKind,
