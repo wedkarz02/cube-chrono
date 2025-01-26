@@ -1,5 +1,6 @@
 use std::sync::Arc;
 
+use futures::TryStreamExt;
 use mongodb::{
     bson::{doc, Uuid},
     results::{DeleteResult, InsertOneResult, UpdateResult},
@@ -14,6 +15,17 @@ pub async fn insert(state: &Arc<AppState>, account: Account) -> Result<InsertOne
     let accounts: Collection<Account> = get_collection(state, Collections::ACCOUNTS);
     let result = accounts
         .insert_one(account)
+        .await?;
+
+    Ok(result)
+}
+
+pub async fn find_all(state: &Arc<AppState>) -> Result<Vec<Account>, AppError> {
+    let accounts: Collection<Account> = get_collection(state, Collections::ACCOUNTS);
+    let result: Vec<Account> = accounts
+        .find(doc! {})
+        .await?
+        .try_collect()
         .await?;
 
     Ok(result)

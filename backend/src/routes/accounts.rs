@@ -14,7 +14,7 @@ use crate::{
     error::{AppError, AuthError},
     models::account::{Account, AccountDto, Role},
     services::{
-        self,
+        self, account_services,
         utils::password_utils::{hash_password, verify_password},
         validation_services::{self, ValidatedJson, ValidatedPath},
     },
@@ -143,12 +143,38 @@ async fn delete_by_id(
     ))
 }
 
+async fn get_all_accounts(
+    Extension(state): Extension<Arc<AppState>>,
+    Extension(account): Extension<Account>,
+) -> Result<impl IntoResponse, AppError> {
+    if !account.has_role(Role::Admin) {
+        return Err(AuthError::Forbidden.into());
+    }
+
+    let account_dtos: Vec<AccountDto> = account_services::find_all(&state)
+        .await?
+        .iter()
+        .map(|acc| AccountDto::from(acc.clone()))
+        .collect();
+
+    Ok((
+        StatusCode::OK,
+        json!({
+                "message": &format!("Found {} accounts", account_dtos.len()),
+                "payload": {
+                    "accounts": account_dtos,
+                }
+        }),
+    ))
+}
+
 pub fn create_routes(state: Arc<AppState>) -> Router {
     let protected_routes = Router::new()
         .route("/logged", get(read_logged))
         .route("/logged/change-username", put(change_username))
         .route("/logged/change-password", put(change_password))
         .route("/{id}", delete(delete_by_id))
+        .route("/", get(get_all_accounts))
         .layer(axum::middleware::from_fn(
             services::auth_services::auth_guard,
         ));
