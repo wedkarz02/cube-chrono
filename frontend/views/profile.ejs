@@ -8,12 +8,12 @@
 </head>
 <body>
     <header>
-        <h1>👤 Profil Użytkownika <%= username %></h1>
-        <div class="auth-links">
-            <a href="/">Strona Główna</a>
-            <a href="/events">Wydarzenia</a>
+        <h1>Profil Użytkownika <%= username %></h1>
+        <div>
+            <a href="/" class="button">Strona Główna</a>
+            <a href="/events" class="button">Wydarzenia</a>
             <form action="http://localhost:3000/logout" method="POST" style="display: inline;">
-                <button type="submit" style="background: none; border: none; color: blue; text-decoration: underline; cursor: pointer;">Wyloguj się</button>
+                <button type="submit" class="button">Wyloguj się</button>
             </form>
         </div>
     </header>
@@ -21,7 +21,7 @@
     <main>
         <!-- Sekcja Informacji Profilowych -->
         <section class="profile-info">
-            <h2>📝 Twoje Dane</h2>
+            <h2>Twoje Dane</h2>
             <form class="form change-password">
                 <label for="old_password">Stare hasło:</label>
                 <input type="password" id="old_password">
@@ -42,24 +42,20 @@
 
         <!-- Sekcja Historii Wyników -->
         <section class="profile-history">
-            <h2>📊 Historia Wyników</h2>
-            <button id="get-all-sessions">Pobierz historię sesji</button>
-            <ul class="history-list">
-                <li><strong>01.05.2024:</strong> 10.24s</li>
-                <li><strong>28.04.2024:</strong> 11.32s</li>
-                <li><strong>25.04.2024:</strong> 12.12s</li>
-            </ul>
-        </section>
+            <h2>Twoje Sesje</h2>
+            <p>Przejdź do listy wszystkich zapisanych sesji:</p>
+            <a href="/sessions" class="button" id="get-all-sessions">Zobacz Sesje</a>
+        </section>        
 
         <section>
-            <h2>🏆 Ranking</h2>
+            <h2>Ranking</h2>
             <p>Sprawdź swoje miejsce w rankingu.</p>
             <button onclick="window.location.href='ranking.html'">Przejdź do Rankingu</button>
         </section>        
 
         <!-- Sekcja Moich Wydarzeń -->
         <section class="profile-events">
-            <h2>🗓️ Moje Wydarzenia</h2>
+            <h2>Moje Wydarzenia</h2>
             <ul class="events-list">
                 <li>
                     <strong>Mistrzostwa Polski 2024</strong> - 15.07.2024
@@ -144,11 +140,13 @@
     </script>
 
     <script>
-        const sessionsButton = document.getElementById('get-all-sessions'); 
+        const sessionsButton = document.getElementById('get-all-sessions');
 
-        sessionsButton.addEventListener('click', async () => {
-            await getAllSessions();
-        });
+        if (sessionsButton) { // Sprawdzenie, czy element istnieje
+            sessionsButton.addEventListener('click', async () => {
+                await getAllSessions();
+            });
+        }
 
         async function getAllSessions() {
             try {

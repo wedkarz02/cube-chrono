@@ -74,6 +74,14 @@ app.get('/register', ensureNotAuthenticated, (req, res) => {
   res.render('register.ejs', {  });
 })
 
+app.get('/sessions', ensureAuthenticated, (req, res) => {
+  res.render('sessions.ejs');
+});
+
+app.get('/session/:id', ensureAuthenticated, (req, res) => {
+  res.render('session.ejs');
+});
+
 app.post('/logout', async (req, res) => {
   const data = {
     refresh_token: getCookieByName('refresh_token', req.cookies)

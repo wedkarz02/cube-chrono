@@ -175,3 +175,40 @@ scrambleButton.addEventListener('click', async () => {
 document.addEventListener('DOMContentLoaded', async () => {
     scrambleDisplay.textContent = await generateScramble("Three", 1);
 });
+
+function getAccessToken() {
+    const token = document.cookie.split('; ').find(row => row.startsWith('access_token='));
+    return token ? token.split('=')[1] : null;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const createSessionButton = document.getElementById('create-session-button');
+    const sessionNameInput = document.getElementById('session-name');
+
+    if (createSessionButton && sessionNameInput) {
+        createSessionButton.addEventListener('click', async () => {
+            const sessionName = sessionNameInput.value || `Sesja ${Date.now()}`;
+            try {
+                const response = await fetch('/new-session', {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${getAccessToken()}`,
+                    },
+                    body: JSON.stringify({ name: sessionName }),
+                });
+
+                if (response.ok) {
+                    alert('Nowa sesja została utworzona!');
+                    sessionNameInput.value = ''; // Wyczyść pole tekstowe
+                } else {
+                    alert('Nie udało się utworzyć nowej sesji.');
+                }
+            } catch (error) {
+                console.error('Błąd przy tworzeniu sesji:', error);
+                alert('Wystąpił problem z połączeniem.');
+            }
+        });
+    }
+});

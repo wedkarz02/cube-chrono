@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cube Chrono</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="data:,">
 </head>
 <body data-is-logged-in="<%= isLoggedIn %>">
     <header>
@@ -13,14 +14,14 @@
         <div>
             <% if (isLoggedIn) { %>
                 <% if (isAdmin) { %>
-                    <a href="/myprofile">Mój Profil</a>
-                    <a href="/admin">Panel administratora</a>
+                    <a href="/myprofile" class="button">Mój Profil</a>
+                    <a href="/admin" class="button">Panel administratora</a>
                 <% } else { %>
-                        <a href="/myprofile">Mój Profil</a>
+                        <a href="/myprofile" class="button">Mój Profil</a>
                 <% } %>
             <% } else { %>
-                    <a href="/login">Zaloguj się</a>
-                    <a href="/register">Zarejestruj się</a>
+                    <a href="/login" class="button">Zaloguj się</a>
+                    <a href="/register" class="button">Zarejestruj się</a>
             <% } %>
         </div>
     </header>
@@ -41,7 +42,15 @@
                 <button id="stop">Stop</button>
                 <button id="reset">Reset</button>
                 <% if (isLoggedIn) { %>
-                    <button id="new-session">Nowa sesja</button>
+                    <div class="new-session-container">
+                        <input
+                            type="text"
+                            id="session-name"
+                            placeholder="Nazwa sesji (opcjonalna)"
+                            class="session-name-input"
+                        />
+                        <button id="create-session-button" class="button">Nowa Sesja</button>
+                    </div>
                 <% } %>
             </div>
         </section>        

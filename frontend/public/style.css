@@ -25,6 +25,9 @@ header {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     position: relative;
     margin-bottom: 20px;
+    position: relative; /* Kontekst dla elementów absolutnych */
+    text-align: center; /* Ustawia napisy na środku */
+    padding: 20px;
 }
 
 header h1 {
@@ -38,6 +41,15 @@ header p {
     margin: 10px 0 0;
     font-size: 1.2rem;
     font-weight: 400;
+}
+
+header div {
+    position: absolute; /* Pozycjonowanie przycisków */
+    top: 50%; /* Wyśrodkowanie w pionie względem nagłówka */
+    right: 50px; /* Przyciski przesunięte od prawej krawędzi */
+    transform: translateY(-50%); /* Dostosowanie środka */
+    display: flex;
+    gap: 15px; /* Odstęp między przyciskami */
 }
 
 .auth-links {
@@ -89,20 +101,65 @@ section h2 {
     margin-top: 10px;
 }
 
-/* Przyciski */
-button {
-    background-color: #4a2c2a; 
-    color: #f5f5dc; 
+.new-session-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.session-name-input {
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #8b6b61;
+    border-radius: 5px;
+    width: 200px;
+}
+
+.session-name-input:focus {
+    outline: none;
+    border-color: #f5f5dc;
+}
+
+.new-session-container .button {
+    background-color: #4a2c2a;
+    color: white;
+}
+
+.profile-history .button{
+    background-color: #4a2c2a;
+    color: white;
+}
+
+.button {
+    padding: 10px 20px;
+    font-size: 1rem;
+    color: #4a2c2a;
+    background-color: #4a2c2a;
     border: none;
     border-radius: 5px;
-    padding: 10px 20px;
-    font-size: 1.2rem;
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
 
-button:hover {
-    background-color: #6f4f4b;
+.button:hover {
+    background: rgba(255, 255, 255, 0.4);
+}
+
+/* Przyciski */
+a.button {
+    color: #f5f5dc;
+    text-decoration: none;
+    margin-left: 15px;
+    font-size: 1rem;
+    font-weight: 500;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 8px 12px;
+    border-radius: 5px;
+    transition: background 0.3s ease;
+}
+
+a.button:hover {
+    background: rgba(255, 255, 255, 0.4);
 }
 
 /* === SEKCJA CZASOMIERZA === */
@@ -261,6 +318,30 @@ section button {
 
 section button:hover {
     background-color: #6f4f4b; 
+}
+
+button, a {
+    font-family: 'Teko', sans-serif; /* Użyj swojej czcionki */
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+button.button {
+    color: #f5f5dc;
+    text-decoration: none;
+    margin-left: 15px;
+    font-size: 1rem;
+    font-weight: 500;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 8px 12px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+button.button:hover {
+    background: rgba(255, 255, 255, 0.4);
 }
 
 /* Link do Profilu */
