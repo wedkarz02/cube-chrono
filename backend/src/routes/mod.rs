@@ -1,7 +1,10 @@
 use std::sync::Arc;
 
 use axum::Router;
+use mongodb::bson::Uuid;
+use serde::Deserialize;
 use tower_http::trace::TraceLayer;
+use validator::Validate;
 
 use crate::AppState;
 
@@ -10,6 +13,12 @@ pub mod auth;
 mod events;
 mod hello;
 pub mod scrambles;
+mod sessions;
+
+#[derive(Deserialize, Validate)]
+pub struct PathId {
+    id: Uuid,
+}
 
 pub fn create_routes(state: Arc<AppState>) -> Router {
     Router::new()
@@ -23,6 +32,10 @@ pub fn create_routes(state: Arc<AppState>) -> Router {
         .nest(
             "/api/v1/scrambles",
             scrambles::create_routes(Arc::clone(&state)),
+        )
+        .nest(
+            "/api/v1/sessions",
+            sessions::create_routes(Arc::clone(&state)),
         )
         .layer(TraceLayer::new_for_http())
 }
