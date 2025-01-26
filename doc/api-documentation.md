@@ -46,6 +46,27 @@ All api endpoints are prefixed with `/api/v1`.
   - `400 Bad Request`: Invalid input data.
   - `401 Unauthorized`: Unauthorized to update this data.
 
+#### `DELETE /api/v1/profiles/{account_id}`
+- **Description**: Delete the account by id.
+- **Headers**:
+  - `Authorization` (string): JWT access token, prefixed with `Bearer `.
+- **Path Parameters**:
+  - `account_id` (int): The id of the account.
+- **Responses**:
+  - `200 OK`: Account deleted.
+  - `400 Bad Request`: Invalid input data.
+  - `401 Unauthorized`: Unauthorized to update this data.
+  - `403 Forbidden`: Resource forbidden.
+
+#### `GET /api/v1/profiles`
+- **Description**: Get all accounts.
+- **Headers**:
+  - `Authorization` (string): JWT access token, prefixed with `Bearer `.
+- **Responses**:
+  - `200 OK`: Accounts found.
+  - `401 Unauthorized`: Unauthorized to read this data.
+  - `403 Forbidden`: Resource forbidden.
+
 
 ### Auth
 

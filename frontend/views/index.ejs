@@ -6,12 +6,22 @@
     <title>Cube Chrono</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body data-is-logged-in="<%= isLoggedIn %>">
     <header>
         <h1>Cube Chrono</h1>
         <p>Zabawa i rywalizacja z kostką Rubika</p>
-        <div class="auth-links" id="auth-links">
-            <!-- Dynamiczne linki -->
+        <div>
+            <% if (isLoggedIn) { %>
+                <% if (isAdmin) { %>
+                    <a href="/myprofile">Mój Profil</a>
+                    <a href="/admin">Panel administratora</a>
+                <% } else { %>
+                        <a href="/myprofile">Mój Profil</a>
+                <% } %>
+            <% } else { %>
+                    <a href="/login">Zaloguj się</a>
+                    <a href="/register">Zarejestruj się</a>
+            <% } %>
         </div>
     </header>
 
@@ -30,6 +40,9 @@
                 <button id="start">Start</button>
                 <button id="stop">Stop</button>
                 <button id="reset">Reset</button>
+                <% if (isLoggedIn) { %>
+                    <button id="new-session">Nowa sesja</button>
+                <% } %>
             </div>
         </section>        
 
@@ -51,64 +64,73 @@
         <section>
             <h2>Ranking</h2>
             <p>Sprawdź swoje miejsce w rankingu.</p>
-            <button onclick="window.location.href='ranking.html'">Przejdź do Rankingu</button>
+            <button onclick="window.location.href='/ranking'">Przejdź do Rankingu</button>
         </section>        
 
         <!-- Sekcja Wydarzeń -->
         <section>
             <h2>Wydarzenia</h2>
             <p>Dołącz do oficjalnych i prywatnych wydarzeń, aby rywalizować z innymi graczami!</p>
-            <button onclick="window.location.href='events.html'">Przejdź do Wydarzeń</button>
+            <button onclick="window.location.href='/events'">Przejdź do Wydarzeń</button>
         </section>
     </main>
 
     <footer>
         <p>&copy; 2024 Cube Chrono. Wszystkie prawa zastrzeżone.</p>
     </footer>
-
-    <script>
+    <!-- <script>
         // Dynamiczna nawigacja na podstawie zalogowania
         document.addEventListener('DOMContentLoaded', () => {
             const authLinks = document.getElementById('auth-links');
             if (isLoggedIn) {
-                authLinks.innerHTML = `
-                    <a href="profile.html">Mój Profil</a>
-                    <a href="logout.html">Wyloguj się</a>
+                if (isAdmin) {
+                    authLinks.innerHTML = `
+                    <a href="/myprofile">Mój Profil</a>
+                    <a href="/admin">Panel administratora</a>
+                    <a href="/logout">Wyloguj się</a>
                 `;
+                } else {
+                    authLinks.innerHTML = `
+                        <a href="/myprofile">Mój Profil</a>
+                        <a href="/logout">Wyloguj się</a>
+                    `;
+                }
             } else {
                 authLinks.innerHTML = `
-                    <a href="login.html">Zaloguj się</a>
-                    <a href="register.html">Zarejestruj się</a>
+                    <a href="/login">Zaloguj się</a>
+                    <a href="/register">Zarejestruj się</a>
                 `;
             }
         });
-    </script>
-    <script src="script.js"></script>
-    <script>
+    </script> -->
+    <!-- <script src="script.js"></script> -->
+    <!-- <script>
         document.addEventListener('DOMContentLoaded', () => {
             const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
             const authLinks = document.getElementById('auth-links');
-    
+            const isAdmin = false;
             if (isLoggedIn) {
                 const username = localStorage.getItem('username') || 'Użytkownik';
-                authLinks.innerHTML = `
-                    <a href="profile.html">Mój Profil</a>
-                    <a href="#" onclick="logout()">Wyloguj się</a>
+                if (isAdmin) {
+                    authLinks.innerHTML = `
+                    <a href="/myprofile">Mój Profil</a>
+                    <a href="/admin">Panel administratora</a>
+                    <a href="/logout">Wyloguj się</a>
                 `;
+                } else {
+                    authLinks.innerHTML = `
+                        <a href="/myprofile">Mój Profil</a>
+                        <a href="/logout">Wyloguj się</a>
+                    `;
+                }
             } else {
                 authLinks.innerHTML = `
-                    <a href="login.html">Zaloguj się</a>
-                    <a href="register.html">Zarejestruj się</a>
+                    <a href="/login">Zaloguj się</a>
+                    <a href="/register">Zarejestruj się</a>
                 `;
             }
         });
-    
-        function logout() {
-            localStorage.removeItem('isLoggedIn');
-            localStorage.removeItem('username');
-            alert('Wylogowano pomyślnie');
-            window.location.href = 'index.html';
-        }
-    </script>    
+    </script>     -->
+    <script src="/script.js"></script>
 </body>
 </html>

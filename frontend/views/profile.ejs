@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil Użytkownika - Cube Chrono</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>👤 Profil Użytkownika <%= username %></h1>
+        <div class="auth-links">
+            <a href="/">Strona Główna</a>
+            <a href="/events">Wydarzenia</a>
+            <form action="http://localhost:3000/logout" method="POST" style="display: inline;">
+                <button type="submit" style="background: none; border: none; color: blue; text-decoration: underline; cursor: pointer;">Wyloguj się</button>
+            </form>
+        </div>
+    </header>
+
+    <main>
+        <!-- Sekcja Informacji Profilowych -->
+        <section class="profile-info">
+            <h2>📝 Twoje Dane</h2>
+            <form class="form change-password">
+                <label for="old_password">Stare hasło:</label>
+                <input type="password" id="old_password">
+            
+                <label for="new_password">Nowe hasło:</label>
+                <input type="password" id="new_password">
+                
+                <button type="submit">Zmień hasło</button>
+            </form>
+            
+            <form class="form change-username">
+                <label for="username">Nazwa użytkownika:</label>
+                <input type="text" id="username" value=<%= username %> required>
+                
+                <button type="submit">Zmień nazwę użytkownika</button>
+            </form>
+        </section>
+
+        <!-- Sekcja Historii Wyników -->
+        <section class="profile-history">
+            <h2>📊 Historia Wyników</h2>
+            <button id="get-all-sessions">Pobierz historię sesji</button>
+            <ul class="history-list">
+                <li><strong>01.05.2024:</strong> 10.24s</li>
+                <li><strong>28.04.2024:</strong> 11.32s</li>
+                <li><strong>25.04.2024:</strong> 12.12s</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🏆 Ranking</h2>
+            <p>Sprawdź swoje miejsce w rankingu.</p>
+            <button onclick="window.location.href='ranking.html'">Przejdź do Rankingu</button>
+        </section>        
+
+        <!-- Sekcja Moich Wydarzeń -->
+        <section class="profile-events">
+            <h2>🗓️ Moje Wydarzenia</h2>
+            <ul class="events-list">
+                <li>
+                    <strong>Mistrzostwa Polski 2024</strong> - 15.07.2024
+                    <span>Status: Zapisany</span>
+                </li>
+                <li>
+                    <strong>Speedcubing Open</strong> - 05.08.2024
+                    <span>Status: Zapisany</span>
+                </li>
+            </ul>
+            <button onclick="window.location.href='/events'">Przejdź do Wydarzeń</button>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Cube Chrono. Wszystkie prawa zastrzeżone.</p>
+    </footer>
+
+    <script>
+        document.querySelector('.change-password').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const old_password = document.getElementById('old_password').value;
+            const new_password = document.getElementById('new_password').value;
+            const data = {
+                new_password: new_password,
+                old_password: old_password
+            };
+
+            try {
+                const result = await fetch("/password", {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const jsonResult = await result.json();
+
+                if (result.status === 200) {
+                    window.location.href = '/login';
+                } else if (result.status === 400 || result.status === 401) {
+                    alert(jsonResult.message || 'Dane są niepoprawne!');
+                } else {
+                    alert(jsonResult.message || 'Błąd komunikacji z serwerem!');
+                }
+            } catch (error) {
+                alert('Błąd przy próbie połączenia z serwerem.');
+                console.error(error);
+            }
+        });
+
+        document.querySelector('.change-username').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const data = {
+                username: username
+            };
+
+            try {
+                const result = await fetch("/username", {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (result.status === 200) {
+                    location.reload();
+                    alert('Zmieniono nazwę użytkownika!');
+                } else if (result.status === 400 || result.status === 401) {
+                    alert(responseBody.message || 'Dane są niepoprawne!');
+                } else {
+                    alert(responseBody.message || 'Błąd komunikacji z serwerem!');
+                }
+            } catch (error) {
+                alert('Błąd przy próbie połączenia z serwerem.');
+                console.error(error);
+            }
+        });
+    </script>
+
+    <script>
+        const sessionsButton = document.getElementById('get-all-sessions'); 
+
+        sessionsButton.addEventListener('click', async () => {
+            await getAllSessions();
+        });
+
+        async function getAllSessions() {
+            try {
+                const response = await fetch(`http://localhost:3000/all-sessions`, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const jsonResult = await response.json();
+                console.log(jsonResult);
+
+                if (response.status == 200) {
+                    console.log("GIT");
+                } else {
+                    console.log("NIE GIT");
+                }
+            } catch (error) {
+                console.error('Błąd połączenia:', error);
+                alert('Wystąpił błąd połączenia z serwerem.');
+            }
+        }
+
+        async function getSession(session_id) {
+            try {
+                const data = {
+                    session_id: session_id
+                };
+
+                const response = await fetch(`http://localhost:3000/session`, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const jsonResult = await response.json();
+                console.log(jsonResult);
+
+                if (response.status == 200) {
+                    console.log("GIT");
+                } else {
+                    console.log("NIE GIT");
+                }
+            } catch (error) {
+                console.error('Błąd połączenia:', error);
+                alert('Wystąpił błąd połączenia z serwerem.');
+            }
+        }
+    </script>
+</body>
+</html>

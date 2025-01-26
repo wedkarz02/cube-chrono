@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Administratora - Cube Chrono</title>
+    <link rel="stylesheet" href="style.css">
+    <script>
+       
+        const isAdmin = true;
+    </script>
+</head>
+<body>
+    <header>
+        <h1>👑 Panel Administratora</h1>
+        <div class="auth-links">
+            <a href="/">Strona Główna</a>
+        </div>
+    </header>
+
+    <main>
+        <section id="admin-panel" style="display: none;">
+            <h2>👥 Zarządzanie Użytkownikami</h2>
+            <button id="get-all-users">Pobierz wszystkich użytkowników</button>
+            <!-- <button id="delete-user">Usuń użytkownika</button> -->
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nazwa Użytkownika</th>
+                        <th>Email</th>
+                        <th>Rola</th>
+                        <th>Akcje</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>SpeedyCubeMaster</td>
+                        <td>speedy@example.com</td>
+                        <td>Moderator</td>
+                        <td>
+                            <button class="btn-warn">Ostrzeż</button>
+                            <button class="btn-ban">Zbanuj</button>
+                            <button class="btn-delete">Usuń</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>RubikPro24</td>
+                        <td>pro@example.com</td>
+                        <td>Użytkownik</td>
+                        <td>
+                            <button class="btn-warn">Ostrzeż</button>
+                            <button class="btn-ban">Zbanuj</button>
+                            <button class="btn-delete">Usuń</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2>🗓️ Zarządzanie Wydarzeniami</h2>
+            <ul class="admin-events">
+                <li>
+                    <strong>Mistrzostwa Polski 2024</strong> - 15.07.2024
+                    <button class="btn-edit">Edytuj</button>
+                    <button class="btn-delete">Usuń</button>
+                </li>
+                <li>
+                    <strong>Speedcubing Open</strong> - 05.08.2024
+                    <button class="btn-edit">Edytuj</button>
+                    <button class="btn-delete">Usuń</button>
+                </li>
+            </ul>
+
+            <h2>➕ Dodaj Wydarzenie</h2>
+            <form class="form">
+                <label for="event-name">Nazwa wydarzenia:</label>
+                <input type="text" id="event-name" required>
+
+                <label for="event-date">Data wydarzenia:</label>
+                <input type="date" id="event-date" required>
+
+                <label for="event-location">Lokalizacja:</label>
+                <input type="text" id="event-location" required>
+
+                <button type="submit">Dodaj Wydarzenie</button>
+            </form>
+        </section>
+
+        <section id="access-denied" style="display: none;">
+            <h2>🚫 Brak Dostępu</h2>
+            <p>Nie masz uprawnień do przeglądania tej strony. Zaloguj się jako administrator.</p>
+            <a href="/login" class="btn-login">Zaloguj się</a>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Cube Chrono. Wszystkie prawa zastrzeżone.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (isAdmin) {
+                document.getElementById('admin-panel').style.display = 'block';
+            } else {
+                document.getElementById('access-denied').style.display = 'block';
+            }
+        });
+    </script>
+<script>
+    const usersButton = document.getElementById('get-all-users');
+    // const deleteUserButton = document.getElementById('delete-user'); 
+
+    usersButton.addEventListener('click', async () => {
+        await getAllUsers();
+    });
+
+    // deleteUserButton.addEventListener('click', async () => {
+    //     await deleteUser(26010e2a-8991-477c-bd4c-94d1cde45571);
+    // });
+
+    async function getAllUsers() {
+        try {
+            const response = await fetch(`http://localhost:3000/all-users`, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const jsonResult = await response.json();
+            console.log(jsonResult);
+
+            if (response.status == 200) {
+                console.log("GIT");
+            } else {
+                console.log("NIE GIT");
+            }
+        } catch (error) {
+            console.error('Błąd połączenia:', error);
+            alert('Wystąpił błąd połączenia z serwerem.');
+        }
+    }
+
+    async function getSession(session_id) {
+        try {
+            const data = {
+                session_id: session_id
+            };
+
+            const response = await fetch(`http://localhost:3000/session`, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            const jsonResult = await response.json();
+            console.log(jsonResult);
+
+            if (response.status == 200) {
+                console.log("GIT");
+            } else {
+                console.log("NIE GIT");
+            }
+        } catch (error) {
+            console.error('Błąd połączenia:', error);
+            alert('Wystąpił błąd połączenia z serwerem.');
+        }
+    }
+
+    // async function deleteUser(user_id) {
+    //     try {
+    //         const data = {
+    //             user_id: user_id
+    //         };
+
+    //         const response = await fetch(`http://localhost:3000/delete-user`, {
+    //             method: 'DELETE',
+    //             headers: {
+    //                 'Accept': 'application/json',
+    //                 'Content-Type': 'application/json'
+    //             },
+    //             body: JSON.stringify(data)
+    //         });
+
+    //         const jsonResult = await response.json();
+    //         console.log(jsonResult);
+
+    //         if (response.status == 200) {
+    //             console.log("GIT");
+    //         } else {
+    //             console.log("NIE GIT");
+    //         }
+    //     } catch (error) {
+    //         console.error('Błąd połączenia:', error);
+    //         alert('Wystąpił błąd połączenia z serwerem.');
+    //     }
+    // }
+</script>
+</body>
+</html>

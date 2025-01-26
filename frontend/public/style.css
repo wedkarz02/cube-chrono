@@ -1,0 +1,698 @@
+/* Import czcionki Teko */
+@import url('https://fonts.googleapis.com/css2?family=Teko:wght@400;600&display=swap');
+
+/* Ogólne */
+body {
+    font-family: 'Teko', sans-serif;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(to bottom, #f5f5dc, #d2b48c); 
+    color: #4a2c2a; 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+}
+
+/* Nagłówek */
+header {
+    background: #4a2c2a; 
+    color: #f5f5dc; 
+    padding: 20px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    position: relative;
+    margin-bottom: 20px;
+}
+
+header h1 {
+    margin: 0;
+    font-weight: 600;
+    font-size: 2.5rem;
+    letter-spacing: 1px;
+}
+
+header p {
+    margin: 10px 0 0;
+    font-size: 1.2rem;
+    font-weight: 400;
+}
+
+.auth-links {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
+
+.auth-links a {
+    color: #f5f5dc;
+    text-decoration: none;
+    margin-left: 15px;
+    font-size: 1rem;
+    font-weight: 500;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 8px 12px;
+    border-radius: 5px;
+    transition: background 0.3s ease;
+}
+
+.auth-links a:hover {
+    background: rgba(255, 255, 255, 0.4);
+}
+
+/* Główna treść */
+main {
+    margin: auto;
+    width: 100%;
+    max-width: 800px;
+    text-align: center;
+    padding: 20px;
+}
+
+section {
+    margin-bottom: 40px;
+}
+
+section h2 {
+    margin-top: 20px;
+    font-size: 1.8rem;
+    color: #4a2c2a; 
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.placeholder {
+    color: #8b6b61; 
+    font-size: 1rem;
+    margin-top: 10px;
+}
+
+/* Przyciski */
+button {
+    background-color: #4a2c2a; 
+    color: #f5f5dc; 
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #6f4f4b;
+}
+
+/* === SEKCJA CZASOMIERZA === */
+.timer-section {
+    text-align: center;
+    margin: 40px 0;
+    padding: 30px;
+    background: #f5f5dc; 
+    border-radius: 10px;
+    border: 2px solid #8b6b61; 
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Nagłówek czasomierza */
+.timer-section h2 {
+    font-size: 2rem;
+    color: #4a2c2a; 
+    margin-bottom: 10px;
+}
+
+/* === TIMER === */
+.timer-container {
+    font-family: 'Teko', monospace;
+    font-size: 3rem;
+    text-align: center;
+    margin: 20px auto;
+    padding: 10px;
+    background: #4a2c2a;
+    color: #f5f5dc;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: fit-content;
+    letter-spacing: 1px;
+}
+
+.timer-container span {
+    display: inline-block;
+    text-align: center;
+}
+
+/* Stała szerokość dla każdego segmentu */
+#hours,
+#minutes,
+#seconds {
+    width: 50px;
+    text-align: center;
+}
+
+#milliseconds {
+    width: 70px;
+    text-align: center;
+}
+
+.colon {
+    width: 10px;
+    text-align: center;
+    font-weight: bold;
+}
+
+#timer {
+    font-size: 3rem;
+    text-align: center;
+    font-family: 'Teko', sans-serif;
+    letter-spacing: 2px;
+    width: 500px;
+    margin: 20px auto;
+    background: #4a2c2a;
+    color: #f5f5dc;
+    padding: 10px;
+    border-radius: 10px;
+    text-align: center;
+    overflow: hidden;
+}
+
+/* Przyciski czasomierza */
+.timer-buttons {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.timer-buttons button {
+    font-size: 1.5rem;
+    padding: 10px 25px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#start {
+    background-color: #4caf50;
+    color: white;
+}
+
+#start:hover {
+    background-color: #388e3c;
+}
+
+#stop {
+    background-color: #f44336; 
+    color: white;
+}
+
+#stop:hover {
+    background-color: #d32f2f;
+}
+
+#reset {
+    background-color: #ff9800; 
+    color: white;
+}
+
+#reset:hover {
+    background-color: #f57c00;
+}
+
+/* === SEKCJA SCRAMBLE === */
+.scramble {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin: 15px 0;
+    color: #4a2c2a; 
+}
+
+#generate-scramble {
+    font-size: 1.2rem;
+    padding: 10px 20px;
+    background-color: #4a2c2a;
+    color: #f5f5dc;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#generate-scramble:hover {
+    background-color: #6f4f4b;
+}
+
+/* Sekcja Wydarzeń na Stronie Głównej */
+section button {
+    margin-top: 10px;
+    background-color: #4a2c2a; 
+    color: #f5f5dc; 
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+section button:hover {
+    background-color: #6f4f4b; 
+}
+
+/* Link do Profilu */
+.auth-links a {
+    color: #f5f5dc;
+    text-decoration: none;
+    margin-left: 15px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 8px 12px;
+    border-radius: 5px;
+    transition: background 0.3s ease;
+}
+
+.auth-links a:hover {
+    background: rgba(255, 255, 255, 0.4);
+}
+
+/* Stopka */
+footer {
+    margin-top: 20px;
+    font-size: 0.9rem;
+    color: #8b6b61; 
+    text-align: center;
+}
+
+/* Formularze */
+.form-container {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    background: #f5f5dc; 
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.form label {
+    font-size: 1rem;
+    color: #4a2c2a; 
+    margin-bottom: 5px;
+}
+
+.form input {
+    padding: 10px;
+    border: 1px solid #8b6b61; 
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+.form button {
+    margin-top: 10px;
+    background-color: #4a2c2a; 
+    color: #f5f5dc; 
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.form button:hover {
+    background-color: #6f4f4b; 
+}
+
+/* Dodatkowe dostosowanie dla pól hasła */
+.form input[type="password"] {
+    margin-bottom: 10px;
+}
+
+/* Sekcja Wydarzeń */
+.event-list {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0;
+}
+
+.event-list li {
+    background: #f5f5dc; 
+    border: 1px solid #8b6b61; 
+    border-radius: 5px;
+    margin-bottom: 15px;
+    padding: 15px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.event-list h3 {
+    font-size: 1.4rem;
+    color: #4a2c2a; 
+    margin: 0 0 5px;
+}
+
+.event-list p {
+    font-size: 1rem;
+    color: #6f4f4b;
+    margin: 5px 0;
+}
+
+.event-list button {
+    background-color: #4a2c2a; 
+    color: #f5f5dc; 
+    border: none;
+    border-radius: 5px;
+    padding: 8px 12px;
+    cursor: pointer;
+    margin-top: 10px;
+    font-size: 1rem;
+}
+
+.event-list button:hover {
+    background-color: #6f4f4b; 
+}
+
+/* Formularz tworzenia wydarzeń */
+.create-event {
+    margin-top: 40px;
+    padding: 20px;
+    background: #f5f5dc; 
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.create-event h2 {
+    font-size: 1.5rem;
+    color: #4a2c2a; 
+    margin-bottom: 20px;
+}
+
+.create-event .form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.create-event .form label {
+    font-size: 1rem;
+    color: #4a2c2a; 
+    margin-bottom: 5px;
+}
+
+.create-event .form input,
+.create-event .form select {
+    padding: 10px;
+    border: 1px solid #8b6b61;
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+.create-event .form button {
+    background-color: #4a2c2a; 
+    color: #f5f5dc; 
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.create-event .form button:hover {
+    background-color: #6f4f4b; 
+}
+
+/* Ranking - Tabela */
+.ranking-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-size: 1rem;
+}
+
+.ranking-table th, .ranking-table td {
+    border: 1px solid #8b6b61;
+    padding: 10px;
+    text-align: center;
+}
+
+.ranking-table th {
+    background-color: #4a2c2a; 
+    color: #f5f5dc; 
+}
+
+.ranking-table tr:nth-child(even) {
+    background-color: #f5f5dc; 
+}
+
+.ranking-table tr:nth-child(odd) {
+    background-color: #e8d5b7;
+}
+
+.ranking-table tr:hover {
+    background-color: #d2b48c;
+    cursor: pointer;
+}
+
+.ranking-table a {
+    color: #4a2c2a;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.ranking-table a:hover {
+    text-decoration: underline;
+}
+
+/* Ranking - Indywidualny Użytkownik */
+.user-ranking {
+    background-color: #f5f5dc; 
+    border: 1px solid #8b6b61;
+    border-radius: 5px;
+    padding: 15px;
+    margin-top: 20px;
+    text-align: center;
+    font-size: 1.1rem;
+}
+
+.user-ranking p {
+    margin: 5px 0;
+}
+
+.user-ranking strong {
+    color: #4a2c2a; 
+}
+
+/* Sekcja Zaloguj się do Rankingu */
+#login-prompt {
+    text-align: center;
+    margin-top: 20px;
+    padding: 20px;
+    background: #f5f5dc; 
+    border-radius: 5px;
+    border: 1px solid #8b6b61; 
+}
+
+#login-prompt h2 {
+    font-size: 1.4rem;
+    color: #4a2c2a; 
+    margin-bottom: 10px;
+}
+
+#login-prompt a.btn-login {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 10px 20px;
+    background-color: #4a2c2a; 
+    color: #f5f5dc; 
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+#login-prompt a.btn-login:hover {
+    background-color: #6f4f4b; 
+}
+
+/* Panel Administratora */
+.admin-table {
+    width: 100%;
+    margin: 20px 0;
+    border-collapse: collapse;
+}
+
+.admin-table th, .admin-table td {
+    border: 1px solid #8b6b61;
+    padding: 10px;
+    text-align: center;
+}
+
+.admin-table th {
+    background: #4a2c2a;
+    color: #f5f5dc;
+}
+
+.admin-table td button {
+    margin: 5px;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.btn-warn {
+    background: #ffa500;
+    color: white;
+}
+
+.btn-ban {
+    background: #dc3545; 
+    color: white;
+}
+
+.btn-delete {
+    background: #8b6b61;
+    color: white;
+}
+
+.admin-events {
+    list-style: none;
+    padding: 0;
+}
+
+.admin-events li {
+    background: #f5f5dc;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.form label {
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+#access-denied {
+    text-align: center;
+    margin-top: 50px;
+}
+
+#access-denied h2 {
+    color: #dc3545;
+}
+
+/* Profil Użytkownika */
+.profile-info, .profile-history, .profile-events {
+    background: #f5f5dc; 
+    border: 1px solid #8b6b61; 
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.profile-info h2,
+.profile-history h2,
+.profile-events h2 {
+    font-size: 1.5rem;
+    color: #4a2c2a; 
+    margin-bottom: 15px;
+}
+
+.profile-info .form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.profile-info .form label {
+    font-size: 1rem;
+    color: #4a2c2a;
+    font-weight: bold;
+}
+
+.profile-info .form input {
+    padding: 10px;
+    border: 1px solid #8b6b61;
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+.profile-info .form button {
+    margin-top: 10px;
+    background-color: #4a2c2a;
+    color: #f5f5dc;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.profile-info .form button:hover {
+    background-color: #6f4f4b;
+}
+
+/* Historia Wyników */
+.history-list {
+    list-style: none;
+    padding: 0;
+}
+
+.history-list li {
+    padding: 8px;
+    border-bottom: 1px solid #8b6b61;
+    font-size: 1rem;
+}
+
+.history-list li:last-child {
+    border-bottom: none;
+}
+
+/* Moje Wydarzenia */
+.events-list {
+    list-style: none;
+    padding: 0;
+}
+
+.events-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #8b6b61;
+    font-size: 1rem;
+}
+
+.events-list li:last-child {
+    border-bottom: none;
+}
+
+.profile-events button {
+    margin-top: 15px;
+    background-color: #4a2c2a;
+    color: #f5f5dc;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.profile-events button:hover {
+    background-color: #6f4f4b;
+}
