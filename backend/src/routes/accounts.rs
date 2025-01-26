@@ -7,7 +7,6 @@ use axum::{
     Extension, Router,
 };
 use axum_extra::json;
-use mongodb::bson::Uuid;
 use serde::Deserialize;
 use validator::Validate;
 
@@ -21,6 +20,8 @@ use crate::{
     },
     AppState,
 };
+
+use super::PathId;
 
 pub async fn read_logged(
     Extension(account): Extension<Account>,
@@ -44,7 +45,7 @@ pub struct ChangeUsernamePayload {
     username: String,
 }
 
-pub async fn change_username(
+async fn change_username(
     Extension(state): Extension<Arc<AppState>>,
     Extension(account): Extension<Account>,
     ValidatedJson(payload): ValidatedJson<ChangeUsernamePayload>,
@@ -79,7 +80,7 @@ pub struct ChangePasswordPayload {
     old_password: String,
 }
 
-pub async fn change_password(
+async fn change_password(
     Extension(state): Extension<Arc<AppState>>,
     Extension(account): Extension<Account>,
     ValidatedJson(payload): ValidatedJson<ChangePasswordPayload>,
@@ -99,11 +100,12 @@ pub async fn change_password(
             .to_owned(),
     };
 
-    let update_res = services::account_services::update(&state, new_account).await?;
     let revoked_count =
-        services::auth_services::revoke_all_refresh_tokens(&state, account, &payload.new_password)
+        services::auth_services::revoke_all_refresh_tokens(&state, account, &payload.old_password)
             .await?
             .deleted_count;
+
+    let update_res = services::account_services::update(&state, new_account).await?;
 
     Ok((
         StatusCode::OK,
@@ -117,12 +119,7 @@ pub async fn change_password(
     ))
 }
 
-#[derive(Deserialize, Validate)]
-pub struct PathId {
-    id: Uuid,
-}
-
-pub async fn delete_by_id(
+async fn delete_by_id(
     Extension(state): Extension<Arc<AppState>>,
     Extension(account): Extension<Account>,
     ValidatedPath(path): ValidatedPath<PathId>,

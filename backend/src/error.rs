@@ -13,7 +13,6 @@ macro_rules! impl_internal_from {
     };
 }
 
-#[allow(unused)]
 #[derive(Debug, thiserror::Error)]
 pub enum AppError {
     #[error("Not found")]
