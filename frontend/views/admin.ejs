@@ -21,6 +21,8 @@
     <main>
         <section id="admin-panel" style="display: none;">
             <h2>👥 Zarządzanie Użytkownikami</h2>
+            <button id="get-all-users">Pobierz wszystkich użytkowników</button>
+            <!-- <button id="delete-user">Usuń użytkownika</button> -->
             <table class="admin-table">
                 <thead>
                     <tr>
@@ -106,5 +108,99 @@
             }
         });
     </script>
+<script>
+    const usersButton = document.getElementById('get-all-users');
+    // const deleteUserButton = document.getElementById('delete-user'); 
+
+    usersButton.addEventListener('click', async () => {
+        await getAllUsers();
+    });
+
+    // deleteUserButton.addEventListener('click', async () => {
+    //     await deleteUser(26010e2a-8991-477c-bd4c-94d1cde45571);
+    // });
+
+    async function getAllUsers() {
+        try {
+            const response = await fetch(`http://localhost:3000/all-users`, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const jsonResult = await response.json();
+            console.log(jsonResult);
+
+            if (response.status == 200) {
+                console.log("GIT");
+            } else {
+                console.log("NIE GIT");
+            }
+        } catch (error) {
+            console.error('Błąd połączenia:', error);
+            alert('Wystąpił błąd połączenia z serwerem.');
+        }
+    }
+
+    async function getSession(session_id) {
+        try {
+            const data = {
+                session_id: session_id
+            };
+
+            const response = await fetch(`http://localhost:3000/session`, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            const jsonResult = await response.json();
+            console.log(jsonResult);
+
+            if (response.status == 200) {
+                console.log("GIT");
+            } else {
+                console.log("NIE GIT");
+            }
+        } catch (error) {
+            console.error('Błąd połączenia:', error);
+            alert('Wystąpił błąd połączenia z serwerem.');
+        }
+    }
+
+    // async function deleteUser(user_id) {
+    //     try {
+    //         const data = {
+    //             user_id: user_id
+    //         };
+
+    //         const response = await fetch(`http://localhost:3000/delete-user`, {
+    //             method: 'DELETE',
+    //             headers: {
+    //                 'Accept': 'application/json',
+    //                 'Content-Type': 'application/json'
+    //             },
+    //             body: JSON.stringify(data)
+    //         });
+
+    //         const jsonResult = await response.json();
+    //         console.log(jsonResult);
+
+    //         if (response.status == 200) {
+    //             console.log("GIT");
+    //         } else {
+    //             console.log("NIE GIT");
+    //         }
+    //     } catch (error) {
+    //         console.error('Błąd połączenia:', error);
+    //         alert('Wystąpił błąd połączenia z serwerem.');
+    //     }
+    // }
+</script>
 </body>
 </html>

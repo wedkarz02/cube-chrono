@@ -11,7 +11,7 @@ const profileRoutes = require('./routes/profileRoutes');
 const eventRoutes = require('./routes/eventRoutes');
 const rankingRoutes = require('./routes/rankingRoutes');
 const adminRoutes = require('./routes/adminRoutes');
-const { getCookieByName, ensureAuthenticated, ensureNotAuthenticated } = require('./utils');
+const { getCookieByName, ensureAuthenticated, ensureNotAuthenticated, getUser, checkIfAdmin } = require('./utils');
 
 app.use(express.json());
 app.use(express.static("public"));
@@ -37,32 +37,22 @@ app.use('/script.js', (req, res, next) => {
 
 app.get('/', async (req, res) => {
   const access_token = getCookieByName("access_token", req.cookies);
+  let isAdmin = false;
   let logged;
   if (access_token !== null) {
     const result = await getUser(req, res, access_token);
     if (result.status === 200) {
       logged = true;
+      const jsonResult = await result.json();
+      isAdmin = checkIfAdmin(jsonResult.payload.logged_account.roles);
     } else {
       logged = false;
     }
   } else {
     logged = false;
   }
-  res.render('index.ejs', { isLoggedIn: logged, isAdmin: true })
+  res.render('index.ejs', { isLoggedIn: logged, isAdmin: isAdmin })
 })
-
-async function getUser(req, res, access_token) {
-  const token = "Bearer ".concat(access_token);
-  const result = await fetch("http://localhost:8080/api/v1/profiles/logged", {
-    method: 'GET',
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-      'Authorization': token
-    }
-  });
-  return result;
-}
 
 app.get('/login', ensureNotAuthenticated, async (req, res) => {
   // const result = await fetch("http://localhost:8080/api/v1/auth/login", {

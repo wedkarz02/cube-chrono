@@ -84,5 +84,22 @@ function getCookieByName(searchKey, cookies) {
     return res.redirect('/')
 
   }
+
+  async function getUser(req, res, access_token) {
+    const token = "Bearer ".concat(access_token);
+    const result = await fetch("http://localhost:8080/api/v1/profiles/logged", {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': token
+      }
+    });
+    return result;
+  }
+
+  function checkIfAdmin(roles) {
+    return roles.includes('Admin');
+  }
   
-  module.exports = { getCookieByName, ensureAuthenticated, getCookieByValue, ensureNotAuthenticated };  
+  module.exports = { getCookieByName, ensureAuthenticated, getCookieByValue, ensureNotAuthenticated, getUser, checkIfAdmin };  
