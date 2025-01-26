@@ -3,7 +3,7 @@ use std::sync::Arc;
 use axum::{
     http::StatusCode,
     response::IntoResponse,
-    routing::{get, post},
+    routing::{delete, get, post},
     Extension, Router,
 };
 use axum_extra::json;
@@ -113,12 +113,53 @@ async fn insert_time(
     ))
 }
 
+async fn delete_by_id(
+    Extension(state): Extension<Arc<AppState>>,
+    Extension(account): Extension<Account>,
+    ValidatedPath(path): ValidatedPath<PathId>,
+) -> Result<impl IntoResponse, AppError> {
+    let deleted_count = session_services::delete_by_id_and_account_id(&state, account.id, path.id)
+        .await?
+        .deleted_count;
+
+    Ok((
+        StatusCode::OK,
+        json!({
+            "message": if deleted_count > 0 { "Session deleted" } else { "Nothing to delete" },
+            "payload": {
+                "deleted_count": deleted_count,
+            }
+        }),
+    ))
+}
+
+async fn delete_all_sessions(
+    Extension(state): Extension<Arc<AppState>>,
+    Extension(account): Extension<Account>,
+) -> Result<impl IntoResponse, AppError> {
+    let deleted_count = session_services::delete_all_by_account_id(&state, account.id)
+        .await?
+        .deleted_count;
+
+    Ok((
+        StatusCode::OK,
+        json!({
+            "message": &format!("Deleted {} sessions", deleted_count),
+            "payload": {
+                "deleted_count": deleted_count,
+            }
+        }),
+    ))
+}
+
 pub fn create_routes(state: Arc<AppState>) -> Router {
     let protected_routes = Router::new()
         .route("/", get(get_all_sessions))
         .route("/{id}", get(get_by_id))
         .route("/empty", post(create_empty))
         .route("/add-time", post(insert_time))
+        .route("/{id}", delete(delete_by_id))
+        .route("/", delete(delete_all_sessions))
         .layer(axum::middleware::from_fn(
             services::auth_services::auth_guard,
         ));

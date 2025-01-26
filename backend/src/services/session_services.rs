@@ -3,7 +3,7 @@ use std::sync::Arc;
 use futures::TryStreamExt;
 use mongodb::{
     bson::{doc, Uuid},
-    results::{InsertOneResult, UpdateResult},
+    results::{DeleteResult, InsertOneResult, UpdateResult},
     Collection,
 };
 
@@ -81,4 +81,29 @@ pub async fn insert_time(
         .push(time);
 
     update_by_id_and_account_id(state, account_id, id, session).await
+}
+
+pub async fn delete_by_id_and_account_id(
+    state: &Arc<AppState>,
+    account_id: Uuid,
+    id: Uuid,
+) -> Result<DeleteResult, AppError> {
+    let sessions: Collection<Session> = get_collection(state, Collections::SESSIONS);
+    let result = sessions
+        .delete_one(doc! { "_id": id, "account_id": account_id })
+        .await?;
+
+    Ok(result)
+}
+
+pub async fn delete_all_by_account_id(
+    state: &Arc<AppState>,
+    account_id: Uuid,
+) -> Result<DeleteResult, AppError> {
+    let sessions: Collection<Session> = get_collection(state, Collections::SESSIONS);
+    let result = sessions
+        .delete_many(doc! { "account_id": account_id })
+        .await?;
+
+    Ok(result)
 }

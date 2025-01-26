@@ -100,11 +100,12 @@ async fn change_password(
             .to_owned(),
     };
 
-    let update_res = services::account_services::update(&state, new_account).await?;
     let revoked_count =
-        services::auth_services::revoke_all_refresh_tokens(&state, account, &payload.new_password)
+        services::auth_services::revoke_all_refresh_tokens(&state, account, &payload.old_password)
             .await?
             .deleted_count;
+
+    let update_res = services::account_services::update(&state, new_account).await?;
 
     Ok((
         StatusCode::OK,

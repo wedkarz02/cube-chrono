@@ -213,3 +213,23 @@ All api endpoints are prefixed with `/api/v1`.
   - `201 Created`: New time inserted.
   - `400 Bad Request`: Invalid input data.
   - `401 Unauthorized`: Unauthorized to access this data.
+
+#### `DELETE /api/v1/sessions/{session_id}`
+- **Description**: Delete a session of the currently logged account by id.
+- **Headers**:
+  - `Authorization` (string): JWT access token, prefixed with `Bearer `.
+- **Path Parameters**:
+  - `session_id` (int): The id of the session.
+- **Responses**:
+  - `200 OK`: Session deleted.
+  - `400 Bad Request`: Invalid input data.
+  - `401 Unauthorized`: Unauthorized to access this data.
+
+#### `DELETE /api/v1/sessions`
+- **Description**: Delete all sessions of the currently logged account.
+- **Headers**:
+  - `Authorization` (string): JWT access token, prefixed with `Bearer `.
+- **Responses**:
+  - `200 OK`: All sessions deleted.
+  - `400 Bad Request`: Invalid input data.
+  - `401 Unauthorized`: Unauthorized to access this data.
