@@ -15,7 +15,8 @@ const { getCookieByName, ensureAuthenticated, ensureNotAuthenticated, getUser, c
 
 app.use(express.json());
 app.use(express.static("public"));
-app.set('view-engine', 'ejs');
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
 app.use(methodOverride('_method'));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -73,14 +74,6 @@ app.get('/login', ensureNotAuthenticated, async (req, res) => {
 app.get('/register', ensureNotAuthenticated, (req, res) => {
   res.render('register.ejs', {  });
 })
-
-app.get('/sessions', ensureAuthenticated, (req, res) => {
-  res.render('sessions.ejs');
-});
-
-app.get('/session/:id', ensureAuthenticated, (req, res) => {
-  res.render('session.ejs');
-});
 
 app.post('/logout', async (req, res) => {
   const data = {
@@ -196,5 +189,56 @@ app.post('/add-time', ensureAuthenticated, async (req, res) => {
   const jsonResult = await response.json();
   res.json(jsonResult);
 })
+
+app.get('/sessions', ensureAuthenticated, async (req, res) => {
+  try {
+    const response = await fetch('http://localhost:8080/api/v1/sessions', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${req.cookies.access_token}`,
+        'Accept': 'application/json',
+      },
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      res.render('sessions', {
+        isLoggedIn: true,
+        username: req.cookies.username || 'Nieznany Użytkownik',
+        sessions: data.payload.sessions,
+      });
+    } else {
+      res.render('sessions', { isLoggedIn: false, username: null, sessions: [] });
+    }
+  } catch (error) {
+    console.error('Błąd podczas pobierania sesji:', error);
+    res.render('sessions', { isLoggedIn: false, username: null, sessions: [] });
+  }
+});
+
+app.get('/session/:id', ensureAuthenticated, async (req, res) => {
+  try {
+    const sessionId = req.params.id;
+    const response = await fetch(`http://localhost:8080/api/v1/sessions/${sessionId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${req.cookies.access_token}`,
+        'Accept': 'application/json',
+      },
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      res.render('session', { isLoggedIn: true, session: data.payload.session });
+    } else if (response.status === 404) {
+      res.status(404).send('Session not found');
+    } else {
+      res.status(response.status).send('Error fetching session details');
+    }
+  } catch (error) {
+    console.error('Error fetching session details:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
 
 app.listen(3000)

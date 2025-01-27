@@ -5,9 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Twoje Sesje</title>
     <link rel="stylesheet" href="/style.css">
-    <link rel="icon" href="data:,">
 </head>
-<body>
+<body data-is-logged-in="<%= isLoggedIn %>">
     <header>
         <h1>Twoje Sesje</h1>
         <div>
@@ -16,67 +15,21 @@
         </div>
     </header>
     <main>
-        <section>
-            <h2>Lista Sesji</h2>
-            <ul id="sessions-list">
-                <li>Ładowanie sesji...</li>
-            </ul>
-        </section>
+        <% if (sessions && sessions.length > 0) { %>
+            <section>
+                <h2>Twoje Sesje</h2>
+                <ul>
+                    <% sessions.forEach(session => { %>
+                        <li>
+                            <strong><%= session.name %></strong>
+                            <button class="button" onclick="window.location.href='/session/<%= session._id %>'">Szczegóły</button>
+                        </li>
+                    <% }) %>
+                </ul>
+            </section>
+        <% } else { %>
+            <p>Brak zapisanych sesji.</p>
+        <% } %>
     </main>
-    <script>
-        async function fetchSessions() {
-            const sessionsList = document.getElementById('sessions-list');
-            try {
-                // Bezpieczne pobieranie tokenu
-                const token = document.cookie.split('; ').find(row => row.startsWith('access_token='));
-                const accessToken = token ? token.split('=')[1] : null;
-
-                if (!accessToken) {
-                    sessionsList.innerHTML = '<li>Brak dostępu — zaloguj się ponownie.</li>';
-                    return;
-                }
-
-                // Wykonaj zapytanie
-                const response = await fetch('/sessions', {
-                    method: 'GET',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${accessToken}`,
-                    },
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    sessionsList.innerHTML = ''; // Wyczyść listę
-
-                    if (!data.payload.sessions.length) {
-                        sessionsList.innerHTML = '<li>Brak zapisanych sesji.</li>';
-                        return;
-                    }
-
-                    data.payload.sessions.forEach(session => {
-                        const li = document.createElement('li');
-                        li.innerHTML = `
-                            <strong>${session.name}</strong>
-                            <button class="button" onclick="viewSession('${session.id}')">Szczegóły</button>
-                        `;
-                        sessionsList.appendChild(li);
-                    });
-                } else {
-                    sessionsList.innerHTML = '<li>Nie udało się załadować listy sesji.</li>';
-                }
-            } catch (error) {
-                console.error('Błąd przy pobieraniu sesji:', error);
-                sessionsList.innerHTML = '<li>Wystąpił błąd połączenia z serwerem.</li>';
-            }
-        }
-    
-        function viewSession(sessionId) {
-            window.location.href = `/session/${sessionId}`;
-        }
-    
-        document.addEventListener('DOMContentLoaded', fetchSessions);
-    </script>    
 </body>
 </html>
