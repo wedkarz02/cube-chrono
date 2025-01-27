@@ -68,17 +68,6 @@
         });
     </script>
 <script>
-    const usersButton = document.getElementById('get-all-users');
-    const deleteUserButton = document.getElementById('delete-user'); 
-
-    usersButton.addEventListener('click', async () => {
-        await getAllUsers();
-    });
-
-    deleteUserButton.addEventListener('click', async () => {
-        await deleteUser("eccc3d06-d863-4d38-a4ea-6104489bfc8c");
-    });
-
     async function getAllUsers() {
         try {
             const response = await fetch(`http://localhost:3000/all-users`, {
@@ -149,6 +138,19 @@
     }
 });
 
+document.addEventListener('DOMContentLoaded', function () {
+    // Zdobądź wszystkie przyciski "Usuń"
+    const deleteButtons = document.querySelectorAll('.delete-btn');
+
+    deleteButtons.forEach(button => {
+        // Dodaj event listener na kliknięcie przycisku
+        button.addEventListener('click', function() {
+            const userId = button.getAttribute('data-id');  // Pobierz id użytkownika z data-id
+            deleteUser(userId);  // Wywołaj funkcję deleteUser z tym id
+        });
+    });
+});
+
 async function deleteUser(user_id) {
     try {
         const data = {
@@ -169,6 +171,7 @@ async function deleteUser(user_id) {
 
         if (response.status == 200) {
             alert('Użytkownik został usunięty.');
+            location.reload();
         } else {
             alert('Nie udało się usunąć użytkownika.');
         }
@@ -177,6 +180,7 @@ async function deleteUser(user_id) {
         alert('Wystąpił błąd połączenia z serwerem.');
     }
 }
+
 </script>
 </body>
 </html>

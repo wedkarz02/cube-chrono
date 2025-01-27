@@ -11,10 +11,7 @@
         <h1>Rejestracja</h1>
     </header>
     <main>
-        <form action="#" method="POST" class="form" id="register-form">
-            <label for="email">E-mail:</label>
-            <input type="email" id="email" name="email" required>
-            
+        <form action="#" method="POST" class="form" id="register-form">          
             <label for="username">Nazwa Użytkownika:</label>
             <input type="text" id="username" name="username" required>
             
@@ -34,7 +31,6 @@
     <script>
         document.getElementById('register-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const email = document.getElementById('email').value;
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
             const confirmPassword = document.getElementById('confirm-password').value;
