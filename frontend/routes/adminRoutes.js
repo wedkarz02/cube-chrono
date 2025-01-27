@@ -66,6 +66,7 @@ let fetch;
       });
 
       const jsonResult = await result.json();
+
       res.json(jsonResult);
     } else {
       res.redirect('/');

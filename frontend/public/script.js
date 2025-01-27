@@ -21,6 +21,7 @@ const resetButton = document.getElementById('reset');
 const newSessionButton = document.getElementById('create-session-button');
 const sessionNameID = document.getElementById('session-name-id');
 
+// Funkcja formatowania czasu
 function formatTime(ms) {
     const hours = String(Math.floor(ms / 3600000)).padStart(2, '0');
     const minutes = String(Math.floor((ms % 3600000) / 60000)).padStart(2, '0');
@@ -33,7 +34,6 @@ if (newSessionButton !== null) {
     newSessionButton.addEventListener('click', async () => {
         const sessionNameInput = document.getElementById('session-name');
         const sessionName = sessionNameInput.value || `Sesja ${Date.now()}`;
-        
         try {
             const data = {
                 name: sessionName
@@ -52,6 +52,7 @@ if (newSessionButton !== null) {
             
             if (response.ok) {
                 sessionID = jsonResult.payload.session_id;
+
                 sessionNameID.textContent = sessionName;
                 alert('Stworzono nową sesję.');
             } else {
