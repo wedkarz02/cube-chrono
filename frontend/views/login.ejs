@@ -8,7 +8,7 @@
 </head>
 <body>
     <header>
-        <h1>🔑 Logowanie</h1>
+        <h1>Logowanie</h1>
     </header>
     <main>
         <form action="#" method="POST" class="form" id="login-form">
@@ -31,15 +31,12 @@
             
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
-            
-            // Tworzymy dane do wysłania
             const data = {
                 username: username,
                 password: password
             };
 
             try {
-                // Wysyłamy zapytanie POST do backendu
                 const response = await fetch('/login', {
                     method: 'POST',
                     headers: {

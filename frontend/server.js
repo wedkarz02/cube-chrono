@@ -2,20 +2,17 @@ require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const app = express();
-const flash = require('express-flash');
-const session = require('express-session');
 const methodOverride = require('method-override');
 const ejs = require('ejs');
 const cookieParser = require('cookie-parser');
 const profileRoutes = require('./routes/profileRoutes');
-const eventRoutes = require('./routes/eventRoutes');
-const rankingRoutes = require('./routes/rankingRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const { getCookieByName, ensureAuthenticated, ensureNotAuthenticated, getUser, checkIfAdmin } = require('./utils');
 
 app.use(express.json());
 app.use(express.static("public"));
-app.set('view-engine', 'ejs');
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
 app.use(methodOverride('_method'));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -27,8 +24,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 const apiURL = new URL("http://localhost:8080/api/v1/");
 
 app.use('/', profileRoutes);
-app.use('/', eventRoutes);
-app.use('/', rankingRoutes);
 app.use('/', adminRoutes);
 app.use('/script.js', (req, res, next) => {
   res.setHeader('Content-Type', 'application/javascript');
@@ -55,18 +50,6 @@ app.get('/', async (req, res) => {
 })
 
 app.get('/login', ensureNotAuthenticated, async (req, res) => {
-  // const result = await fetch("http://localhost:8080/api/v1/auth/login", {
-  //   method: 'POST',
-  //   headers: {
-  //     'Accept': 'application/json',
-  //     'Content-Type': 'application/json'
-  //   }
-  // });
-  
-  // // const jsonResult = await result.json();
-  // // console.log(jsonResult);
-  // console.log(result);
-  // console.log(result.status);
   res.render('login.ejs', {  });
 })
 
@@ -138,7 +121,6 @@ app.post('/register', async (req, res) => {
     });
     const jsonResult = await result.json();
     res.send(jsonResult);
-  //dodać automatyczne logowanie po rejestracji.
 })
 
 app.post('/scrambles', async (req, res) => {
@@ -188,5 +170,56 @@ app.post('/add-time', ensureAuthenticated, async (req, res) => {
   const jsonResult = await response.json();
   res.json(jsonResult);
 })
+
+app.get('/sessions', ensureAuthenticated, async (req, res) => {
+  try {
+    const response = await fetch('http://localhost:8080/api/v1/sessions', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${req.cookies.access_token}`,
+        'Accept': 'application/json',
+      },
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      res.render('sessions', {
+        isLoggedIn: true,
+        username: req.cookies.username || 'Nieznany Użytkownik',
+        sessions: data.payload.sessions,
+      });
+    } else {
+      res.render('sessions', { isLoggedIn: false, username: null, sessions: [] });
+    }
+  } catch (error) {
+    console.error('Błąd podczas pobierania sesji:', error);
+    res.render('sessions', { isLoggedIn: false, username: null, sessions: [] });
+  }
+});
+
+app.get('/session/:id', ensureAuthenticated, async (req, res) => {
+  try {
+    const sessionId = req.params.id;
+    const response = await fetch(`http://localhost:8080/api/v1/sessions/${sessionId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${req.cookies.access_token}`,
+        'Accept': 'application/json',
+      },
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      res.render('session', { isLoggedIn: true, session: data.payload.session });
+    } else if (response.status === 404) {
+      res.status(404).send('Session not found');
+    } else {
+      res.status(response.status).send('Error fetching session details');
+    }
+  } catch (error) {
+    console.error('Error fetching session details:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
 
 app.listen(3000)

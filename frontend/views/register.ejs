@@ -8,7 +8,7 @@
 </head>
 <body>
     <header>
-        <h1>📝 Rejestracja</h1>
+        <h1>Rejestracja</h1>
     </header>
     <main>
         <form action="#" method="POST" class="form" id="register-form">
@@ -45,11 +45,9 @@
                 const data = {
                     username: username,
                     password: password,
-                    //email: email
                 };
                 
                 try {
-                // Wysyłamy zapytanie POST do backendu
                 const response = await fetch('/register', {
                     method: 'POST',
                     headers: {
@@ -64,7 +62,6 @@
                     alert(`Pomyślnie utworzono użytkownika: ${username}`);
                     window.location.href = '/login';
                 } else {
-                    // Błąd logowania
                     alert('Użytkownik o takich danych już istnieje!');
                 }
             } catch (error) {
