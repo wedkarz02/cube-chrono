@@ -786,3 +786,9 @@ footer {
 .profile-events button:hover {
     background-color: #6f4f4b;
 }
+
+#session-name-id {
+    color: #4a2c2a; /* Kolor tekstu */
+    font-size: 1.5rem;
+    font-weight: bold;
+}

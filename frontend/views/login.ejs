@@ -31,15 +31,13 @@
             
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
-            
-            // Tworzymy dane do wysłania
+
             const data = {
                 username: username,
                 password: password
             };
 
             try {
-                // Wysyłamy zapytanie POST do backendu
                 const response = await fetch('/login', {
                     method: 'POST',
                     headers: {

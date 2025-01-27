@@ -3,6 +3,7 @@ const isLoggedIn = document.body.getAttribute('data-is-logged-in') === 'true';
 let globalKind;
 let globalSequence;
 let sessionID;
+let globalSessionName;
 
 // === TIMER === //
 let timerInterval;
@@ -17,9 +18,9 @@ const millisecondsDisplay = document.getElementById('milliseconds');
 const startButton = document.getElementById('start');
 const stopButton = document.getElementById('stop');
 const resetButton = document.getElementById('reset');
-const newSessionButton = document.getElementById('new-session');
+const newSessionButton = document.getElementById('create-session-button');
+const sessionNameID = document.getElementById('session-name-id');
 
-// Funkcja formatowania czasu
 function formatTime(ms) {
     const hours = String(Math.floor(ms / 3600000)).padStart(2, '0');
     const minutes = String(Math.floor((ms % 3600000) / 60000)).padStart(2, '0');
@@ -30,7 +31,9 @@ function formatTime(ms) {
 
 if (newSessionButton !== null) {
     newSessionButton.addEventListener('click', async () => {
-        let sessionName = "Sesja 1";
+        const sessionNameInput = document.getElementById('session-name');
+        const sessionName = sessionNameInput.value || `Sesja ${Date.now()}`;
+        
         try {
             const data = {
                 name: sessionName
@@ -49,6 +52,7 @@ if (newSessionButton !== null) {
             
             if (response.ok) {
                 sessionID = jsonResult.payload.session_id;
+                sessionNameID.textContent = sessionName;
                 alert('Stworzono nową sesję.');
             } else {
                 alert(jsonResult.message);
@@ -57,10 +61,9 @@ if (newSessionButton !== null) {
             console.error('Błąd połączenia:', error);
             alert('Wystąpił błąd połączenia z serwerem.');
         }
-    });    
+    });
 }
 
-// Start Timer
 startButton.addEventListener('click', () => {
     if (!timerInterval) {
         startTime = Date.now();
@@ -75,7 +78,6 @@ startButton.addEventListener('click', () => {
     }
 });
 
-// Stop Timer
 stopButton.addEventListener('click', async () => {
     clearInterval(timerInterval);
     timerInterval = null;
@@ -120,7 +122,6 @@ stopButton.addEventListener('click', async () => {
     }    
 });
 
-// Reset Timer
 resetButton.addEventListener('click', () => {
     clearInterval(timerInterval);
     timerInterval = null;
@@ -166,12 +167,10 @@ async function generateScramble(kind, count) {
     }
 }
 
-// Wyświetlanie scramble na kliknięcie przycisku
 scrambleButton.addEventListener('click', async () => {
     scrambleDisplay.textContent = await generateScramble("Three", 1);
 });
 
-// Generowanie scramble przy załadowaniu strony
 document.addEventListener('DOMContentLoaded', async () => {
     scrambleDisplay.textContent = await generateScramble("Three", 1);
 });
@@ -180,35 +179,3 @@ function getAccessToken() {
     const token = document.cookie.split('; ').find(row => row.startsWith('access_token='));
     return token ? token.split('=')[1] : null;
 }
-
-document.addEventListener('DOMContentLoaded', () => {
-    const createSessionButton = document.getElementById('create-session-button');
-    const sessionNameInput = document.getElementById('session-name');
-
-    if (createSessionButton && sessionNameInput) {
-        createSessionButton.addEventListener('click', async () => {
-            const sessionName = sessionNameInput.value || `Sesja ${Date.now()}`;
-            try {
-                const response = await fetch('/new-session', {
-                    method: 'POST',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${getAccessToken()}`,
-                    },
-                    body: JSON.stringify({ name: sessionName }),
-                });
-
-                if (response.ok) {
-                    alert('Nowa sesja została utworzona!');
-                    sessionNameInput.value = ''; // Wyczyść pole tekstowe
-                } else {
-                    alert('Nie udało się utworzyć nowej sesji.');
-                }
-            } catch (error) {
-                console.error('Błąd przy tworzeniu sesji:', error);
-                alert('Wystąpił problem z połączeniem.');
-            }
-        });
-    }
-});

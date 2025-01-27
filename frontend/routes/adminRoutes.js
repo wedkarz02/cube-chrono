@@ -1,15 +1,34 @@
 const express = require('express');
 const router = express.Router();
-const { getCookieByName, ensureAuthenticated, getUser, checkIfAdmin } = require('../utils'); // Przenieś pomocnicze funkcje do osobnego pliku
+const { getCookieByName, ensureAuthenticated, getUser, checkIfAdmin } = require('../utils');
 
-// Zmieniamy require na dynamiczny import
 let fetch;
 
 (async () => {
-  fetch = (await import('node-fetch')).default; // Dynamiczny import fetch
+  fetch = (await import('node-fetch')).default;
 
-  router.get('/admin', ensureAdmin, (req, res) => {
-    res.render('admin.ejs');
+  router.get('/admin', ensureAdmin, async (req, res) => {
+    const access_token = getCookieByName("access_token", req.cookies);
+    if (access_token !== null) {
+      try {
+      const token = "Bearer ".concat(access_token);
+      const result = await fetch("http://localhost:8080/api/v1/profiles", {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': token
+        }
+      });
+
+      const jsonResult = await result.json();
+      const accounts = jsonResult.payload.accounts;
+      res.render('admin.ejs', { accounts: accounts });
+      } catch (e) {
+        console.error(e);
+        res.redirect('/');
+      }
+    }
   })
 
   router.get('/all-users', await ensureAuthenticated, async (req, res) => {
@@ -26,19 +45,17 @@ let fetch;
       });
 
       const jsonResult = await result.json();
-      console.log(result);
-      console.log(jsonResult);
       res.json(jsonResult);
     } else {
       res.redirect('/');
     }
   });
 
-  router.delete('/delete-user', await ensureAuthenticated, async (req, res) => {
+  router.post('/delete-user', await ensureAuthenticated, async (req, res) => {
     const access_token = getCookieByName("access_token", req.cookies);
     if (access_token !== null) {
       const token = "Bearer ".concat(access_token);
-      const account_id = req.body.account_id;
+      const account_id = req.body.user_id;
       const result = await fetch(`http://localhost:8080/api/v1/profiles/${account_id}`, {
         method: 'DELETE',
         headers: {
@@ -49,8 +66,6 @@ let fetch;
       });
 
       const jsonResult = await result.json();
-      console.log(result);
-      console.log(jsonResult);
       res.json(jsonResult);
     } else {
       res.redirect('/');

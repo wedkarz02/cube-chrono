@@ -45,29 +45,7 @@
             <h2>Twoje Sesje</h2>
             <p>Przejdź do listy wszystkich zapisanych sesji:</p>
             <a href="/sessions" class="button" id="get-all-sessions">Zobacz Sesje</a>
-        </section>        
-
-        <section>
-            <h2>Ranking</h2>
-            <p>Sprawdź swoje miejsce w rankingu.</p>
-            <button onclick="window.location.href='ranking.html'">Przejdź do Rankingu</button>
-        </section>        
-
-        <!-- Sekcja Moich Wydarzeń -->
-        <section class="profile-events">
-            <h2>Moje Wydarzenia</h2>
-            <ul class="events-list">
-                <li>
-                    <strong>Mistrzostwa Polski 2024</strong> - 15.07.2024
-                    <span>Status: Zapisany</span>
-                </li>
-                <li>
-                    <strong>Speedcubing Open</strong> - 05.08.2024
-                    <span>Status: Zapisany</span>
-                </li>
-            </ul>
-            <button onclick="window.location.href='/events'">Przejdź do Wydarzeń</button>
-        </section>
+        </section>            
     </main>
 
     <footer>
@@ -142,7 +120,7 @@
     <script>
         const sessionsButton = document.getElementById('get-all-sessions');
 
-        if (sessionsButton) { // Sprawdzenie, czy element istnieje
+        if (sessionsButton) {
             sessionsButton.addEventListener('click', async () => {
                 await getAllSessions();
             });
@@ -162,9 +140,8 @@
                 console.log(jsonResult);
 
                 if (response.status == 200) {
-                    console.log("GIT");
                 } else {
-                    console.log("NIE GIT");
+                    console.error("Błąd z zapytaniem.")
                 }
             } catch (error) {
                 console.error('Błąd połączenia:', error);
