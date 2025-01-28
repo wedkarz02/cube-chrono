@@ -2,16 +2,15 @@
 
 * [Requirements](#requirements)
 * [Download](#download)
-* [Build](#build)
+* [Install](#install)
 * [Getting Started](#getting-started)
-  * [Environment](#environment)
-  * [Compose](#compose)
+  * [API Setup](#api-setup)
 * [Usage](#usage)
 * [License](#license)
 
 ## Requirements
 
-→ [Npm](https://www.npmjs.com/)
+→ [Npm](https://www.npmjs.com/)\
 → [Node](https://nodejs.org/)
 
 ## Download
@@ -24,7 +23,7 @@ $ git clone https://github.com/wedkarz02/cube-chrono.git
 
 Or use the *Download ZIP* option from the Github repository [page](https://github.com/wedkarz02/cube-chrono.git).
 
-## Build
+## Install
 
 Install the required dependencies using `npm`:
 
@@ -34,11 +33,11 @@ $ npm install .
 
 ## Getting Started
 
-### Environment
+### API Setup
 
 To setup the backend, please head to the backend directory and check out the file README.md. After backend is properly configured, you can continue from this place. 
 
-### Usage
+## Usage
 
 When the API is live, you can use any endpoints specified in the [API Reference](https://github.com/wedkarz02/cube-chrono/blob/main/doc/api-documentation.md) document.
 When in the cube-chrono/frontend directory, start the server application with Node.js:
