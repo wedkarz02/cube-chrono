@@ -1,3 +1,5 @@
+import {API_URL} from "../server";
+
 const express = require('express');
 const router = express.Router();
 const {getCookieByName, ensureAuthenticated, getUser, checkIfAdmin} = require('../utils');
@@ -7,7 +9,7 @@ router.get('/admin', ensureAdmin, async (req, res) => {
     if (access_token !== null) {
         try {
             const token = "Bearer ".concat(access_token);
-            const result = await fetch("http://localhost:8080/api/v1/profiles", {
+            const result = await fetch(API_URL + "/profiles", {
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json',
@@ -30,7 +32,7 @@ router.get('/all-users', ensureAuthenticated, async (req, res) => {
     const access_token = getCookieByName("access_token", req.cookies);
     if (access_token !== null) {
         const token = "Bearer ".concat(access_token);
-        const result = await fetch("http://localhost:8080/api/v1/profiles", {
+        const result = await fetch(API_URL + "/profiles", {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
@@ -51,7 +53,7 @@ router.post('/delete-user', ensureAuthenticated, async (req, res) => {
     if (access_token !== null) {
         const token = "Bearer ".concat(access_token);
         const account_id = req.body.user_id;
-        const result = await fetch(`http://localhost:8080/api/v1/profiles/${account_id}`, {
+        const result = await fetch(API_URL + `/profiles/${account_id}`, {
             method: 'DELETE',
             headers: {
                 'Accept': 'application/json',

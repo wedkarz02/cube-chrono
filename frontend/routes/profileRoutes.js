@@ -1,3 +1,5 @@
+import {API_URL} from "../server";
+
 const express = require('express');
 const router = express.Router();
 const {getCookieByName, ensureAuthenticated} = require('../utils');
@@ -6,7 +8,7 @@ router.get('/myprofile', ensureAuthenticated, async (req, res) => {
     const access_token = getCookieByName("access_token", req.cookies);
     if (access_token !== null) {
         const token = "Bearer ".concat(access_token);
-        const result = await fetch("http://localhost:8080/api/v1/profiles/logged", {
+        const result = await fetch(API_URL + "/profiles/logged", {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
@@ -33,7 +35,7 @@ router.put('/password', ensureAuthenticated, async (req, res) => {
         const token = "Bearer ".concat(access_token);
 
         try {
-            const result = await fetch("http://localhost:8080/api/v1/profiles/logged/change-password", {
+            const result = await fetch(API_URL + "/profiles/logged/change-password", {
                 method: 'PUT',
                 headers: {
                     'Accept': 'application/json',
@@ -67,7 +69,7 @@ router.put('/username', ensureAuthenticated, async (req, res) => {
         const token = "Bearer ".concat(access_token);
 
         try {
-            const result = await fetch("http://localhost:8080/api/v1/profiles/logged/change-username", {
+            const result = await fetch(API_URL + "/profiles/logged/change-username", {
                 method: 'PUT',
                 headers: {
                     'Accept': 'application/json',
@@ -96,7 +98,7 @@ router.get('/all-sessions', ensureAuthenticated, async (req, res) => {
     const access_token = getCookieByName("access_token", req.cookies);
     if (access_token !== null) {
         const token = "Bearer ".concat(access_token);
-        const result = await fetch("http://localhost:8080/api/v1/sessions", {
+        const result = await fetch(API_URL + "/sessions", {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
@@ -118,7 +120,7 @@ router.post('/session', ensureAuthenticated, async (req, res) => {
     if (access_token !== null) {
         const session_id = req.body.session_id;
         const token = "Bearer ".concat(access_token);
-        const result = await fetch(`http://localhost:8080/api/v1/sessions/${session_id}`, {
+        const result = await fetch(API_URL + `/sessions/${session_id}`, {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',

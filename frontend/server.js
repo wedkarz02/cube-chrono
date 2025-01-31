@@ -21,11 +21,11 @@ app.use((_req, res, next) => {
 });
 app.use(express.static(path.join(__dirname, 'public')));
 
-const API_URL = new URL('http://localhost:8080/api/v1');
+export const API_URL = new URL('http://localhost:8080/api/v1');
 
 // NOTE: Assuming these durations could change in the backend, it may be better to receive them with api requests
-const ACCESS_TOKEN_EXPIRY_TIME = 1000 * 60 * 15;
-const REFRESH_TOKEN_EXPIRY_TIME = 1000 * 60 * 60 * 24 * 30;
+export const ACCESS_TOKEN_EXPIRY_TIME = 1000 * 60 * 15;
+export const REFRESH_TOKEN_EXPIRY_TIME = 1000 * 60 * 60 * 24 * 30;
 
 app.use('/', profileRoutes);
 app.use('/', adminRoutes);

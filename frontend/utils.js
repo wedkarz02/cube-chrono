@@ -1,6 +1,4 @@
-import {API_URL} from './server'
-
-const ACCESS_TOKEN_EXPIRY_TIME = 1000 * 60 * 15;
+import {API_URL, ACCESS_TOKEN_EXPIRY_TIME} from './server'
 
 function getCookieByName(searchKey, cookies) {
     for (const [key, value] of Object.entries(cookies)) {
