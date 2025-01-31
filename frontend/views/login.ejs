@@ -14,10 +14,10 @@
         <form action="#" method="POST" class="form" id="login-form">
             <label for="username">E-mail lub Nazwa Użytkownika:</label>
             <input type="text" id="username" name="username" required>
-            
+
             <label for="password">Hasło:</label>
             <input type="password" id="password" name="password" required>
-            
+
             <button type="submit">Zaloguj się</button>
         </form>
         <p>Nie masz konta? <a href="/register">Zarejestruj się tutaj</a>.</p>
@@ -28,7 +28,7 @@
     <script>
         document.getElementById('login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            
+
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
             const data = {
@@ -45,7 +45,7 @@
                     body: JSON.stringify(data)
                 });
 
-                if (response.status == 200) {
+                if (response.status === 200) {
                     localStorage.setItem('isLoggedIn', 'true');
                     localStorage.setItem('username', username);
                     alert(`Zalogowano jako: ${username}`);

@@ -31,7 +31,7 @@ let fetch;
     }
   })
 
-  router.get('/all-users', await ensureAuthenticated, async (req, res) => {
+  router.get('/all-users', ensureAuthenticated, async (req, res) => {
     const access_token = getCookieByName("access_token", req.cookies);
     if (access_token !== null) {
       const token = "Bearer ".concat(access_token);
@@ -51,7 +51,7 @@ let fetch;
     }
   });
 
-  router.post('/delete-user', await ensureAuthenticated, async (req, res) => {
+  router.post('/delete-user', ensureAuthenticated, async (req, res) => {
     const access_token = getCookieByName("access_token", req.cookies);
     if (access_token !== null) {
       const token = "Bearer ".concat(access_token);

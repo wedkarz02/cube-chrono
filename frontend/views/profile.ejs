@@ -18,33 +18,31 @@
     </header>
 
     <main>
-        <!-- Sekcja Informacji Profilowych -->
         <section class="profile-info">
             <h2>Twoje Dane</h2>
             <form class="form change-password">
                 <label for="old_password">Stare hasło:</label>
                 <input type="password" id="old_password">
-            
+
                 <label for="new_password">Nowe hasło:</label>
                 <input type="password" id="new_password">
-                
+
                 <button type="submit">Zmień hasło</button>
             </form>
-            
+
             <form class="form change-username">
                 <label for="username">Nazwa użytkownika:</label>
                 <input type="text" id="username" value=<%= username %> required>
-                
+
                 <button type="submit">Zmień nazwę użytkownika</button>
             </form>
         </section>
 
-        <!-- Sekcja Historii Wyników -->
         <section class="profile-history">
             <h2>Twoje Sesje</h2>
             <p>Przejdź do listy wszystkich zapisanych sesji:</p>
             <a href="/sessions" class="button" id="get-all-sessions">Zobacz Sesje</a>
-        </section>            
+        </section>
     </main>
 
     <footer>
@@ -138,7 +136,7 @@
                 const jsonResult = await response.json();
                 console.log(jsonResult);
 
-                if (response.status == 200) {
+                if (response.status === 200) {
                 } else {
                     console.error("Błąd z zapytaniem.")
                 }
@@ -166,7 +164,7 @@
                 const jsonResult = await response.json();
                 console.log(jsonResult);
 
-                if (response.status == 200) {
+                if (response.status === 200) {
                     console.log("GIT");
                 } else {
                     console.log("NIE GIT");

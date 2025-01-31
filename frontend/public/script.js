@@ -3,14 +3,12 @@ const isLoggedIn = document.body.getAttribute('data-is-logged-in') === 'true';
 let globalKind;
 let globalSequence;
 let sessionID;
-let globalSessionName;
 
 // === TIMER === //
 let timerInterval;
 let startTime;
 let elapsedTime = 0;
 
-// Pobieranie elementów DOM
 const hoursDisplay = document.getElementById('hours');
 const minutesDisplay = document.getElementById('minutes');
 const secondsDisplay = document.getElementById('seconds');
@@ -21,7 +19,6 @@ const resetButton = document.getElementById('reset');
 const newSessionButton = document.getElementById('create-session-button');
 const sessionNameID = document.getElementById('session-name-id');
 
-// Funkcja formatowania czasu
 function formatTime(ms) {
     const hours = String(Math.floor(ms / 3600000)).padStart(2, '0');
     const minutes = String(Math.floor((ms % 3600000) / 60000)).padStart(2, '0');
@@ -38,7 +35,7 @@ if (newSessionButton !== null) {
             const data = {
                 name: sessionName
             };
-    
+
             const response = await fetch(`http://localhost:3000/new-session`, {
                 method: 'POST',
                 headers: {
@@ -47,9 +44,9 @@ if (newSessionButton !== null) {
                 },
                 body: JSON.stringify(data)
             });
-    
+
             const jsonResult = await response.json();
-            
+
             if (response.ok) {
                 sessionID = jsonResult.payload.session_id;
 
@@ -109,9 +106,7 @@ stopButton.addEventListener('click', async () => {
                 body: JSON.stringify(data)
             });
 
-            const jsonResult = await response.json();
-
-            if (response.status == 200) {
+            if (response.status === 200) {
                 alert(`Zapisano czas w sesji.`);
             } else {
                 alert('Błąd zapisu!');
@@ -120,7 +115,7 @@ stopButton.addEventListener('click', async () => {
             console.error('Błąd połączenia:', error);
             alert('Wystąpił błąd połączenia z serwerem.');
         }
-    }    
+    }
 });
 
 resetButton.addEventListener('click', () => {
@@ -155,7 +150,7 @@ async function generateScramble(kind, count) {
 
         const jsonResult = await response.json();
 
-        if (response.status == 200) {
+        if (response.status === 200) {
             globalSequence = jsonResult.payload.scrambles[0].sequence;
             globalKind = kind;
             return jsonResult.payload.scrambles[0].sequence;
@@ -175,8 +170,3 @@ scrambleButton.addEventListener('click', async () => {
 document.addEventListener('DOMContentLoaded', async () => {
     scrambleDisplay.textContent = await generateScramble("Three", 1);
 });
-
-function getAccessToken() {
-    const token = document.cookie.split('; ').find(row => row.startsWith('access_token='));
-    return token ? token.split('=')[1] : null;
-}

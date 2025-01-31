@@ -27,13 +27,12 @@
     </header>
 
     <main>
-        <!-- Czasomierz -->
         <section class="timer-section">
             <h2>Czasomierz</h2>
             <p>Kliknij "Start", aby rozpocząć pomiar czasu!</p>
             <% if (isLoggedIn) { %>
                 <h1>Obecna sesja <span id="session-name-id">nie będzie zapisywana.</span></h1>
-            <% } %>    
+            <% } %>
             <div class="timer-container">
                 <span id="hours">00</span><span class="colon">:</span>
                 <span id="minutes">00</span><span class="colon">:</span>
@@ -56,7 +55,7 @@
                     </div>
                 <% } %>
             </div>
-        </section>        
+        </section>
 
         <!-- Scramble -->
         <section>
@@ -70,6 +69,6 @@
     <footer>
         <p>&copy; 2024 Cube Chrono. Wszystkie prawa zastrzeżone.</p>
     </footer>
-    <script src="/script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>

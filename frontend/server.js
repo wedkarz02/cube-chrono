@@ -3,25 +3,29 @@ const express = require('express');
 const path = require('path');
 const app = express();
 const methodOverride = require('method-override');
-const ejs = require('ejs');
 const cookieParser = require('cookie-parser');
 const profileRoutes = require('./routes/profileRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const { getCookieByName, ensureAuthenticated, ensureNotAuthenticated, getUser, checkIfAdmin } = require('./utils');
 
 app.use(express.json());
-app.use(express.static("public"));
+app.use(express.static('public'));
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use(methodOverride('_method'));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use((_req, res, next) => {
-  res.set("Cache-Control", "no-store, no-cache, must-revalidate, private");
+  res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
   next();
 });
 app.use(express.static(path.join(__dirname, 'public')));
-const apiURL = new URL("http://localhost:8080/api/v1/");
+
+const API_URL = new URL('http://localhost:8080/api/v1');
+
+// NOTE: Assuming these durations could change in the backend, it may be better to receive them with api requests
+const ACCESS_TOKEN_EXPIRY_TIME = 1000 * 60 * 15;
+const REFRESH_TOKEN_EXPIRY_TIME = 1000 * 60 * 60 * 24 * 30;
 
 app.use('/', profileRoutes);
 app.use('/', adminRoutes);
@@ -31,7 +35,7 @@ app.use('/script.js', (req, res, next) => {
 });
 
 app.get('/', async (req, res) => {
-  const access_token = getCookieByName("access_token", req.cookies);
+  const access_token = getCookieByName('access_token', req.cookies);
   let isAdmin = false;
   let logged;
   if (access_token !== null) {
@@ -62,7 +66,7 @@ app.post('/logout', async (req, res) => {
     refresh_token: getCookieByName('refresh_token', req.cookies)
   };
 
-  const result = await fetch("http://localhost:8080/api/v1/auth/logout", {
+  await fetch(API_URL + '/auth/logout', {
     method: 'POST',
     headers: {
       'Accept': 'application/json',
@@ -77,47 +81,47 @@ app.post('/logout', async (req, res) => {
 })
 
 app.post('/login', async (req, res) => {
-  const result = await fetch("http://localhost:8080/api/v1/auth/login", {
+  const result = await fetch(API_URL + '/auth/login', {
     method: 'POST',
     headers: {
       'Accept': 'application/json',
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify(req.body)  
+    body: JSON.stringify(req.body)
   });
-  
+
   const jsonResult = await result.json();
-  
-  if (result.status == 200) {
+
+  if (result.status === 200) {
     res.cookie('access_token', jsonResult.payload.access_token, {
       httpOnly: true,
-      secure: true, 
-      maxAge: 1000 * 60 * 15,
+      secure: true,
+      maxAge: ACCESS_TOKEN_EXPIRY_TIME,
       sameSite: 'Strict'
     });
 
     res.cookie('refresh_token', jsonResult.payload.refresh_token, {
-      httpOnly: true,  
-      secure: true,  
-      maxAge: 30 * 24 * 60 * 60 * 1000,
-      sameSite: 'Strict' 
+      httpOnly: true,
+      secure: true,
+      maxAge: REFRESH_TOKEN_EXPIRY_TIME,
+      sameSite: 'Strict'
     });
-    
+
     res.send(result);
   } else {
-    res.status(401).send({ message: "Invalid credentials" });
+    res.status(401).send({ message: 'Invalid credentials' });
   }
 
 })
 
 app.post('/register', async (req, res) => {
-    const result = await fetch("http://localhost:8080/api/v1/auth/register", {
+    const result = await fetch(API_URL + '/auth/register', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(req.body)  
+      body: JSON.stringify(req.body)
     });
     const jsonResult = await result.json();
     res.send(jsonResult);
@@ -127,7 +131,7 @@ app.post('/scrambles', async (req, res) => {
   const kind = req.body.kind;
   const count = req.body.count;
 
-  const response = await fetch(`http://localhost:8080/api/v1/scrambles?kind=${kind}&count=${count}`, {
+  const response = await fetch(API_URL + `/scrambles?kind=${kind}&count=${count}`, {
     method: 'GET',
     headers: {
         'Accept': 'application/json',
@@ -140,9 +144,9 @@ app.post('/scrambles', async (req, res) => {
 })
 
 app.post('/new-session', ensureAuthenticated, async (req, res) => {
-  const access_token = getCookieByName("access_token", req.cookies);
-  const token = "Bearer ".concat(access_token);
-  const response = await fetch(`http://localhost:8080/api/v1/sessions/empty`, {
+  const access_token = getCookieByName('access_token', req.cookies);
+  const token = 'Bearer '.concat(access_token);
+  const response = await fetch(API_URL + '/sessions/empty', {
     method: 'POST',
     headers: {
         'Accept': 'application/json',
@@ -156,8 +160,8 @@ app.post('/new-session', ensureAuthenticated, async (req, res) => {
 })
 
 app.post('/add-time', ensureAuthenticated, async (req, res) => {
-  const access_token = getCookieByName("access_token", req.cookies);
-  const token = "Bearer ".concat(access_token);
+  const access_token = getCookieByName('access_token', req.cookies);
+  const token = 'Bearer '.concat(access_token);
   const response = await fetch(`http://localhost:8080/api/v1/sessions/add-time`, {
     method: 'POST',
     headers: {
@@ -173,7 +177,7 @@ app.post('/add-time', ensureAuthenticated, async (req, res) => {
 
 app.get('/sessions', ensureAuthenticated, async (req, res) => {
   try {
-    const response = await fetch('http://localhost:8080/api/v1/sessions', {
+    const response = await fetch(API_URL + '/sessions', {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${req.cookies.access_token}`,
