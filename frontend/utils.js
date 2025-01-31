@@ -1,6 +1,6 @@
-import {API_URL, ACCESS_TOKEN_EXPIRY_TIME} from './server'
+import {API_URL, ACCESS_TOKEN_EXPIRY_TIME} from './server.js';
 
-function getCookieByName(searchKey, cookies) {
+export function getCookieByName(searchKey, cookies) {
     for (const [key, value] of Object.entries(cookies)) {
         if (key === searchKey) {
             return value;
@@ -9,7 +9,7 @@ function getCookieByName(searchKey, cookies) {
     return null;
 }
 
-function getCookieByValue(searchValue, cookies) {
+export function getCookieByValue(searchValue, cookies) {
     for (const [, value] of Object.entries(cookies)) {
         if (value === searchValue) {
             return value;
@@ -27,7 +27,7 @@ function createCookie(name, value, age, res) {
     });
 }
 
-async function ensureAuthenticated(req, res, next) {
+export async function ensureAuthenticated(req, res, next) {
     let access_token = getCookieByName('access_token', req.cookies);
     if (access_token !== null) {
         return next();
@@ -57,7 +57,7 @@ async function ensureAuthenticated(req, res, next) {
     res.redirect('/');
 }
 
-async function ensureNotAuthenticated(req, res, next) {
+export async function ensureNotAuthenticated(req, res, next) {
     let access_token = getCookieByName('access_token', req.cookies);
     let refresh = getCookieByName('refresh_token', req.cookies);
 
@@ -87,7 +87,7 @@ async function ensureNotAuthenticated(req, res, next) {
 
 }
 
-async function getUser(req, res, access_token) {
+export async function getUser(req, res, access_token) {
     const token = 'Bearer '.concat(access_token);
     return await fetch(API_URL + '/profiles/logged', {
         method: 'GET',
@@ -99,8 +99,6 @@ async function getUser(req, res, access_token) {
     });
 }
 
-function checkIfAdmin(roles) {
+export function checkIfAdmin(roles) {
     return roles.includes('Admin');
 }
-
-module.exports = {getCookieByName, ensureAuthenticated, ensureNotAuthenticated, getUser, checkIfAdmin};

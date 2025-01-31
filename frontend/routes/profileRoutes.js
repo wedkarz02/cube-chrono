@@ -1,8 +1,8 @@
-import {API_URL} from "../server";
+import {API_URL} from '../server.js';
+import {getCookieByName, ensureAuthenticated} from '../utils.js';
+import express from 'express';
 
-const express = require('express');
 const router = express.Router();
-const {getCookieByName, ensureAuthenticated} = require('../utils');
 
 router.get('/myprofile', ensureAuthenticated, async (req, res) => {
     const access_token = getCookieByName("access_token", req.cookies);
@@ -137,4 +137,4 @@ router.post('/session', ensureAuthenticated, async (req, res) => {
     }
 });
 
-module.exports = router;
+export default router;

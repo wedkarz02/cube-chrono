@@ -1,8 +1,8 @@
-import {API_URL} from "../server";
+import {API_URL} from '../server.js';
+import {getCookieByName, ensureAuthenticated, getUser, checkIfAdmin} from '../utils.js';
+import express from 'express';
 
-const express = require('express');
 const router = express.Router();
-const {getCookieByName, ensureAuthenticated, getUser, checkIfAdmin} = require('../utils');
 
 router.get('/admin', ensureAdmin, async (req, res) => {
     const access_token = getCookieByName("access_token", req.cookies);
@@ -86,4 +86,4 @@ async function ensureAdmin(req, res, next) {
     return res.redirect('/');
 }
 
-module.exports = router;
+export default router;

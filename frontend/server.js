@@ -1,13 +1,15 @@
-require('dotenv').config();
-const express = require('express');
-const path = require('path');
-const app = express();
-const methodOverride = require('method-override');
-const cookieParser = require('cookie-parser');
-const profileRoutes = require('./routes/profileRoutes');
-const adminRoutes = require('./routes/adminRoutes');
-const {getCookieByName, ensureAuthenticated, ensureNotAuthenticated, getUser, checkIfAdmin} = require('./utils');
+import express from 'express';
+import path from 'path';
+import methodOverride from 'method-override';
+import cookieParser from 'cookie-parser';
 
+import profileRoutes from './routes/profileRoutes.js';
+import adminRoutes from './routes/adminRoutes.js';
+import {getCookieByName, ensureAuthenticated, ensureNotAuthenticated, getUser, checkIfAdmin} from './utils.js';
+
+const __dirname = import.meta.dirname;
+
+const app = express();
 app.use(express.json());
 app.use(express.static('public'));
 app.set('view engine', 'ejs');
