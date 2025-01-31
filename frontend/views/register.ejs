@@ -7,43 +7,43 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header>
-        <h1>Rejestracja</h1>
-    </header>
-    <main>
-        <form action="#" method="POST" class="form" id="register-form">          
-            <label for="username">Nazwa Użytkownika:</label>
-            <input type="text" id="username" name="username" required>
-            
-            <label for="password">Hasło:</label>
-            <input type="password" id="password" name="password" required>
-            
-            <label for="confirm-password">Potwierdź Hasło:</label>
-            <input type="password" id="confirm-password" name="confirm-password" required>
-            
-            <button type="submit">Zarejestruj się</button>
-        </form>
-        <p>Masz już konto? <a href="/login">Zaloguj się tutaj</a>.</p>
-    </main>
-    <footer>
-        <p>&copy; 2024 Cube Chrono</p>
-    </footer>
-    <script>
-        document.getElementById('register-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            const confirmPassword = document.getElementById('confirm-password').value;
+<header>
+    <h1>Rejestracja</h1>
+</header>
+<main>
+    <form action="#" method="POST" class="form" id="register-form">
+        <label for="username">Nazwa Użytkownika:</label>
+        <input type="text" id="username" name="username" required>
 
-            if (password !== confirmPassword) {
-                alert('Hasła nie są zgodne!');
-            } else {             
-                const data = {
-                    username: username,
-                    password: password,
-                };
-                
-                try {
+        <label for="password">Hasło:</label>
+        <input type="password" id="password" name="password" required>
+
+        <label for="confirm-password">Potwierdź Hasło:</label>
+        <input type="password" id="confirm-password" name="confirm-password" required>
+
+        <button type="submit">Zarejestruj się</button>
+    </form>
+    <p>Masz już konto? <a href="/login">Zaloguj się tutaj</a>.</p>
+</main>
+<footer>
+    <p>&copy; 2024 Cube Chrono</p>
+</footer>
+<script>
+    document.getElementById('register-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirm-password').value;
+
+        if (password !== confirmPassword) {
+            alert('Hasła nie są zgodne!');
+        } else {
+            const data = {
+                username: username,
+                password: password,
+            };
+
+            try {
                 const response = await fetch('/register', {
                     method: 'POST',
                     headers: {
@@ -64,8 +64,8 @@
                 console.error('Błąd połączenia:', error);
                 alert('Wystąpił błąd połączenia z serwerem.');
             }
-            }
-        });
-    </script>
+        }
+    });
+</script>
 </body>
 </html>

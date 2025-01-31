@@ -7,29 +7,30 @@
     <link rel="stylesheet" href="/style.css">
 </head>
 <body data-is-logged-in="<%= isLoggedIn %>">
-    <header>
-        <h1>Twoje Sesje</h1>
-        <div>
-            <a href="/myprofile" class="button">Powrót do Profilu</a>
-            <a href="/" class="button">Strona Główna</a>
-        </div>
-    </header>
-    <main>
-        <% if (sessions && sessions.length > 0) { %>
-            <section>
-                <h2>Twoje Sesje</h2>
-                <ul>
-                    <% sessions.forEach(session => { %>
-                        <li>
-                            <strong><%= session.name %></strong>
-                            <button class="button" onclick="window.location.href='/session/<%= session._id %>'">Szczegóły</button>
-                        </li>
-                    <% }) %>
-                </ul>
-            </section>
-        <% } else { %>
-            <p>Brak zapisanych sesji.</p>
-        <% } %>
-    </main>
+<header>
+    <h1>Twoje Sesje</h1>
+    <div>
+        <a href="/myprofile" class="button">Powrót do Profilu</a>
+        <a href="/" class="button">Strona Główna</a>
+    </div>
+</header>
+<main>
+    <% if (sessions && sessions.length > 0) { %>
+        <section>
+            <h2>Twoje Sesje</h2>
+            <ul>
+                <% sessions.forEach(session => { %>
+                    <li>
+                        <strong><%= session.name %></strong>
+                        <button class="button" onclick="window.location.href='/session/<%= session._id %>'">Szczegóły
+                        </button>
+                    </li>
+                <% }) %>
+            </ul>
+        </section>
+    <% } else { %>
+        <p>Brak zapisanych sesji.</p>
+    <% } %>
+</main>
 </body>
 </html>

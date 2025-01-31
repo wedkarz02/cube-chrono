@@ -11,62 +11,64 @@
     </script>
 </head>
 <body>
-    <header>
-        <h1>Panel Administratora</h1>
-        <div class="auth-links">
-            <a href="/">Strona Główna</a>
-        </div>
-    </header>
+<header>
+    <h1>Panel Administratora</h1>
+    <div class="auth-links">
+        <a href="/">Strona Główna</a>
+    </div>
+</header>
 
-    <main>
-        <section id="admin-panel" style="display: none;">
-            <h2>Zarządzanie Użytkownikami</h2>
-            <% if (accounts && accounts.length > 0) { %>
+<main>
+    <section id="admin-panel" style="display: none;">
+        <h2>Zarządzanie Użytkownikami</h2>
+        <% if (accounts && accounts.length > 0) { %>
             <table class="admin-table">
                 <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Nazwa Użytkownika</th>
-                        <th>Rola</th>
-                        <th>Akcje</th>
-                    </tr>
+                <tr>
+                    <th>ID</th>
+                    <th>Nazwa Użytkownika</th>
+                    <th>Rola</th>
+                    <th>Akcje</th>
+                </tr>
                 </thead>
                 <tbody>
-                    <% accounts.forEach(account => { %>
+                <% accounts.forEach(account => { %>
                     <tr>
                         <td><%= account.id %></td>
                         <td><%= account.username %></td>
                         <td><%= account.roles.join(", ") %></td>
-                        <td><button class="delete-btn" data-id="<%= account.id %>">Usuń</button></td>
+                        <td>
+                            <button class="delete-btn" data-id="<%= account.id %>">Usuń</button>
+                        </td>
                     </tr>
-                    <% }) %>
+                <% }) %>
                 </tbody>
             </table>
-            <% } else { %>
-                <p>Nie udało się wczytać użytkowników.</p>
-            <% } %>
-        </section>
+        <% } else { %>
+            <p>Nie udało się wczytać użytkowników.</p>
+        <% } %>
+    </section>
 
-        <section id="access-denied" style="display: none;">
-            <h2>Brak Dostępu</h2>
-            <p>Nie masz uprawnień do przeglądania tej strony. Zaloguj się jako administrator.</p>
-            <a href="/login" class="btn-login">Zaloguj się</a>
-        </section>
-    </main>
+    <section id="access-denied" style="display: none;">
+        <h2>Brak Dostępu</h2>
+        <p>Nie masz uprawnień do przeglądania tej strony. Zaloguj się jako administrator.</p>
+        <a href="/login" class="btn-login">Zaloguj się</a>
+    </section>
+</main>
 
-    <footer>
-        <p>&copy; 2024 Cube Chrono. Wszystkie prawa zastrzeżone.</p>
-    </footer>
+<footer>
+    <p>&copy; 2024 Cube Chrono. Wszystkie prawa zastrzeżone.</p>
+</footer>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            if (isAdmin) {
-                document.getElementById('admin-panel').style.display = 'block';
-            } else {
-                document.getElementById('access-denied').style.display = 'block';
-            }
-        });
-    </script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        if (isAdmin) {
+            document.getElementById('admin-panel').style.display = 'block';
+        } else {
+            document.getElementById('access-denied').style.display = 'block';
+        }
+    });
+</script>
 <script>
     async function getAllUsers() {
         try {
@@ -122,62 +124,62 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-    if (isAdmin) {
-        document.getElementById('admin-panel').style.display = 'block';
+        if (isAdmin) {
+            document.getElementById('admin-panel').style.display = 'block';
 
+            const deleteButtons = document.querySelectorAll('.delete-btn');
+            deleteButtons.forEach(button => {
+                button.addEventListener('click', async (event) => {
+                    const userId = event.target.getAttribute('data-id');
+                    await deleteUser(userId);
+                    location.reload();
+                });
+            });
+        } else {
+            document.getElementById('access-denied').style.display = 'block';
+        }
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
         const deleteButtons = document.querySelectorAll('.delete-btn');
+
         deleteButtons.forEach(button => {
-            button.addEventListener('click', async (event) => {
-                const userId = event.target.getAttribute('data-id');
-                await deleteUser(userId);
-                location.reload();
+            button.addEventListener('click', function () {
+                const userId = button.getAttribute('data-id');
+                deleteUser(userId);
             });
         });
-    } else {
-        document.getElementById('access-denied').style.display = 'block';
-    }
-});
-
-document.addEventListener('DOMContentLoaded', function () {
-    const deleteButtons = document.querySelectorAll('.delete-btn');
-
-    deleteButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const userId = button.getAttribute('data-id');
-            deleteUser(userId);
-        });
     });
-});
 
-async function deleteUser(user_id) {
-    try {
-        const data = {
-            user_id: user_id
-        };
+    async function deleteUser(user_id) {
+        try {
+            const data = {
+                user_id: user_id
+            };
 
-        const response = await fetch(`http://localhost:3000/delete-user`, {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        });
+            const response = await fetch(`http://localhost:3000/delete-user`, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
 
-        const jsonResult = await response.json();
-        console.log(jsonResult);
+            const jsonResult = await response.json();
+            console.log(jsonResult);
 
-        if (response.status === 200) {
-            alert('Użytkownik został usunięty.');
-            location.reload();
-        } else {
-            alert('Nie udało się usunąć użytkownika.');
+            if (response.status === 200) {
+                alert('Użytkownik został usunięty.');
+                location.reload();
+            } else {
+                alert('Nie udało się usunąć użytkownika.');
+            }
+        } catch (error) {
+            console.error('Błąd połączenia:', error);
+            alert('Wystąpił błąd połączenia z serwerem.');
         }
-    } catch (error) {
-        console.error('Błąd połączenia:', error);
-        alert('Wystąpił błąd połączenia z serwerem.');
     }
-}
 
 </script>
 </body>

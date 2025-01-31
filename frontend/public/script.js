@@ -24,7 +24,7 @@ function formatTime(ms) {
     const minutes = String(Math.floor((ms % 3600000) / 60000)).padStart(2, '0');
     const seconds = String(Math.floor((ms % 60000) / 1000)).padStart(2, '0');
     const milliseconds = String(ms % 1000).padStart(3, '0');
-    return { hours, minutes, seconds, milliseconds };
+    return {hours, minutes, seconds, milliseconds};
 }
 
 if (newSessionButton !== null) {
@@ -67,7 +67,7 @@ startButton.addEventListener('click', () => {
         startTime = Date.now();
         timerInterval = setInterval(() => {
             elapsedTime = Date.now() - startTime;
-            const { hours, minutes, seconds, milliseconds } = formatTime(elapsedTime);
+            const {hours, minutes, seconds, milliseconds} = formatTime(elapsedTime);
             hoursDisplay.textContent = hours;
             minutesDisplay.textContent = minutes;
             secondsDisplay.textContent = seconds;

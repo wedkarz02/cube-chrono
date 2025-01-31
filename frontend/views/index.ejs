@@ -8,67 +8,67 @@
     <link rel="icon" href="data:,">
 </head>
 <body data-is-logged-in="<%= isLoggedIn %>">
-    <header>
-        <h1>Cube Chrono</h1>
-        <p>Zabawa i rywalizacja z kostką Rubika</p>
-        <div>
-            <% if (isLoggedIn) { %>
-                <% if (isAdmin) { %>
-                    <a href="/myprofile" class="button">Mój Profil</a>
-                    <a href="/admin" class="button">Panel administratora</a>
-                <% } else { %>
-                        <a href="/myprofile" class="button">Mój Profil</a>
-                <% } %>
+<header>
+    <h1>Cube Chrono</h1>
+    <p>Zabawa i rywalizacja z kostką Rubika</p>
+    <div>
+        <% if (isLoggedIn) { %>
+            <% if (isAdmin) { %>
+                <a href="/myprofile" class="button">Mój Profil</a>
+                <a href="/admin" class="button">Panel administratora</a>
             <% } else { %>
-                    <a href="/login" class="button">Zaloguj się</a>
-                    <a href="/register" class="button">Zarejestruj się</a>
+                <a href="/myprofile" class="button">Mój Profil</a>
             <% } %>
-        </div>
-    </header>
+        <% } else { %>
+            <a href="/login" class="button">Zaloguj się</a>
+            <a href="/register" class="button">Zarejestruj się</a>
+        <% } %>
+    </div>
+</header>
 
-    <main>
-        <section class="timer-section">
-            <h2>Czasomierz</h2>
-            <p>Kliknij "Start", aby rozpocząć pomiar czasu!</p>
+<main>
+    <section class="timer-section">
+        <h2>Czasomierz</h2>
+        <p>Kliknij "Start", aby rozpocząć pomiar czasu!</p>
+        <% if (isLoggedIn) { %>
+            <h1>Obecna sesja <span id="session-name-id">nie będzie zapisywana.</span></h1>
+        <% } %>
+        <div class="timer-container">
+            <span id="hours">00</span><span class="colon">:</span>
+            <span id="minutes">00</span><span class="colon">:</span>
+            <span id="seconds">00</span><span class="colon">:</span>
+            <span id="milliseconds">000</span>
+        </div>
+        <div class="timer-buttons">
+            <button id="start">Start</button>
+            <button id="stop">Stop</button>
+            <button id="reset">Reset</button>
             <% if (isLoggedIn) { %>
-                <h1>Obecna sesja <span id="session-name-id">nie będzie zapisywana.</span></h1>
-            <% } %>
-            <div class="timer-container">
-                <span id="hours">00</span><span class="colon">:</span>
-                <span id="minutes">00</span><span class="colon">:</span>
-                <span id="seconds">00</span><span class="colon">:</span>
-                <span id="milliseconds">000</span>
-            </div>
-            <div class="timer-buttons">
-                <button id="start">Start</button>
-                <button id="stop">Stop</button>
-                <button id="reset">Reset</button>
-                <% if (isLoggedIn) { %>
-                    <div class="new-session-container">
-                        <input
+                <div class="new-session-container">
+                    <input
                             type="text"
                             id="session-name"
                             placeholder="Nazwa sesji (opcjonalna)"
                             class="session-name-input"
-                        />
-                        <button id="create-session-button" class="button">Nowa Sesja</button>
-                    </div>
-                <% } %>
-            </div>
-        </section>
+                    />
+                    <button id="create-session-button" class="button">Nowa Sesja</button>
+                </div>
+            <% } %>
+        </div>
+    </section>
 
-        <!-- Scramble -->
-        <section>
-            <h2>Scramble</h2>
-            <p>Oto twoje mieszanie:</p>
-            <p class="scramble" id="scramble-display">---</p>
-            <button id="generate-scramble">Generuj Scramble</button>
-        </section>
-    </main>
+    <!-- Scramble -->
+    <section>
+        <h2>Scramble</h2>
+        <p>Oto twoje mieszanie:</p>
+        <p class="scramble" id="scramble-display">---</p>
+        <button id="generate-scramble">Generuj Scramble</button>
+    </section>
+</main>
 
-    <footer>
-        <p>&copy; 2024 Cube Chrono. Wszystkie prawa zastrzeżone.</p>
-    </footer>
-    <script src="script.js"></script>
+<footer>
+    <p>&copy; 2024 Cube Chrono. Wszystkie prawa zastrzeżone.</p>
+</footer>
+<script src="script.js"></script>
 </body>
 </html>

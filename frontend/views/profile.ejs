@@ -7,173 +7,173 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header>
-        <h1>Profil Użytkownika <%= username %></h1>
-        <div>
-            <a href="/" class="button">Strona Główna</a>
-            <form action="http://localhost:3000/logout" method="POST" style="display: inline;">
-                <button type="submit" class="button">Wyloguj się</button>
-            </form>
-        </div>
-    </header>
+<header>
+    <h1>Profil Użytkownika <%= username %></h1>
+    <div>
+        <a href="/" class="button">Strona Główna</a>
+        <form action="http://localhost:3000/logout" method="POST" style="display: inline;">
+            <button type="submit" class="button">Wyloguj się</button>
+        </form>
+    </div>
+</header>
 
-    <main>
-        <section class="profile-info">
-            <h2>Twoje Dane</h2>
-            <form class="form change-password">
-                <label for="old_password">Stare hasło:</label>
-                <input type="password" id="old_password">
+<main>
+    <section class="profile-info">
+        <h2>Twoje Dane</h2>
+        <form class="form change-password">
+            <label for="old_password">Stare hasło:</label>
+            <input type="password" id="old_password">
 
-                <label for="new_password">Nowe hasło:</label>
-                <input type="password" id="new_password">
+            <label for="new_password">Nowe hasło:</label>
+            <input type="password" id="new_password">
 
-                <button type="submit">Zmień hasło</button>
-            </form>
+            <button type="submit">Zmień hasło</button>
+        </form>
 
-            <form class="form change-username">
-                <label for="username">Nazwa użytkownika:</label>
-                <input type="text" id="username" value=<%= username %> required>
+        <form class="form change-username">
+            <label for="username">Nazwa użytkownika:</label>
+            <input type="text" id="username" value=<%= username %> required>
 
-                <button type="submit">Zmień nazwę użytkownika</button>
-            </form>
-        </section>
+            <button type="submit">Zmień nazwę użytkownika</button>
+        </form>
+    </section>
 
-        <section class="profile-history">
-            <h2>Twoje Sesje</h2>
-            <p>Przejdź do listy wszystkich zapisanych sesji:</p>
-            <a href="/sessions" class="button" id="get-all-sessions">Zobacz Sesje</a>
-        </section>
-    </main>
+    <section class="profile-history">
+        <h2>Twoje Sesje</h2>
+        <p>Przejdź do listy wszystkich zapisanych sesji:</p>
+        <a href="/sessions" class="button" id="get-all-sessions">Zobacz Sesje</a>
+    </section>
+</main>
 
-    <footer>
-        <p>&copy; 2024 Cube Chrono. Wszystkie prawa zastrzeżone.</p>
-    </footer>
+<footer>
+    <p>&copy; 2024 Cube Chrono. Wszystkie prawa zastrzeżone.</p>
+</footer>
 
-    <script>
-        document.querySelector('.change-password').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const old_password = document.getElementById('old_password').value;
-            const new_password = document.getElementById('new_password').value;
-            const data = {
-                new_password: new_password,
-                old_password: old_password
-            };
+<script>
+    document.querySelector('.change-password').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const old_password = document.getElementById('old_password').value;
+        const new_password = document.getElementById('new_password').value;
+        const data = {
+            new_password: new_password,
+            old_password: old_password
+        };
 
-            try {
-                const result = await fetch("/password", {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(data)
-                });
-
-                const jsonResult = await result.json();
-
-                if (result.status === 200) {
-                    window.location.href = '/login';
-                } else if (result.status === 400 || result.status === 401) {
-                    alert(jsonResult.message || 'Dane są niepoprawne!');
-                } else {
-                    alert(jsonResult.message || 'Błąd komunikacji z serwerem!');
-                }
-            } catch (error) {
-                alert('Błąd przy próbie połączenia z serwerem.');
-                console.error(error);
-            }
-        });
-
-        document.querySelector('.change-username').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const username = document.getElementById('username').value;
-            const data = {
-                username: username
-            };
-
-            try {
-                const result = await fetch("/username", {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(data)
-                });
-
-                if (result.status === 200) {
-                    location.reload();
-                    alert('Zmieniono nazwę użytkownika!');
-                } else if (result.status === 400 || result.status === 401) {
-                    alert(responseBody.message || 'Dane są niepoprawne!');
-                } else {
-                    alert(responseBody.message || 'Błąd komunikacji z serwerem!');
-                }
-            } catch (error) {
-                alert('Błąd przy próbie połączenia z serwerem.');
-                console.error(error);
-            }
-        });
-    </script>
-
-    <script>
-        const sessionsButton = document.getElementById('get-all-sessions');
-
-        if (sessionsButton) {
-            sessionsButton.addEventListener('click', async () => {
-                await getAllSessions();
+        try {
+            const result = await fetch("/password", {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
             });
-        }
 
-        async function getAllSessions() {
-            try {
-                const response = await fetch(`http://localhost:3000/all-sessions`, {
-                    method: 'GET',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    }
-                });
+            const jsonResult = await result.json();
 
-                const jsonResult = await response.json();
-                console.log(jsonResult);
-
-                if (response.status === 200) {
-                } else {
-                    console.error("Błąd z zapytaniem.")
-                }
-            } catch (error) {
-                console.error('Błąd połączenia:', error);
-                alert('Wystąpił błąd połączenia z serwerem.');
+            if (result.status === 200) {
+                window.location.href = '/login';
+            } else if (result.status === 400 || result.status === 401) {
+                alert(jsonResult.message || 'Dane są niepoprawne!');
+            } else {
+                alert(jsonResult.message || 'Błąd komunikacji z serwerem!');
             }
+        } catch (error) {
+            alert('Błąd przy próbie połączenia z serwerem.');
+            console.error(error);
         }
+    });
 
-        async function getSession(session_id) {
-            try {
-                const data = {
-                    session_id: session_id
-                };
+    document.querySelector('.change-username').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const username = document.getElementById('username').value;
+        const data = {
+            username: username
+        };
 
-                const response = await fetch(`http://localhost:3000/session`, {
-                    method: 'POST',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(data)
-                });
+        try {
+            const result = await fetch("/username", {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            });
 
-                const jsonResult = await response.json();
-                console.log(jsonResult);
-
-                if (response.status === 200) {
-                    console.log("GIT");
-                } else {
-                    console.log("NIE GIT");
-                }
-            } catch (error) {
-                console.error('Błąd połączenia:', error);
-                alert('Wystąpił błąd połączenia z serwerem.');
+            if (result.status === 200) {
+                location.reload();
+                alert('Zmieniono nazwę użytkownika!');
+            } else if (result.status === 400 || result.status === 401) {
+                alert(responseBody.message || 'Dane są niepoprawne!');
+            } else {
+                alert(responseBody.message || 'Błąd komunikacji z serwerem!');
             }
+        } catch (error) {
+            alert('Błąd przy próbie połączenia z serwerem.');
+            console.error(error);
         }
-    </script>
+    });
+</script>
+
+<script>
+    const sessionsButton = document.getElementById('get-all-sessions');
+
+    if (sessionsButton) {
+        sessionsButton.addEventListener('click', async () => {
+            await getAllSessions();
+        });
+    }
+
+    async function getAllSessions() {
+        try {
+            const response = await fetch(`http://localhost:3000/all-sessions`, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const jsonResult = await response.json();
+            console.log(jsonResult);
+
+            if (response.status === 200) {
+            } else {
+                console.error("Błąd z zapytaniem.")
+            }
+        } catch (error) {
+            console.error('Błąd połączenia:', error);
+            alert('Wystąpił błąd połączenia z serwerem.');
+        }
+    }
+
+    async function getSession(session_id) {
+        try {
+            const data = {
+                session_id: session_id
+            };
+
+            const response = await fetch(`http://localhost:3000/session`, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            const jsonResult = await response.json();
+            console.log(jsonResult);
+
+            if (response.status === 200) {
+                console.log("GIT");
+            } else {
+                console.log("NIE GIT");
+            }
+        } catch (error) {
+            console.error('Błąd połączenia:', error);
+            alert('Wystąpił błąd połączenia z serwerem.');
+        }
+    }
+</script>
 </body>
 </html>
