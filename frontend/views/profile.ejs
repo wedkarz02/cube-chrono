@@ -60,7 +60,7 @@
         };
 
         try {
-            const result = await fetch("/password", {
+            const response = await fetch("/password", {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -68,18 +68,16 @@
                 body: JSON.stringify(data)
             });
 
-            const jsonResult = await result.json();
-
-            if (result.status === 200) {
-                window.location.href = '/login';
-            } else if (result.status === 400 || result.status === 401) {
-                alert(jsonResult.message || 'Dane są niepoprawne!');
-            } else {
-                alert(jsonResult.message || 'Błąd komunikacji z serwerem!');
+            if (!response.ok) {
+                let errorMessage = (await response.json()).error;
+                alert(errorMessage);
+                return;
             }
+
+            window.location.href = '/login';
         } catch (error) {
-            alert('Błąd przy próbie połączenia z serwerem.');
-            console.error(error);
+            console.error(error)
+            alert(error);
         }
     });
 
@@ -91,7 +89,7 @@
         };
 
         try {
-            const result = await fetch("/username", {
+            const response = await fetch("/username", {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -99,22 +97,20 @@
                 body: JSON.stringify(data)
             });
 
-            if (result.status === 200) {
-                location.reload();
-                alert('Zmieniono nazwę użytkownika!');
-            } else if (result.status === 400 || result.status === 401) {
-                alert(responseBody.message || 'Dane są niepoprawne!');
-            } else {
-                alert(responseBody.message || 'Błąd komunikacji z serwerem!');
+            if (!response.ok) {
+                let errorMessage = (await response.json()).error;
+                alert(errorMessage);
+                return;
             }
+
+            location.reload();
+            alert('Zmieniono nazwę użytkownika!');
         } catch (error) {
-            alert('Błąd przy próbie połączenia z serwerem.');
-            console.error(error);
+            console.error(error)
+            alert(error);
         }
     });
-</script>
 
-<script>
     const sessionsButton = document.getElementById('get-all-sessions');
 
     if (sessionsButton) {
@@ -133,16 +129,17 @@
                 }
             });
 
+            if (!response.ok) {
+                let errorMessage = (await response.json()).error;
+                alert(errorMessage);
+                return;
+            }
+
             const jsonResult = await response.json();
             console.log(jsonResult);
-
-            if (response.status === 200) {
-            } else {
-                console.error("Błąd z zapytaniem.")
-            }
         } catch (error) {
-            console.error('Błąd połączenia:', error);
-            alert('Wystąpił błąd połączenia z serwerem.');
+            console.error(error)
+            alert(error);
         }
     }
 
@@ -161,17 +158,17 @@
                 body: JSON.stringify(data)
             });
 
+            if (!response.ok) {
+                let errorMessage = (await response.json()).error;
+                alert(errorMessage);
+                return;
+            }
+
             const jsonResult = await response.json();
             console.log(jsonResult);
-
-            if (response.status === 200) {
-                console.log("GIT");
-            } else {
-                console.log("NIE GIT");
-            }
         } catch (error) {
-            console.error('Błąd połączenia:', error);
-            alert('Wystąpił błąd połączenia z serwerem.');
+            console.error(error)
+            alert(error);
         }
     }
 </script>

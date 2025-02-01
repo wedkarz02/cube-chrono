@@ -80,17 +80,17 @@
                 }
             });
 
+            if (!response.ok) {
+                let errorMessage = (await response.json()).error;
+                alert(errorMessage);
+                return;
+            }
+
             const jsonResult = await response.json();
             console.log(jsonResult);
-
-            if (response.status === 200) {
-                console.log("GIT");
-            } else {
-                console.log("NIE GIT");
-            }
         } catch (error) {
-            console.error('Błąd połączenia:', error);
-            alert('Wystąpił błąd połączenia z serwerem.');
+            console.error(error)
+            alert(error);
         }
     }
 
@@ -109,17 +109,19 @@
                 body: JSON.stringify(data)
             });
 
+            if (!response.ok) {
+                let errorMessage = (await response.json()).error;
+                alert(errorMessage);
+                return;
+            }
+
             const jsonResult = await response.json();
             console.log(jsonResult);
-
-            if (response.status === 200) {
-                console.log("GIT");
-            } else {
-                console.log("NIE GIT");
-            }
+            return jsonResult;
         } catch (error) {
-            console.error('Błąd połączenia:', error);
-            alert('Wystąpił błąd połączenia z serwerem.');
+            console.error('Error fetching session:', error);
+            alert(error);
+            return null;
         }
     }
 
@@ -166,18 +168,17 @@
                 body: JSON.stringify(data)
             });
 
-            const jsonResult = await response.json();
-            console.log(jsonResult);
-
-            if (response.status === 200) {
-                alert('Użytkownik został usunięty.');
-                location.reload();
-            } else {
-                alert('Nie udało się usunąć użytkownika.');
+            if (!response.ok) {
+                let errorMessage = (await response.json()).error;
+                alert(errorMessage);
+                return;
             }
+
+            alert('Użytkownik został usunięty.');
+            location.reload();
         } catch (error) {
-            console.error('Błąd połączenia:', error);
-            alert('Wystąpił błąd połączenia z serwerem.');
+            console.error(error)
+            alert(error);
         }
     }
 

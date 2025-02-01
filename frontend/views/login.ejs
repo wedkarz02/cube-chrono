@@ -28,7 +28,6 @@
 <script>
     document.getElementById('login-form').addEventListener('submit', async (e) => {
         e.preventDefault();
-
         const username = document.getElementById('username').value;
         const password = document.getElementById('password').value;
         const data = {
@@ -45,17 +44,19 @@
                 body: JSON.stringify(data)
             });
 
-            if (response.status === 200) {
-                localStorage.setItem('isLoggedIn', 'true');
-                localStorage.setItem('username', username);
-                alert(`Zalogowano jako: ${username}`);
-                window.location.href = '/';
-            } else {
-                alert('Błąd logowania!');
+            if (!response.ok) {
+                let errorMessage = (await response.json()).error;
+                alert(errorMessage);
+                return;
             }
+
+            localStorage.setItem('isLoggedIn', 'true');
+            localStorage.setItem('username', username);
+            alert(`Zalogowano jako: ${username}`);
+            window.location.href = '/';
         } catch (error) {
-            console.error('Błąd połączenia:', error);
-            alert('Wystąpił błąd połączenia z serwerem.');
+            console.error(error)
+            alert(error);
         }
     });
 </script>

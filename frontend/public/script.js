@@ -31,12 +31,13 @@ if (newSessionButton !== null) {
     newSessionButton.addEventListener('click', async () => {
         const sessionNameInput = document.getElementById('session-name');
         const sessionName = sessionNameInput.value || `Sesja ${Date.now()}`;
+
         try {
             const data = {
                 name: sessionName
             };
 
-            const response = await fetch(`http://localhost:3000/new-session`, {
+            const response = await fetch(`/new-session`, {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
@@ -45,19 +46,19 @@ if (newSessionButton !== null) {
                 body: JSON.stringify(data)
             });
 
-            const jsonResult = await response.json();
-
-            if (response.ok) {
-                sessionID = jsonResult.payload.session_id;
-
-                sessionNameID.textContent = sessionName;
-                alert('Stworzono nową sesję.');
-            } else {
-                alert(jsonResult.message);
+            if (!response.ok) {
+                let errorMessage = (await response.json()).error;
+                alert(errorMessage);
+                return;
             }
+
+            const jsonResult = await response.json();
+            sessionID = jsonResult.payload.session_id;
+            sessionNameID.textContent = sessionName;
+            alert('Stworzono nową sesję.');
         } catch (error) {
-            console.error('Błąd połączenia:', error);
-            alert('Wystąpił błąd połączenia z serwerem.');
+            console.error(error)
+            alert(error);
         }
     });
 }
@@ -80,7 +81,7 @@ stopButton.addEventListener('click', async () => {
     clearInterval(timerInterval);
     timerInterval = null;
 
-    if ((isLoggedIn && sessionID !== undefined && sessionID !== null)) {
+    if (isLoggedIn && sessionID !== undefined && sessionID !== null) {
         const scramble = {
             kind: globalKind,
             sequence: globalSequence
@@ -106,14 +107,16 @@ stopButton.addEventListener('click', async () => {
                 body: JSON.stringify(data)
             });
 
-            if (response.status === 200) {
-                alert(`Zapisano czas w sesji.`);
-            } else {
-                alert('Błąd zapisu!');
+            if (!response.ok) {
+                let errorMessage = (await response.json()).error;
+                alert(errorMessage);
+                return;
             }
+
+            alert(`Zapisano czas w sesji.`);
         } catch (error) {
-            console.error('Błąd połączenia:', error);
-            alert('Wystąpił błąd połączenia z serwerem.');
+            console.error(error)
+            alert(error);
         }
     }
 });
@@ -139,7 +142,7 @@ async function generateScramble(kind, count) {
             count: count
         };
 
-        const response = await fetch(`http://localhost:3000/scrambles`, {
+        const response = await fetch(`/scrambles`, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -148,18 +151,20 @@ async function generateScramble(kind, count) {
             body: JSON.stringify(data)
         });
 
-        const jsonResult = await response.json();
-
-        if (response.status === 200) {
-            globalSequence = jsonResult.payload.scrambles[0].sequence;
-            globalKind = kind;
-            return jsonResult.payload.scrambles[0].sequence;
-        } else {
-            return jsonResult.message;
+        if (!response.ok) {
+            let errorMessage = (await response.json()).error;
+            alert(errorMessage);
+            return;
         }
+
+        const jsonResult = await response.json();
+        globalSequence = jsonResult.payload.scrambles[0].sequence;
+        globalKind = kind;
+        return jsonResult.payload.scrambles[0].sequence;
     } catch (error) {
-        console.error('Błąd połączenia:', error);
-        alert('Wystąpił błąd połączenia z serwerem.');
+        console.error(error)
+        alert(error);
+        return null;
     }
 }
 

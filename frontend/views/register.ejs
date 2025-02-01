@@ -37,33 +37,32 @@
 
         if (password !== confirmPassword) {
             alert('Hasła nie są zgodne!');
-        } else {
-            const data = {
-                username: username,
-                password: password,
-            };
+            return;
+        }
 
-            try {
-                const response = await fetch('/register', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(data)
-                });
+        try {
+            const response = await fetch('/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username: username,
+                    password: password,
+                })
+            });
 
-                const result = await response.json();
-
-                if (result.message !== "User already exists") {
-                    alert(`Pomyślnie utworzono użytkownika: ${username}`);
-                    window.location.href = '/login';
-                } else {
-                    alert('Użytkownik o takich danych już istnieje!');
-                }
-            } catch (error) {
-                console.error('Błąd połączenia:', error);
-                alert('Wystąpił błąd połączenia z serwerem.');
+            if (!response.ok) {
+                let errorMessage = (await response.json()).error;
+                alert(errorMessage);
+                return;
             }
+
+            alert(`Pomyślnie utworzono użytkownika: ${username}`);
+            window.location.href = '/login';
+        } catch (error) {
+            console.error(error)
+            alert(error);
         }
     });
 </script>

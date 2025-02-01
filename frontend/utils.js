@@ -29,32 +29,41 @@ function createCookie(name, value, age, res) {
 
 export async function ensureAuthenticated(req, res, next) {
     let access_token = getCookieByName('access_token', req.cookies);
-    if (access_token !== null) {
-        return next();
+
+    if (!access_token && !req.cookies.refresh_token) {
+        return res.status(401).json({
+            error: 'Unauthorized',
+            status: 401
+        });
     }
 
-    let refresh = getCookieByName('refresh_token', req.cookies);
-    if (refresh !== null) {
-        const data = {
-            refresh_token: refresh
-        };
-
+    if (!access_token) {
+        const refresh = getCookieByName('refresh_token', req.cookies);
         const result = await fetch(API_URL + '/auth/refresh', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(data)
+            body: JSON.stringify({ refresh_token: refresh })
         });
 
-        if (result.status === 200) {
-            const jsonResult = await result.json();
-            createCookie('access_token', jsonResult.payload.access_token, ACCESS_TOKEN_EXPIRY_TIME, res);
+        if (!result.ok) {
+            let error = new Error(`Refresh token error: ${result.status}`);
+            console.error('Authentication error:', error);
+            res.status(result.status).json({
+                error: 'Invalid credentials',
+                status: result.status
+            });
         }
+
+        const jsonResult = await result.json();
+        createCookie('access_token', jsonResult.payload.access_token, ACCESS_TOKEN_EXPIRY_TIME, res);
+        access_token = jsonResult.payload.access_token;
     }
 
-    res.redirect('/');
+    req.accessToken = access_token;
+    next();
 }
 
 export async function ensureNotAuthenticated(req, res, next) {
@@ -77,7 +86,7 @@ export async function ensureNotAuthenticated(req, res, next) {
             body: JSON.stringify(data)
         });
 
-        if (result.status === 200) {
+        if (result.ok) {
             const jsonResult = await result.json();
             createCookie('access_token', jsonResult.payload.access_token, ACCESS_TOKEN_EXPIRY_TIME, res);
         }
@@ -88,15 +97,27 @@ export async function ensureNotAuthenticated(req, res, next) {
 }
 
 export async function getUser(req, res, access_token) {
-    const token = 'Bearer '.concat(access_token);
-    return await fetch(API_URL + '/profiles/logged', {
-        method: 'GET',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'Authorization': token
+    try {
+        const response = await fetch(API_URL + '/profiles/logged', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${access_token}`,
+                'Accept': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            return res.status(response.status).json({
+                error: errorData.error || 'Wystąpił błąd podczas pobierania profilu',
+                status: response.status
+            });
         }
-    });
+        return response
+    } catch (error) {
+        console.error('Get profile error:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
 }
 
 export function checkIfAdmin(roles) {
