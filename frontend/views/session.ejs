@@ -8,34 +8,34 @@
     <link rel="icon" href="data:,">
 </head>
 <body data-is-logged-in="<%= isLoggedIn %>">
-    <header>
-        <h1>Szczegóły Sesji</h1>
-        <div>
-            <a href="/sessions" class="button">Powrót do Sesji</a>
-        </div>
-    </header>
-    <main>
-        <% if (session) { %>
-            <section>
-                <h2>Szczegóły dla sesji: <%= session.name %></h2>
-                <h3>Czasy:</h3>
-                <% if (session.times && session.times.length > 0) { %>
-                    <ul>
-                        <% session.times.forEach((time, index) => { %>
-                            <li>
-                                <strong>Numer:</strong> <%= index + 1 %><br>
-                                <strong>Czas:</strong> <%= time.millis %> ms<br>
-                                <strong>Data:</strong> <%= new Date(time.recorded_at).toLocaleString() %>
-                            </li>
-                        <% }) %>
-                    </ul>
-                <% } else { %>
-                    <p>Brak zapisanych czasów dla tej sesji.</p>
-                <% } %>
-            </section>
-        <% } else { %>
-            <p>Nie znaleziono szczegółów dla tej sesji.</p>
-        <% } %>
-    </main>
+<header>
+    <h1>Szczegóły Sesji</h1>
+    <div>
+        <a href="/sessions" class="button">Powrót do Sesji</a>
+    </div>
+</header>
+<main>
+    <% if (session) { %>
+        <section>
+            <h2>Szczegóły dla sesji: <%= session.name %></h2>
+            <h3>Czasy:</h3>
+            <% if (session.times && session.times.length > 0) { %>
+                <ul>
+                    <% session.times.forEach((time, index) => { %>
+                        <li>
+                            <strong>Numer:</strong> <%= index + 1 %><br>
+                            <strong>Czas:</strong> <%= time.millis %> ms<br>
+                            <strong>Data:</strong> <%= new Date(time.recorded_at).toLocaleString() %>
+                        </li>
+                    <% }) %>
+                </ul>
+            <% } else { %>
+                <p>Brak zapisanych czasów dla tej sesji.</p>
+            <% } %>
+        </section>
+    <% } else { %>
+        <p>Nie znaleziono szczegółów dla tej sesji.</p>
+    <% } %>
+</main>
 </body>
 </html>

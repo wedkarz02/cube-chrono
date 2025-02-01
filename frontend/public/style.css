@@ -1,13 +1,11 @@
-/* Import czcionki Teko */
 @import url('https://fonts.googleapis.com/css2?family=Teko:wght@400;600&display=swap');
 
-/* Ogólne */
 body {
     font-family: 'Teko', sans-serif;
     margin: 0;
     padding: 0;
-    background: linear-gradient(to bottom, #f5f5dc, #d2b48c); 
-    color: #4a2c2a; 
+    background: linear-gradient(to bottom, #f5f5dc, #d2b48c);
+    color: #4a2c2a;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -15,19 +13,15 @@ body {
     min-height: 100vh;
 }
 
-/* Nagłówek */
 header {
-    background: #4a2c2a; 
-    color: #f5f5dc; 
+    background: #4a2c2a;
+    color: #f5f5dc;
     padding: 20px;
     width: 100%;
     text-align: center;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     position: relative;
     margin-bottom: 20px;
-    position: relative; /* Kontekst dla elementów absolutnych */
-    text-align: center; /* Ustawia napisy na środku */
-    padding: 20px;
 }
 
 header h1 {
@@ -44,12 +38,12 @@ header p {
 }
 
 header div {
-    position: absolute; /* Pozycjonowanie przycisków */
-    top: 50%; /* Wyśrodkowanie w pionie względem nagłówka */
-    right: 50px; /* Przyciski przesunięte od prawej krawędzi */
-    transform: translateY(-50%); /* Dostosowanie środka */
+    position: absolute;
+    top: 50%;
+    right: 50px;
+    transform: translateY(-50%);
     display: flex;
-    gap: 15px; /* Odstęp między przyciskami */
+    gap: 15px;
 }
 
 .auth-links {
@@ -62,7 +56,7 @@ header div {
     color: #f5f5dc;
     text-decoration: none;
     margin-left: 15px;
-    font-size: 1rem;
+    font-size: 0.9rem;
     font-weight: 500;
     background: rgba(255, 255, 255, 0.2);
     padding: 8px 12px;
@@ -74,7 +68,6 @@ header div {
     background: rgba(255, 255, 255, 0.4);
 }
 
-/* Główna treść */
 main {
     margin: auto;
     width: 100%;
@@ -90,13 +83,13 @@ section {
 section h2 {
     margin-top: 20px;
     font-size: 1.8rem;
-    color: #4a2c2a; 
+    color: #4a2c2a;
     font-weight: 600;
     margin-bottom: 10px;
 }
 
 .placeholder {
-    color: #8b6b61; 
+    color: #8b6b61;
     font-size: 1rem;
     margin-top: 10px;
 }
@@ -125,7 +118,7 @@ section h2 {
     color: white;
 }
 
-.profile-history .button{
+.profile-history .button {
     background-color: #4a2c2a;
     color: white;
 }
@@ -145,7 +138,6 @@ section h2 {
     background: rgba(255, 255, 255, 0.4);
 }
 
-/* Przyciski */
 a.button {
     color: #f5f5dc;
     text-decoration: none;
@@ -162,25 +154,22 @@ a.button:hover {
     background: rgba(255, 255, 255, 0.4);
 }
 
-/* === SEKCJA CZASOMIERZA === */
 .timer-section {
     text-align: center;
     margin: 40px 0;
     padding: 30px;
-    background: #f5f5dc; 
+    background: #f5f5dc;
     border-radius: 10px;
-    border: 2px solid #8b6b61; 
+    border: 2px solid #8b6b61;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-/* Nagłówek czasomierza */
 .timer-section h2 {
     font-size: 2rem;
-    color: #4a2c2a; 
+    color: #4a2c2a;
     margin-bottom: 10px;
 }
 
-/* === TIMER === */
 .timer-container {
     font-family: 'Teko', monospace;
     font-size: 3rem;
@@ -202,7 +191,6 @@ a.button:hover {
     text-align: center;
 }
 
-/* Stała szerokość dla każdego segmentu */
 #hours,
 #minutes,
 #seconds {
@@ -232,11 +220,9 @@ a.button:hover {
     color: #f5f5dc;
     padding: 10px;
     border-radius: 10px;
-    text-align: center;
     overflow: hidden;
 }
 
-/* Przyciski czasomierza */
 .timer-buttons {
     margin-top: 20px;
     display: flex;
@@ -263,7 +249,7 @@ a.button:hover {
 }
 
 #stop {
-    background-color: #f44336; 
+    background-color: #f44336;
     color: white;
 }
 
@@ -272,7 +258,7 @@ a.button:hover {
 }
 
 #reset {
-    background-color: #ff9800; 
+    background-color: #ff9800;
     color: white;
 }
 
@@ -281,20 +267,19 @@ a.button:hover {
 }
 
 ul {
-    list-style-type: none; /* Usuwa kropki z list */
-    padding-left: 0; /* Usuwa wcięcie */
+    list-style-type: none;
+    padding-left: 0;
 }
 
 li {
-    margin-bottom: 10px; /* Dodaje margines między elementami listy */
+    margin-bottom: 10px;
 }
 
-/* === SEKCJA SCRAMBLE === */
 .scramble {
     font-size: 1.5rem;
     font-weight: bold;
     margin: 15px 0;
-    color: #4a2c2a; 
+    color: #4a2c2a;
 }
 
 #generate-scramble {
@@ -312,11 +297,10 @@ li {
     background-color: #6f4f4b;
 }
 
-/* Sekcja Wydarzeń na Stronie Głównej */
 section button {
     margin-top: 10px;
-    background-color: #4a2c2a; 
-    color: #f5f5dc; 
+    background-color: #4a2c2a;
+    color: #f5f5dc;
     border: none;
     border-radius: 5px;
     padding: 10px 20px;
@@ -326,11 +310,11 @@ section button {
 }
 
 section button:hover {
-    background-color: #6f4f4b; 
+    background-color: #6f4f4b;
 }
 
 button, a {
-    font-family: 'Teko', sans-serif; /* Użyj swojej czcionki */
+    font-family: 'Teko', sans-serif;
     font-size: 1rem;
     font-weight: 500;
 }
@@ -353,37 +337,18 @@ button.button:hover {
     background: rgba(255, 255, 255, 0.4);
 }
 
-/* Link do Profilu */
-.auth-links a {
-    color: #f5f5dc;
-    text-decoration: none;
-    margin-left: 15px;
-    font-size: 0.9rem;
-    font-weight: 500;
-    background: rgba(255, 255, 255, 0.2);
-    padding: 8px 12px;
-    border-radius: 5px;
-    transition: background 0.3s ease;
-}
-
-.auth-links a:hover {
-    background: rgba(255, 255, 255, 0.4);
-}
-
-/* Stopka */
 footer {
     margin-top: 20px;
     font-size: 0.9rem;
-    color: #8b6b61; 
+    color: #8b6b61;
     text-align: center;
 }
 
-/* Formularze */
 .form-container {
     max-width: 400px;
     margin: 0 auto;
     padding: 20px;
-    background: #f5f5dc; 
+    background: #f5f5dc;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
@@ -396,21 +361,23 @@ footer {
 
 .form label {
     font-size: 1rem;
-    color: #4a2c2a; 
+    font-weight: bold;
+    color: #4a2c2a;
+    margin-top: 10px;
     margin-bottom: 5px;
 }
 
 .form input {
     padding: 10px;
-    border: 1px solid #8b6b61; 
+    border: 1px solid #8b6b61;
     border-radius: 5px;
     font-size: 1rem;
 }
 
 .form button {
     margin-top: 10px;
-    background-color: #4a2c2a; 
-    color: #f5f5dc; 
+    background-color: #4a2c2a;
+    color: #f5f5dc;
     border: none;
     border-radius: 5px;
     padding: 10px 20px;
@@ -420,15 +387,13 @@ footer {
 }
 
 .form button:hover {
-    background-color: #6f4f4b; 
+    background-color: #6f4f4b;
 }
 
-/* Dodatkowe dostosowanie dla pól hasła */
 .form input[type="password"] {
     margin-bottom: 10px;
 }
 
-/* Sekcja Wydarzeń */
 .event-list {
     list-style: none;
     padding: 0;
@@ -436,8 +401,8 @@ footer {
 }
 
 .event-list li {
-    background: #f5f5dc; 
-    border: 1px solid #8b6b61; 
+    background: #f5f5dc;
+    border: 1px solid #8b6b61;
     border-radius: 5px;
     margin-bottom: 15px;
     padding: 15px;
@@ -446,7 +411,7 @@ footer {
 
 .event-list h3 {
     font-size: 1.4rem;
-    color: #4a2c2a; 
+    color: #4a2c2a;
     margin: 0 0 5px;
 }
 
@@ -457,8 +422,8 @@ footer {
 }
 
 .event-list button {
-    background-color: #4a2c2a; 
-    color: #f5f5dc; 
+    background-color: #4a2c2a;
+    color: #f5f5dc;
     border: none;
     border-radius: 5px;
     padding: 8px 12px;
@@ -468,21 +433,20 @@ footer {
 }
 
 .event-list button:hover {
-    background-color: #6f4f4b; 
+    background-color: #6f4f4b;
 }
 
-/* Formularz tworzenia wydarzeń */
 .create-event {
     margin-top: 40px;
     padding: 20px;
-    background: #f5f5dc; 
+    background: #f5f5dc;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .create-event h2 {
     font-size: 1.5rem;
-    color: #4a2c2a; 
+    color: #4a2c2a;
     margin-bottom: 20px;
 }
 
@@ -494,7 +458,7 @@ footer {
 
 .create-event .form label {
     font-size: 1rem;
-    color: #4a2c2a; 
+    color: #4a2c2a;
     margin-bottom: 5px;
 }
 
@@ -507,8 +471,8 @@ footer {
 }
 
 .create-event .form button {
-    background-color: #4a2c2a; 
-    color: #f5f5dc; 
+    background-color: #4a2c2a;
+    color: #f5f5dc;
     border: none;
     border-radius: 5px;
     padding: 10px 20px;
@@ -517,10 +481,9 @@ footer {
 }
 
 .create-event .form button:hover {
-    background-color: #6f4f4b; 
+    background-color: #6f4f4b;
 }
 
-/* Ranking - Tabela */
 .ranking-table {
     width: 100%;
     border-collapse: collapse;
@@ -535,12 +498,12 @@ footer {
 }
 
 .ranking-table th {
-    background-color: #4a2c2a; 
-    color: #f5f5dc; 
+    background-color: #4a2c2a;
+    color: #f5f5dc;
 }
 
 .ranking-table tr:nth-child(even) {
-    background-color: #f5f5dc; 
+    background-color: #f5f5dc;
 }
 
 .ranking-table tr:nth-child(odd) {
@@ -562,9 +525,8 @@ footer {
     text-decoration: underline;
 }
 
-/* Ranking - Indywidualny Użytkownik */
 .user-ranking {
-    background-color: #f5f5dc; 
+    background-color: #f5f5dc;
     border: 1px solid #8b6b61;
     border-radius: 5px;
     padding: 15px;
@@ -578,22 +540,21 @@ footer {
 }
 
 .user-ranking strong {
-    color: #4a2c2a; 
+    color: #4a2c2a;
 }
 
-/* Sekcja Zaloguj się do Rankingu */
 #login-prompt {
     text-align: center;
     margin-top: 20px;
     padding: 20px;
-    background: #f5f5dc; 
+    background: #f5f5dc;
     border-radius: 5px;
-    border: 1px solid #8b6b61; 
+    border: 1px solid #8b6b61;
 }
 
 #login-prompt h2 {
     font-size: 1.4rem;
-    color: #4a2c2a; 
+    color: #4a2c2a;
     margin-bottom: 10px;
 }
 
@@ -601,8 +562,8 @@ footer {
     display: inline-block;
     margin-top: 10px;
     padding: 10px 20px;
-    background-color: #4a2c2a; 
-    color: #f5f5dc; 
+    background-color: #4a2c2a;
+    color: #f5f5dc;
     border-radius: 5px;
     text-decoration: none;
     font-size: 1rem;
@@ -610,10 +571,9 @@ footer {
 }
 
 #login-prompt a.btn-login:hover {
-    background-color: #6f4f4b; 
+    background-color: #6f4f4b;
 }
 
-/* Panel Administratora */
 .admin-table {
     width: 100%;
     margin: 20px 0;
@@ -645,7 +605,7 @@ footer {
 }
 
 .btn-ban {
-    background: #dc3545; 
+    background: #dc3545;
     color: white;
 }
 
@@ -669,11 +629,6 @@ footer {
     align-items: center;
 }
 
-.form label {
-    font-weight: bold;
-    margin-top: 10px;
-}
-
 #access-denied {
     text-align: center;
     margin-top: 50px;
@@ -683,10 +638,9 @@ footer {
     color: #dc3545;
 }
 
-/* Profil Użytkownika */
 .profile-info, .profile-history, .profile-events {
-    background: #f5f5dc; 
-    border: 1px solid #8b6b61; 
+    background: #f5f5dc;
+    border: 1px solid #8b6b61;
     border-radius: 8px;
     padding: 20px;
     margin-bottom: 20px;
@@ -697,7 +651,7 @@ footer {
 .profile-history h2,
 .profile-events h2 {
     font-size: 1.5rem;
-    color: #4a2c2a; 
+    color: #4a2c2a;
     margin-bottom: 15px;
 }
 
@@ -736,7 +690,6 @@ footer {
     background-color: #6f4f4b;
 }
 
-/* Historia Wyników */
 .history-list {
     list-style: none;
     padding: 0;
@@ -752,7 +705,6 @@ footer {
     border-bottom: none;
 }
 
-/* Moje Wydarzenia */
 .events-list {
     list-style: none;
     padding: 0;
@@ -788,7 +740,7 @@ footer {
 }
 
 #session-name-id {
-    color: #4a2c2a; /* Kolor tekstu */
+    color: #4a2c2a;
     font-size: 1.5rem;
     font-weight: bold;
 }

@@ -21,7 +21,7 @@ Download the source code using the ```git clone``` command:
 $ git clone https://github.com/wedkarz02/cube-chrono.git
 ```
 
-Or use the *Download ZIP* option from the Github repository [page](https://github.com/wedkarz02/cube-chrono.git).
+Or use the *Download ZIP* option from the GitHub repository [page](https://github.com/wedkarz02/cube-chrono.git).
 
 ## Install
 
@@ -35,12 +35,12 @@ $ npm install .
 
 ### API Setup
 
-To setup the backend, please head to the backend directory and check out the file README.md. After backend is properly configured, you can continue from this place. 
+To setup the backend, please head to the `backend` directory and check out the file README.md. After backend is properly configured, you can continue from this place. 
 
 ## Usage
 
 When the API is live, you can use any endpoints specified in the [API Reference](https://github.com/wedkarz02/cube-chrono/blob/main/doc/api-documentation.md) document.
-When in the cube-chrono/frontend directory, start the server application with Node.js:
+When in the `cube-chrono/frontend` directory, start the server application with Node.js:
 
 ```bash
 $ node server.js

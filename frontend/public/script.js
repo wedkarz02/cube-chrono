@@ -3,14 +3,12 @@ const isLoggedIn = document.body.getAttribute('data-is-logged-in') === 'true';
 let globalKind;
 let globalSequence;
 let sessionID;
-let globalSessionName;
 
 // === TIMER === //
 let timerInterval;
 let startTime;
 let elapsedTime = 0;
 
-// Pobieranie elementów DOM
 const hoursDisplay = document.getElementById('hours');
 const minutesDisplay = document.getElementById('minutes');
 const secondsDisplay = document.getElementById('seconds');
@@ -21,25 +19,25 @@ const resetButton = document.getElementById('reset');
 const newSessionButton = document.getElementById('create-session-button');
 const sessionNameID = document.getElementById('session-name-id');
 
-// Funkcja formatowania czasu
 function formatTime(ms) {
     const hours = String(Math.floor(ms / 3600000)).padStart(2, '0');
     const minutes = String(Math.floor((ms % 3600000) / 60000)).padStart(2, '0');
     const seconds = String(Math.floor((ms % 60000) / 1000)).padStart(2, '0');
     const milliseconds = String(ms % 1000).padStart(3, '0');
-    return { hours, minutes, seconds, milliseconds };
+    return {hours, minutes, seconds, milliseconds};
 }
 
 if (newSessionButton !== null) {
     newSessionButton.addEventListener('click', async () => {
         const sessionNameInput = document.getElementById('session-name');
         const sessionName = sessionNameInput.value || `Sesja ${Date.now()}`;
+
         try {
             const data = {
                 name: sessionName
             };
-    
-            const response = await fetch(`http://localhost:3000/new-session`, {
+
+            const response = await fetch(`/new-session`, {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
@@ -47,20 +45,20 @@ if (newSessionButton !== null) {
                 },
                 body: JSON.stringify(data)
             });
-    
-            const jsonResult = await response.json();
-            
-            if (response.ok) {
-                sessionID = jsonResult.payload.session_id;
 
-                sessionNameID.textContent = sessionName;
-                alert('Stworzono nową sesję.');
-            } else {
-                alert(jsonResult.message);
+            if (!response.ok) {
+                let errorMessage = (await response.json()).error;
+                alert(errorMessage);
+                return;
             }
+
+            const jsonResult = await response.json();
+            sessionID = jsonResult.payload.session_id;
+            sessionNameID.textContent = sessionName;
+            alert('Stworzono nową sesję.');
         } catch (error) {
-            console.error('Błąd połączenia:', error);
-            alert('Wystąpił błąd połączenia z serwerem.');
+            console.error(error)
+            alert(error);
         }
     });
 }
@@ -70,7 +68,7 @@ startButton.addEventListener('click', () => {
         startTime = Date.now();
         timerInterval = setInterval(() => {
             elapsedTime = Date.now() - startTime;
-            const { hours, minutes, seconds, milliseconds } = formatTime(elapsedTime);
+            const {hours, minutes, seconds, milliseconds} = formatTime(elapsedTime);
             hoursDisplay.textContent = hours;
             minutesDisplay.textContent = minutes;
             secondsDisplay.textContent = seconds;
@@ -83,7 +81,7 @@ stopButton.addEventListener('click', async () => {
     clearInterval(timerInterval);
     timerInterval = null;
 
-    if ((isLoggedIn && sessionID !== undefined && sessionID !== null)) {
+    if (isLoggedIn && sessionID !== undefined && sessionID !== null) {
         const scramble = {
             kind: globalKind,
             sequence: globalSequence
@@ -109,18 +107,18 @@ stopButton.addEventListener('click', async () => {
                 body: JSON.stringify(data)
             });
 
-            const jsonResult = await response.json();
-
-            if (response.status == 200) {
-                alert(`Zapisano czas w sesji.`);
-            } else {
-                alert('Błąd zapisu!');
+            if (!response.ok) {
+                let errorMessage = (await response.json()).error;
+                alert(errorMessage);
+                return;
             }
+
+            alert(`Zapisano czas w sesji.`);
         } catch (error) {
-            console.error('Błąd połączenia:', error);
-            alert('Wystąpił błąd połączenia z serwerem.');
+            console.error(error)
+            alert(error);
         }
-    }    
+    }
 });
 
 resetButton.addEventListener('click', () => {
@@ -144,7 +142,7 @@ async function generateScramble(kind, count) {
             count: count
         };
 
-        const response = await fetch(`http://localhost:3000/scrambles`, {
+        const response = await fetch(`/scrambles`, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -153,18 +151,20 @@ async function generateScramble(kind, count) {
             body: JSON.stringify(data)
         });
 
-        const jsonResult = await response.json();
-
-        if (response.status == 200) {
-            globalSequence = jsonResult.payload.scrambles[0].sequence;
-            globalKind = kind;
-            return jsonResult.payload.scrambles[0].sequence;
-        } else {
-            return jsonResult.message;
+        if (!response.ok) {
+            let errorMessage = (await response.json()).error;
+            alert(errorMessage);
+            return;
         }
+
+        const jsonResult = await response.json();
+        globalSequence = jsonResult.payload.scrambles[0].sequence;
+        globalKind = kind;
+        return jsonResult.payload.scrambles[0].sequence;
     } catch (error) {
-        console.error('Błąd połączenia:', error);
-        alert('Wystąpił błąd połączenia z serwerem.');
+        console.error(error)
+        alert(error);
+        return null;
     }
 }
 
@@ -175,8 +175,3 @@ scrambleButton.addEventListener('click', async () => {
 document.addEventListener('DOMContentLoaded', async () => {
     scrambleDisplay.textContent = await generateScramble("Three", 1);
 });
-
-function getAccessToken() {
-    const token = document.cookie.split('; ').find(row => row.startsWith('access_token='));
-    return token ? token.split('=')[1] : null;
-}
