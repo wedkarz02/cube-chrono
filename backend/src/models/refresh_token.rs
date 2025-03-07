@@ -1,7 +1,7 @@
 use mongodb::bson::Uuid;
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
 pub struct RefreshToken {
     #[serde(rename = "_id")]
     pub id: Uuid,

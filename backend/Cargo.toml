@@ -6,12 +6,14 @@ edition = "2021"
 [dependencies]
 anyhow = "1.0.95"
 argon2 = "0.5.3"
+async-trait = "0.1.87"
 axum = { version = "0.8.1", features = ["macros"] }
 axum-extra = { version = "0.10.0", features = ["erased-json"] }
 chrono = "0.4.39"
 dotenvy = "0.15.7"
 futures = "0.3.31"
 jsonwebtoken = "9.3.0"
+mockall = "0.13.1"
 mongodb = "3.2.0"
 rand = "0.8.5"
 serde = { version = "1.0.217", features = ["derive"] }
