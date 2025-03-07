@@ -11,13 +11,13 @@ use crate::{
     AppState,
 };
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
 pub enum ScrambleKind {
     Three,
     // TODO (wedkarz): Add more puzzles later
 }
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
 pub struct Scramble {
     pub kind: ScrambleKind,
     pub sequence: String,

@@ -3,14 +3,14 @@ use serde::{Deserialize, Serialize};
 
 use crate::routes::scrambles::Scramble;
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
 pub struct Time {
-    millis: u64,
-    recorded_at: u64,
-    scramble: Scramble,
+    pub millis: u64,
+    pub recorded_at: u64,
+    pub scramble: Scramble,
 }
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
 pub struct Session {
     #[serde(rename = "_id")]
     pub id: Uuid,
