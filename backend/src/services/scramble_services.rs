@@ -40,3 +40,60 @@ fn generate_3x3() -> String {
 
     scramble.join(" ")
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_generate_3x3_scramble_length() {
+        let scramble = generate(ScrambleKind::Three);
+
+        // Check that the scramble sequence has exactly 20 moves
+        assert_eq!(
+            scramble
+                .sequence
+                .split_whitespace()
+                .count(),
+            20
+        );
+    }
+
+    #[test]
+    fn test_generate_scramble_kind() {
+        let scramble = generate(ScrambleKind::Three);
+
+        assert!(matches!(scramble.kind, ScrambleKind::Three));
+    }
+
+    #[test]
+    fn test_generate_3x3_scramble_valid_moves() {
+        let scramble = generate(ScrambleKind::Three);
+        let valid_moves = ["U", "D", "R", "L", "F", "B"];
+        let valid_modifiers = ["", "'", "2"];
+
+        for move_str in scramble
+            .sequence
+            .split_whitespace()
+        {
+            let move_part = &move_str[..1];
+            let modifier_part = &move_str[1..];
+
+            assert!(valid_moves.contains(&move_part));
+            assert!(valid_modifiers.contains(&modifier_part));
+        }
+    }
+
+    #[test]
+    fn test_generate_no_repeated_consecutive_moves() {
+        let scramble = generate(ScrambleKind::Three);
+
+        let moves: Vec<&str> = scramble
+            .sequence
+            .split_whitespace()
+            .collect();
+        for i in 0..moves.len() - 1 {
+            assert_ne!(moves[i], moves[i + 1]);
+        }
+    }
+}

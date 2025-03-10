@@ -15,3 +15,24 @@ pub fn verify_password(hash: &str, password: &str) -> bool {
         .map(|parsed_hash| Argon2::default().verify_password(password.as_bytes(), &parsed_hash))
         .is_ok_and(|res| res.is_ok())
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_verify_password() {
+        let password = "test_password";
+        let hash = hash_password(password);
+
+        assert!(verify_password(&hash, password));
+    }
+
+    #[test]
+    fn test_verify_password_failed() {
+        let password = "test_password";
+        let hash = hash_password(password);
+
+        assert!(!verify_password(&hash, "wrong_password"));
+    }
+}

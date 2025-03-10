@@ -128,3 +128,139 @@ pub fn strong_password(value: &str) -> Result<(), ValidationError> {
 
     Ok(())
 }
+
+#[cfg(test)]
+mod tests {
+    use axum::body::Body;
+    use serde::{Deserialize, Serialize};
+
+    use super::*;
+
+    #[derive(Debug, Clone, Validate, Serialize, Deserialize)]
+    pub struct TestPayload {
+        #[validate(custom(function = "ascii_string"))]
+        pub username: String,
+        #[validate(custom(function = "strong_password"))]
+        pub password: String,
+    }
+
+    #[tokio::test]
+    async fn test_validated_json_success() {
+        let valid_payload = TestPayload {
+            username: "validuser".to_string(),
+            password: "StrongP@ssw0rd".to_string(),
+        };
+
+        let body = serde_json::to_string(&valid_payload).unwrap();
+        let req = Request::builder()
+            .uri("/test")
+            .header("content-type", "application/json")
+            .body(Body::from(body))
+            .unwrap();
+
+        let validated_json = ValidatedJson::<TestPayload>::from_request(req, &())
+            .await
+            .expect("Failed to validate JSON");
+
+        assert_eq!(
+            validated_json
+                .0
+                .username,
+            "validuser"
+        );
+        assert_eq!(
+            validated_json
+                .0
+                .password,
+            "StrongP@ssw0rd"
+        );
+    }
+
+    #[tokio::test]
+    async fn test_validated_json_failure() {
+        let invalid_payload = TestPayload {
+            username: "invalid_无效的_user".to_string(),
+            password: "weakpass".to_string(),
+        };
+
+        let body = serde_json::to_string(&invalid_payload).unwrap();
+        let req = Request::builder()
+            .uri("/test")
+            .header("content-type", "application/json")
+            .body(Body::from(body))
+            .unwrap();
+
+        let result = ValidatedJson::<TestPayload>::from_request(req, &()).await;
+
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_validated_query_success() {
+        let query = "username=validuser&password=StrongP@ssw0rd";
+        let req = Request::builder()
+            .uri(format!("/test?{}", query))
+            .header("content-type", "application/x-www-form-urlencoded")
+            .body(Body::empty())
+            .unwrap();
+
+        let validated_query = ValidatedQuery::<TestPayload>::from_request(req, &())
+            .await
+            .expect("Failed to validate query parameters");
+
+        assert_eq!(
+            validated_query
+                .0
+                .username,
+            "validuser"
+        );
+        assert_eq!(
+            validated_query
+                .0
+                .password,
+            "StrongP@ssw0rd"
+        );
+    }
+
+    #[tokio::test]
+    async fn test_ascii_string_valid() {
+        let valid_input = "valid_ascii";
+        let result = ascii_string(valid_input);
+        assert!(result.is_ok());
+    }
+
+    #[tokio::test]
+    async fn test_ascii_string_invalid() {
+        let invalid_input = "invalid_无效的_string";
+        let result = ascii_string(invalid_input);
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_strong_password_valid() {
+        let valid_password = "ValidP@ssw0rd";
+        let result = strong_password(valid_password);
+        assert!(result.is_ok());
+    }
+
+    #[tokio::test]
+    async fn test_strong_password_invalid_length() {
+        let invalid_password = "short";
+        let result = strong_password(invalid_password);
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_strong_password_invalid_no_digit() {
+        let invalid_password = "NoDigitPassword";
+        let result = strong_password(invalid_password);
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_strong_password_invalid_no_special_char() {
+        let invalid_password = "NoSpecialChar123";
+        let result = strong_password(invalid_password);
+        assert!(result.is_err());
+    }
+}
