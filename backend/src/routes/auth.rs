@@ -14,7 +14,7 @@ use crate::services::validation_services::ValidatedJson;
 use crate::services::{self, validation_services};
 use crate::AppState;
 
-#[derive(Deserialize, Validate)]
+#[derive(Clone, Debug, PartialEq, Deserialize, Validate)]
 pub struct AuthPayload {
     #[validate(length(min = 4, max = 32, message = "length must be in range (4..=32)"))]
     #[validate(custom(function = "validation_services::ascii_string"))]
