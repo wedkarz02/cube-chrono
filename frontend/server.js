@@ -30,22 +30,6 @@ export const ACCESS_TOKEN_EXPIRY_TIME = 1000 * 60 * 15;
 export const REFRESH_TOKEN_EXPIRY_TIME = 1000 * 60 * 60 * 24 * 30;
 // NOTE: If I were to work more on this, I would apply TypeScript everywhere for sure
 
-app.use((req, res, next) => {
-    res.status(404);
-
-    if (req.accepts('html')) {
-        res.render('404', { url: req.url });
-        return;
-    }
-
-    if (req.accepts('json')) {
-        res.json({ error: 'Not found' });
-        return;
-    }
-
-    res.type('txt').send('Not found');
-});
-
 app.use('/', profileRoutes);
 app.use('/', adminRoutes);
 app.use('/script.js', (req, res, next) => {
@@ -337,6 +321,23 @@ app.get('/session/:id', ensureAuthenticated, async (req, res) => {
         console.error('Error fetching session details:', error);
         res.status(500).send('Internal Server Error');
     }
+});
+
+// Has to be defined last
+app.use((req, res, next) => {
+    res.status(404);
+
+    if (req.accepts('html')) {
+        res.render('404', { url: req.url });
+        return;
+    }
+
+    if (req.accepts('json')) {
+        res.json({ error: 'Not found' });
+        return;
+    }
+
+    res.type('txt').send('Not found');
 });
 
 const PORT = 3000;
